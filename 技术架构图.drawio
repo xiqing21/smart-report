@@ -1,0 +1,255 @@
+<mxfile host="app.diagrams.net" modified="2024-01-20T10:00:00.000Z" agent="5.0" etag="xxx" version="22.1.16" type="device">
+  <diagram name="技术架构图" id="technical-architecture">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- 标题 -->
+        <mxCell id="title" value="智能报告生成系统 - 技术架构图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1890FF;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="360" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 用户接入层 -->
+        <mxCell id="user-layer" value="用户接入层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="1070" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 用户终端 -->
+        <mxCell id="web-browser" value="Web浏览器\nChrome/Firefox/Safari" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="150" y="150" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mobile-browser" value="移动端浏览器\nResponsive Design" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="350" y="150" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="desktop-app" value="桌面应用\nElectron (可选)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="550" y="150" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-client" value="API客户端\nPostman/第三方集成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="750" y="150" width="140" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 前端应用层 -->
+        <mxCell id="frontend-layer" value="前端应用层 (React 18 + TypeScript)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2E8;strokeColor=#FA8C16;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="250" width="1070" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 前端核心组件 -->
+        <mxCell id="react-app" value="React应用核心\n• React 18\n• TypeScript\n• Vite构建" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="80" y="320" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ui-components" value="UI组件库\n• Ant Design\n• 自定义组件\n• 响应式布局" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9F0FF;strokeColor=#722ED1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="230" y="320" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="state-management" value="状态管理\n• Zustand\n• React Query\n• 本地存储" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6FFFB;strokeColor=#13C2C2;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="380" y="320" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="editor-components" value="编辑器组件\n• Quill富文本\n• 图表组件\n• 模板引擎" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E6;strokeColor=#FA8C16;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="530" y="320" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="chart-visualization" value="数据可视化\n• ECharts\n• D3.js\n• 自定义图表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="680" y="320" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="routing-auth" value="路由&amp;认证\n• React Router\n• 权限控制\n• 路由守卫" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF1F0;strokeColor=#F5222D;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="830" y="320" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- API网关层 -->
+        <mxCell id="api-layer" value="API网关层 (Supabase Edge Functions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F5FF;strokeColor=#2F54EB;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="440" width="1070" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- API服务 -->
+        <mxCell id="auth-api" value="认证API\n• 用户登录\n• JWT令牌\n• 权限验证" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="100" y="510" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="report-api" value="报告API\n• CRUD操作\n• 版本管理\n• 分享权限" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9F0FF;strokeColor=#722ED1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="240" y="510" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="template-api" value="模板API\n• 模板管理\n• 自定义模板\n• 模板分类" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6FFFB;strokeColor=#13C2C2;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="380" y="510" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="data-api" value="数据API\n• 数据源接入\n• 数据处理\n• 数据查询" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E6;strokeColor=#FA8C16;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="520" y="510" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ai-api" value="AI服务API\n• 内容生成\n• 智能分析\n• 文本处理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="660" y="510" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="file-api" value="文件API\n• 文件上传\n• 图片处理\n• 文档导出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF1F0;strokeColor=#F5222D;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="800" y="510" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Supabase服务层 -->
+        <mxCell id="supabase-layer" value="Supabase服务层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="620" width="1070" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Supabase核心服务 -->
+        <mxCell id="supabase-auth" value="Supabase Auth\n• 用户认证\n• 社交登录\n• 多因子认证" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="80" y="690" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-db" value="PostgreSQL\n• 关系型数据库\n• RLS安全策略\n• 实时订阅" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9F0FF;strokeColor=#722ED1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="230" y="690" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-storage" value="Supabase Storage\n• 文件存储\n• CDN加速\n• 权限控制" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6FFFB;strokeColor=#13C2C2;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="380" y="690" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-realtime" value="Realtime\n• 实时同步\n• 协作编辑\n• 状态广播" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E6;strokeColor=#FA8C16;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="530" y="690" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-functions" value="Edge Functions\n• 服务端逻辑\n• API端点\n• 定时任务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="680" y="690" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-analytics" value="Analytics\n• 使用统计\n• 性能监控\n• 错误追踪" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF1F0;strokeColor=#F5222D;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="830" y="690" width="130" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- 外部服务层 -->
+        <mxCell id="external-layer" value="外部服务层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2E8;strokeColor=#FA8C16;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="800" width="1070" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 外部服务 -->
+        <mxCell id="openai-service" value="OpenAI API\n• GPT-4模型\n• 文本生成\n• 智能分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="120" y="870" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="baidu-ai" value="百度文心\n• 中文优化\n• 本土化AI\n• 备用方案" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9F0FF;strokeColor=#722ED1;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="270" y="870" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="data-sources" value="数据源\n• MySQL/Oracle\n• REST API\n• Excel/CSV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6FFFB;strokeColor=#13C2C2;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="420" y="870" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="email-service" value="邮件服务\n• 通知推送\n• 报告分享\n• 系统告警" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E6;strokeColor=#FA8C16;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="570" y="870" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="cdn-service" value="CDN服务\n• 静态资源\n• 全球加速\n• 缓存优化" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="720" y="870" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="monitoring" value="监控服务\n• Sentry错误\n• 性能监控\n• 日志分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF1F0;strokeColor=#F5222D;fontSize=11;align=left;" vertex="1" parent="1">
+          <mxGeometry x="870" y="870" width="120" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- 数据流连线 - 用户到前端 -->
+        <mxCell id="user-flow1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="web-browser" target="react-app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user-flow2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="mobile-browser" target="ui-components">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user-flow3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="api-client" target="routing-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 前端到API -->
+        <mxCell id="frontend-api1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1890FF;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="react-app" target="auth-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="frontend-api2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#722ED1;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="editor-components" target="report-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="frontend-api3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#13C2C2;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="state-management" target="template-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="frontend-api4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FA8C16;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="chart-visualization" target="data-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- API到Supabase -->
+        <mxCell id="api-supabase1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1890FF;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="auth-api" target="supabase-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-supabase2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#722ED1;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="report-api" target="supabase-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-supabase3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#13C2C2;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="template-api" target="supabase-storage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-supabase4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FA8C16;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="data-api" target="supabase-realtime">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-supabase5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="ai-api" target="supabase-functions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-supabase6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F5222D;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="file-api" target="supabase-analytics">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Supabase到外部服务 -->
+        <mxCell id="supabase-external1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1890FF;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="supabase-functions" target="openai-service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-external2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#722ED1;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="supabase-functions" target="baidu-ai">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-external3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#13C2C2;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="supabase-db" target="data-sources">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-external4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FA8C16;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="supabase-auth" target="email-service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-external5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="supabase-storage" target="cdn-service">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="supabase-external6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F5222D;strokeWidth=3;flowAnimation=1;" edge="1" parent="1" source="supabase-analytics" target="monitoring">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 实时数据流 -->
+        <mxCell id="realtime-flow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF4D4F;strokeWidth=4;flowAnimation=1;strokeDashArray=5 5;" edge="1" parent="1" source="supabase-realtime" target="state-management">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="595" y="650" />
+              <mxPoint x="1000" y="650" />
+              <mxPoint x="1000" y="280" />
+              <mxPoint x="445" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 数据流标签 -->
+        <mxCell id="data-flow-label" value="实时数据流" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#FF4D4F;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="450" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

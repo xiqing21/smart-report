@@ -1,0 +1,125 @@
+/* 智能报告生成系统 - 设计变量 */
+
+:root {
+  /* 主色调 */
+  --primary-color: #1890FF;
+  --primary-light: #40A9FF;
+  --primary-dark: #096DD9;
+  --primary-ultra-light: #E6F7FF;
+
+  /* 辅助色彩 */
+  --success-color: #52C41A;
+  --warning-color: #FAAD14;
+  --error-color: #FF4D4F;
+  --info-color: #1890FF;
+
+  /* 中性色彩 */
+  --title-color: #262626;
+  --text-color: #595959;
+  --text-secondary: #8C8C8C;
+  --text-disabled: #BFBFBF;
+  --border-color: #D9D9D9;
+  --divider-color: #F0F0F0;
+  --background-color: #FAFAFA;
+  --white: #FFFFFF;
+
+  /* 字体规范 */
+  --font-family-zh: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-family-en: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-code: 'Fira Code', Monaco, Consolas, monospace;
+
+  /* 字体大小 */
+  --font-size-xl: 28px;
+  --font-size-lg: 24px;
+  --font-size-md: 20px;
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-xs: 12px;
+
+  /* 字重 */
+  --font-weight-bold: 600;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --font-weight-light: 300;
+
+  /* 间距规范 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  /* 圆角规范 */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-round: 50%;
+
+  /* 阴影规范 */
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-normal: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-strong: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
+
+  /* 渐变色 */
+  --gradient-primary: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+
+  /* 动画时长 */
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+
+  /* 布局尺寸 */
+  --header-height: 64px;
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 64px;
+  --button-height: 40px;
+  --input-height: 40px;
+  --table-row-height: 56px;
+  --table-header-height: 48px;
+
+  /* 响应式断点 */
+  --breakpoint-xs: 576px;
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 992px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1600px;
+}
+
+/* 全局重置样式 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-zh), var(--font-family-en);
+  font-size: var(--font-size-base);
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--divider-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-disabled);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}

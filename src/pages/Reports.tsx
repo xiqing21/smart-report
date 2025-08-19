@@ -1,0 +1,619 @@
+import React, { useState } from 'react'
+import {
+  Card,
+  Table,
+  Button,
+  Input,
+  Select,
+  DatePicker,
+  Tag,
+  Space,
+  Avatar,
+  Dropdown,
+  Modal,
+  message,
+  Row,
+  Col,
+  Tooltip,
+  Progress
+} from 'antd'
+import {
+  AppstoreOutlined,
+  UnorderedListOutlined,
+  SearchOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ShareAltOutlined,
+  DownloadOutlined,
+  EyeOutlined,
+  MoreOutlined,
+
+  FileTextOutlined,
+  ClockCircleOutlined,
+  UserOutlined
+} from '@ant-design/icons'
+import { EnhancedButton, InteractiveCard, StatusTag, LikeButton, BookmarkButton } from '../components/InteractiveEnhancements'
+import { AnimatedList } from '../components/AdvancedAnimations'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import type { ColumnsType } from 'antd/es/table'
+import dayjs from 'dayjs'
+
+const { Search } = Input
+const { Option } = Select
+const { RangePicker } = DatePicker
+
+interface Report {
+  id: string
+  title: string
+  description: string
+  status: 'draft' | 'published' | 'reviewing' | 'archived'
+  author: string
+  authorAvatar?: string
+  createTime: string
+  updateTime: string
+  views: number
+  category: string
+  tags: string[]
+  progress?: number
+  size: string
+}
+
+const Reports: React.FC = () => {
+  const navigate = useNavigate()
+  const [viewMode, setViewMode] = useState<'table' | 'card'>('table')
+  const [searchText, setSearchText] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
+  const [dateRange, setDateRange] = useState<any>(null)
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+  const [loading] = useState(false)
+
+  // 模拟数据
+  const mockReports: Report[] = [
+    {
+      id: '1',
+      title: '2024年第一季度销售分析报告',
+      description: '详细分析第一季度各产品线销售情况，包含市场趋势和竞争对手分析',
+      status: 'published',
+      author: '张三',
+      authorAvatar: '',
+      createTime: '2024-01-15 14:30:00',
+      updateTime: '2024-01-16 09:15:00',
+      views: 156,
+      category: '销售分析',
+      tags: ['季度报告', '销售', '数据分析'],
+      size: '2.3 MB'
+    },
+    {
+      id: '2',
+      title: '用户行为数据洞察报告',
+      description: '基于用户行为数据的深度分析，发现用户使用模式和优化建议',
+      status: 'draft',
+      author: '李四',
+      createTime: '2024-01-14 09:15:00',
+      updateTime: '2024-01-14 16:45:00',
+      views: 89,
+      category: '用户研究',
+      tags: ['用户行为', 'UX', '数据洞察'],
+      progress: 65,
+      size: '1.8 MB'
+    },
+    {
+      id: '3',
+      title: '市场竞争力分析报告',
+      description: '全面分析市场竞争环境，评估公司产品竞争力和市场定位',
+      status: 'reviewing',
+      author: '王五',
+      createTime: '2024-01-13 16:45:00',
+      updateTime: '2024-01-13 18:20:00',
+      views: 234,
+      category: '市场分析',
+      tags: ['竞争分析', '市场调研', '战略规划'],
+      size: '3.1 MB'
+    },
+    {
+      id: '4',
+      title: '产品功能使用情况统计',
+      description: '统计分析各产品功能的使用频率和用户满意度',
+      status: 'published',
+      author: '赵六',
+      createTime: '2024-01-12 11:20:00',
+      updateTime: '2024-01-12 15:30:00',
+      views: 98,
+      category: '产品分析',
+      tags: ['功能分析', '用户体验', '产品优化'],
+      size: '1.5 MB'
+    },
+    {
+      id: '5',
+      title: '年度财务总结报告',
+      description: '2023年度财务状况全面总结，包含收入、支出和投资回报分析',
+      status: 'archived',
+      author: '钱七',
+      createTime: '2023-12-28 10:00:00',
+      updateTime: '2023-12-30 14:20:00',
+      views: 445,
+      category: '财务分析',
+      tags: ['年度报告', '财务', '总结'],
+      size: '4.2 MB'
+    }
+  ]
+
+  const [reports, setReports] = useState<Report[]>(mockReports)
+
+
+
+  const handleEdit = (record: Report) => {
+    navigate(`/editor/${record.id}`)
+  }
+
+  const handleDelete = (record: Report) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: `确定要删除报告 "${record.title}" 吗？此操作不可恢复。`,
+      okText: '删除',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk() {
+        setReports(reports.filter(r => r.id !== record.id))
+        message.success('报告删除成功')
+      }
+    })
+  }
+
+  const handleShare = (record: Report) => {
+    message.success(`报告 "${record.title}" 分享链接已复制到剪贴板`)
+  }
+
+  const handleDownload = (record: Report) => {
+    message.success(`正在下载报告 "${record.title}"`)
+  }
+
+  const getActionMenu = (record: Report) => ({
+    items: [
+      {
+        key: 'edit',
+        label: '编辑',
+        icon: <EditOutlined />,
+        onClick: () => handleEdit(record)
+      },
+      {
+        key: 'share',
+        label: '分享',
+        icon: <ShareAltOutlined />,
+        onClick: () => handleShare(record)
+      },
+      {
+        key: 'download',
+        label: '下载',
+        icon: <DownloadOutlined />,
+        onClick: () => handleDownload(record)
+      },
+      {
+        type: 'divider' as const
+      },
+      {
+        key: 'delete',
+        label: '删除',
+        icon: <DeleteOutlined />,
+        danger: true,
+        onClick: () => handleDelete(record)
+      }
+    ]
+  })
+
+  const columns: ColumnsType<Report> = [
+    {
+      title: '报告标题',
+      dataIndex: 'title',
+      key: 'title',
+      width: 300,
+      render: (text: string, record: Report) => (
+        <div className="flex items-center space-x-3">
+          <Avatar 
+            size={40} 
+            icon={<FileTextOutlined />} 
+            className="bg-blue-100 text-blue-600"
+          />
+          <div>
+            <div 
+              className="font-medium text-gray-900 hover:text-blue-600 cursor-pointer truncate"
+              onClick={() => handleEdit(record)}
+            >
+              {text}
+            </div>
+            <div className="text-xs text-gray-500 truncate max-w-xs">
+              {record.description}
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 100,
+      render: (status: string, record: Report) => (
+        <div>
+          <StatusTag 
+            status={status === 'published' ? 'completed' : status === 'draft' ? 'new' : 'processing'}
+            animated
+          />
+          {record.progress && (
+            <div className="mt-1">
+              <Progress percent={record.progress} size="small" />
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      title: '分类',
+      dataIndex: 'category',
+      key: 'category',
+      width: 120,
+      render: (category: string) => (
+        <Tag color="blue">{category}</Tag>
+      )
+    },
+    {
+      title: '作者',
+      dataIndex: 'author',
+      key: 'author',
+      width: 120,
+      render: (author: string) => (
+        <div className="flex items-center space-x-2">
+          <Avatar size={24} icon={<UserOutlined />} />
+          <span>{author}</span>
+        </div>
+      )
+    },
+    {
+      title: '浏览量',
+      dataIndex: 'views',
+      key: 'views',
+      width: 80,
+      render: (views: number) => (
+        <span className="flex items-center space-x-1">
+          <EyeOutlined className="text-gray-400" />
+          <span>{views}</span>
+        </span>
+      )
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      width: 150,
+      render: (time: string) => (
+        <Tooltip title={time}>
+          <span className="text-gray-600">
+            {dayjs(time).format('MM-DD HH:mm')}
+          </span>
+        </Tooltip>
+      )
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 120,
+      render: (_, record: Report) => (
+        <Space>
+          <Tooltip title="编辑">
+            <Button 
+              type="text" 
+              size="small" 
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(record)}
+            />
+          </Tooltip>
+          <Tooltip title="分享">
+            <Button 
+              type="text" 
+              size="small" 
+              icon={<ShareAltOutlined />}
+              onClick={() => handleShare(record)}
+            />
+          </Tooltip>
+          <Dropdown menu={getActionMenu(record)} trigger={['click']}>
+            <Button type="text" size="small" icon={<MoreOutlined />} />
+          </Dropdown>
+        </Space>
+      )
+    }
+  ]
+
+  const filteredReports = reports.filter(report => {
+    const matchesSearch = report.title.toLowerCase().includes(searchText.toLowerCase()) ||
+                         report.description.toLowerCase().includes(searchText.toLowerCase())
+    const matchesStatus = statusFilter === 'all' || report.status === statusFilter
+    const matchesCategory = categoryFilter === 'all' || report.category === categoryFilter
+    
+    let matchesDate = true
+    if (dateRange && dateRange.length === 2) {
+      const reportDate = dayjs(report.updateTime)
+      matchesDate = reportDate.isAfter(dateRange[0]) && reportDate.isBefore(dateRange[1])
+    }
+    
+    return matchesSearch && matchesStatus && matchesCategory && matchesDate
+  })
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys)
+    }
+  }
+
+  const renderCardView = () => (
+    <Row gutter={[24, 24]}>
+      <AnimatePresence>
+        <AnimatedList
+          dataSource={filteredReports}
+          staggerDelay={0.1}
+          animationType="scale"
+          renderItem={(report, index) => (
+            <Col xs={24} sm={12} lg={8} xl={6} key={report.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                whileHover={{ y: -4 }}
+              >
+                <InteractiveCard
+                  className="h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                  effect="lift"
+                  hoverable
+                >
+                  <Card
+                    bordered={false}
+                    cover={
+                      <div className="h-32 bg-gradient-to-r from-blue-50 to-purple-50 flex items-center justify-center">
+                        <FileTextOutlined className="text-4xl text-blue-400" />
+                      </div>
+                    }
+                    actions={[
+                      <Tooltip title="编辑" key="edit">
+                        <EditOutlined onClick={() => handleEdit(report)} />
+                      </Tooltip>,
+                      <Tooltip title="分享" key="share">
+                        <ShareAltOutlined onClick={() => handleShare(report)} />
+                      </Tooltip>,
+                      <Tooltip title="下载" key="download">
+                        <DownloadOutlined onClick={() => handleDownload(report)} />
+                      </Tooltip>,
+                      <LikeButton key="like" initialLiked={false} likeCount={Math.floor(Math.random() * 20)} />,
+                      <BookmarkButton key="bookmark" initialBookmarked={false} />,
+                      <Dropdown menu={getActionMenu(report)} trigger={['click']} key="more">
+                        <MoreOutlined />
+                      </Dropdown>
+                    ]}
+                  >
+                <Card.Meta
+                  title={
+                    <div className="truncate" title={report.title}>
+                      {report.title}
+                    </div>
+                  }
+                  description={
+                    <div className="space-y-3">
+                      <p className="text-gray-600 text-sm line-clamp-2">
+                        {report.description}
+                      </p>
+                      
+                      <div className="flex items-center justify-between">
+                        <StatusTag 
+                          status={report.status === 'published' ? 'completed' : report.status === 'draft' ? 'new' : 'processing'}
+                          animated
+                        />
+                        <Tag color="blue">{report.category}</Tag>
+                      </div>
+                      
+                      {report.progress && (
+                        <div>
+                          <div className="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>进度</span>
+                            <span>{report.progress}%</span>
+                          </div>
+                          <Progress percent={report.progress} size="small" />
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center space-x-1">
+                          <UserOutlined />
+                          <span>{report.author}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <EyeOutlined />
+                          <span>{report.views}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-xs text-gray-400">
+                        <div className="flex items-center space-x-1">
+                          <ClockCircleOutlined />
+                          <span>{dayjs(report.updateTime).format('MM-DD HH:mm')}</span>
+                        </div>
+                        <span>{report.size}</span>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-1">
+                        {report.tags.slice(0, 2).map((tag: string) => (
+                          <Tag key={tag}>{tag}</Tag>
+                        ))}
+                        {report.tags.length > 2 && (
+                          <Tag>+{report.tags.length - 2}</Tag>
+                        )}
+                      </div>
+                    </div>
+                  }
+                />
+                </Card>
+                </InteractiveCard>
+              </motion.div>
+            </Col>
+          )}
+        />
+      </AnimatePresence>
+    </Row>
+  )
+
+  return (
+    <div className="p-6 bg-gray-50 min-h-full">
+      {/* 页面标题和操作栏 */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-6"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">报告管理</h1>
+            <p className="text-gray-600 mt-1">管理和组织您的所有报告</p>
+          </div>
+          <EnhancedButton 
+            type="primary" 
+            size="large" 
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/editor')}
+            className="shadow-lg"
+            variant="glow"
+          >
+            创建报告
+          </EnhancedButton>
+        </div>
+
+        {/* 筛选和搜索栏 */}
+        <Card className="shadow-sm">
+          <div className="flex flex-wrap items-center gap-4">
+            <Search
+              placeholder="搜索报告标题或描述"
+              allowClear
+              style={{ width: 300 }}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              prefix={<SearchOutlined />}
+            />
+            
+            <Select
+              placeholder="状态筛选"
+              style={{ width: 120 }}
+              value={statusFilter}
+              onChange={setStatusFilter}
+            >
+              <Option value="all">全部状态</Option>
+              <Option value="draft">草稿</Option>
+              <Option value="reviewing">审核中</Option>
+              <Option value="published">已发布</Option>
+              <Option value="archived">已归档</Option>
+            </Select>
+            
+            <Select
+              placeholder="分类筛选"
+              style={{ width: 120 }}
+              value={categoryFilter}
+              onChange={setCategoryFilter}
+            >
+              <Option value="all">全部分类</Option>
+              <Option value="销售分析">销售分析</Option>
+              <Option value="用户研究">用户研究</Option>
+              <Option value="市场分析">市场分析</Option>
+              <Option value="产品分析">产品分析</Option>
+              <Option value="财务分析">财务分析</Option>
+            </Select>
+            
+            <RangePicker
+              placeholder={['开始日期', '结束日期']}
+              value={dateRange}
+              onChange={setDateRange}
+            />
+            
+            <div className="flex items-center space-x-2 ml-auto">
+              <span className="text-gray-600 text-sm">
+                共 {filteredReports.length} 个报告
+              </span>
+              <Button.Group>
+                <EnhancedButton
+                  type={viewMode === 'table' ? 'primary' : 'default'}
+                  icon={<UnorderedListOutlined />}
+                  onClick={() => setViewMode('table')}
+                  variant="pulse"
+                >
+                  列表
+                </EnhancedButton>
+                <EnhancedButton
+                  type={viewMode === 'card' ? 'primary' : 'default'}
+                  icon={<AppstoreOutlined />}
+                  onClick={() => setViewMode('card')}
+                  variant="pulse"
+                >
+                  卡片
+                </EnhancedButton>
+              </Button.Group>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* 批量操作栏 */}
+      {selectedRowKeys.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4"
+        >
+          <Card className="bg-blue-50 border-blue-200">
+            <div className="flex items-center justify-between">
+              <span className="text-blue-700">
+                已选择 {selectedRowKeys.length} 个报告
+              </span>
+              <Space>
+                <Button size="small">批量分享</Button>
+                <Button size="small">批量下载</Button>
+                <Button size="small" danger>批量删除</Button>
+              </Space>
+            </div>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* 报告列表 */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        {viewMode === 'table' ? (
+          <Card className="shadow-sm">
+            <Table
+              columns={columns}
+              dataSource={filteredReports}
+              rowKey="id"
+              rowSelection={rowSelection}
+              loading={loading}
+              pagination={{
+                total: filteredReports.length,
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => 
+                  `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
+              }}
+              scroll={{ x: 1200 }}
+            />
+          </Card>
+        ) : (
+          renderCardView()
+        )}
+      </motion.div>
+    </div>
+  )
+}
+
+export default Reports

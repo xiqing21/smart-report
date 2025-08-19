@@ -1,0 +1,189 @@
+<mxfile host="app.diagrams.net" modified="2024-01-20T10:00:00.000Z" agent="5.0" etag="xxx" version="22.1.16" type="device">
+  <diagram name="产品架构图" id="product-architecture">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- 标题 -->
+        <mxCell id="title" value="智能报告生成系统 - 产品架构图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1890FF;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="360" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 用户层 -->
+        <mxCell id="user-layer" value="用户层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="1070" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 用户角色 -->
+        <mxCell id="admin" value="系统管理员" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#52C41A;strokeColor=#389E0D;fontColor=white;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="100" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="analyst" value="业务分析师" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1890FF;strokeColor=#096DD9;fontColor=white;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="100" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="operator" value="数据运维员" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#722ED1;strokeColor=#531DAB;fontColor=white;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="100" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="user" value="普通用户" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#13C2C2;strokeColor=#08979C;fontColor=white;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="100" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="manager" value="管理决策层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FA8C16;strokeColor=#D46B08;fontColor=white;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="100" width="100" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 功能模块层 -->
+        <mxCell id="function-layer" value="功能模块层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2E8;strokeColor=#FA8C16;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="180" width="1070" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 核心功能模块 -->
+        <mxCell id="auth-module" value="用户认证\n登录注册" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="dashboard-module" value="工作台\n数据概览\n快速操作" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="report-module" value="报告管理\n列表管理\n分类筛选" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9F0FF;strokeColor=#722ED1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="editor-module" value="报告编辑器\n富文本编辑\nAI辅助" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6FFFB;strokeColor=#13C2C2;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="530" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="template-module" value="模板中心\n模板库\n自定义模板" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E6;strokeColor=#FA8C16;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="680" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="datasource-module" value="数据源管理\n连接配置\n数据预览" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF1F0;strokeColor=#F5222D;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="830" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ai-module" value="AI分析中心\n智能分析\n洞察报告" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCFFE6;strokeColor=#A0D911;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="980" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- 核心流程层 -->
+        <mxCell id="process-layer" value="核心流程层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F5FF;strokeColor=#2F54EB;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="370" width="1070" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 核心流程 -->
+        <mxCell id="create-process" value="报告创建流程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="150" y="440" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="analysis-process" value="数据分析流程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="440" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="collab-process" value="协作共享流程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E6;strokeColor=#FA8C16;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="650" y="440" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 数据服务层 -->
+        <mxCell id="data-layer" value="数据服务层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9F0FF;strokeColor=#722ED1;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="540" width="1070" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 数据服务 -->
+        <mxCell id="user-data" value="用户数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6FFED;strokeColor=#52C41A;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="report-data" value="报告数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6F7FF;strokeColor=#1890FF;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="230" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="template-data" value="模板数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9F0FF;strokeColor=#722ED1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="360" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="source-data" value="数据源" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E6FFFB;strokeColor=#13C2C2;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ai-data" value="AI分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7E6;strokeColor=#FA8C16;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="620" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="file-storage" value="文件存储" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF1F0;strokeColor=#F5222D;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="750" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="realtime-sync" value="实时同步" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCFFE6;strokeColor=#A0D911;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="880" y="600" width="100" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 流动连线 - 用户到功能模块 -->
+        <mxCell id="flow1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1890FF;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="analyst" target="dashboard-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1890FF;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="analyst" target="editor-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="admin" target="auth-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#722ED1;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="operator" target="datasource-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#13C2C2;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="user" target="report-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FA8C16;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="manager" target="ai-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 功能模块到流程 -->
+        <mxCell id="flow7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1890FF;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="editor-module" target="create-process">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="ai-module" target="analysis-process">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FA8C16;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="report-module" target="collab-process">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 流程到数据服务 -->
+        <mxCell id="flow10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1890FF;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="create-process" target="report-data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#52C41A;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="analysis-process" target="ai-data">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FA8C16;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="collab-process" target="realtime-sync">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 模板到编辑器的连线 -->
+        <mxCell id="flow13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FA8C16;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="template-module" target="editor-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 数据源到AI分析的连线 -->
+        <mxCell id="flow14" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F5222D;strokeWidth=2;flowAnimation=1;" edge="1" parent="1" source="datasource-module" target="ai-module">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
