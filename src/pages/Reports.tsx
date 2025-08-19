@@ -349,7 +349,7 @@ const Reports: React.FC = () => {
   }
 
   const renderCardView = () => (
-    <Row gutter={[24, 24]}>
+    <Row gutter={[16, 16]} style={{ margin: 0 }}>
       <AnimatePresence>
         <AnimatedList
           dataSource={filteredReports}
@@ -370,10 +370,10 @@ const Reports: React.FC = () => {
                   hoverable
                 >
                   <Card
-                    bordered={false}
+                    bodyStyle={{ padding: '16px' }}
                     cover={
-                      <div className="h-32 bg-gradient-to-r from-blue-50 to-purple-50 flex items-center justify-center">
-                        <FileTextOutlined className="text-4xl text-blue-400" />
+                      <div className="h-24 bg-gradient-to-r from-blue-50 to-purple-50 flex items-center justify-center">
+                        <FileTextOutlined className="text-3xl text-blue-400" />
                       </div>
                     }
                     actions={[
@@ -395,59 +395,81 @@ const Reports: React.FC = () => {
                   >
                 <Card.Meta
                   title={
-                    <div className="truncate" title={report.title}>
+                    <div 
+                      className="font-semibold text-base leading-tight mb-2" 
+                      title={report.title}
+                      style={{ 
+                        height: '44px', 
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        lineHeight: '22px'
+                      }}
+                    >
                       {report.title}
                     </div>
                   }
                   description={
-                    <div className="space-y-3">
-                      <p className="text-gray-600 text-sm line-clamp-2">
+                    <div style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <p 
+                        className="text-gray-600 text-sm" 
+                        style={{ 
+                          height: '40px',
+                          overflow: 'hidden',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          lineHeight: '20px',
+                          marginBottom: '12px'
+                        }}
+                      >
                         {report.description}
                       </p>
                       
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between" style={{ marginBottom: '12px' }}>
                         <StatusTag 
                           status={report.status === 'published' ? 'completed' : report.status === 'draft' ? 'new' : 'processing'}
                           animated
                         />
-                        <Tag color="blue">{report.category}</Tag>
+                        <Tag color="blue" style={{ fontSize: '12px' }}>{report.category}</Tag>
                       </div>
                       
                       {report.progress && (
-                        <div>
-                          <div className="flex justify-between text-xs text-gray-500 mb-1">
+                        <div style={{ marginBottom: '12px' }}>
+                          <div className="flex justify-between text-xs text-gray-500 mb-2">
                             <span>进度</span>
-                            <span>{report.progress}%</span>
+                            <span style={{ fontWeight: '500' }}>{report.progress}%</span>
                           </div>
-                          <Progress percent={report.progress} size="small" />
+                          <Progress percent={report.progress} size="small" strokeColor="#1890ff" />
                         </div>
                       )}
                       
-                      <div className="flex items-center justify-between text-xs text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <UserOutlined />
-                          <span>{report.author}</span>
+                      <div className="flex items-center justify-between text-xs text-gray-500" style={{ marginBottom: '8px' }}>
+                        <div className="flex items-center" style={{ gap: '4px' }}>
+                          <UserOutlined style={{ fontSize: '12px' }} />
+                          <span style={{ fontWeight: '500' }}>{report.author}</span>
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <EyeOutlined />
+                        <div className="flex items-center" style={{ gap: '4px' }}>
+                          <EyeOutlined style={{ fontSize: '12px' }} />
                           <span>{report.views}</span>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between text-xs text-gray-400">
-                        <div className="flex items-center space-x-1">
-                          <ClockCircleOutlined />
+                      <div className="flex items-center justify-between text-xs text-gray-400" style={{ marginBottom: '12px' }}>
+                        <div className="flex items-center" style={{ gap: '4px' }}>
+                          <ClockCircleOutlined style={{ fontSize: '12px' }} />
                           <span>{dayjs(report.updateTime).format('MM-DD HH:mm')}</span>
                         </div>
-                        <span>{report.size}</span>
+                        <span style={{ fontWeight: '500' }}>{report.size}</span>
                       </div>
                       
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap" style={{ gap: '4px', marginTop: 'auto' }}>
                         {report.tags.slice(0, 2).map((tag: string) => (
-                          <Tag key={tag}>{tag}</Tag>
+                          <Tag key={tag} style={{ fontSize: '11px', margin: 0, padding: '2px 6px', height: 'auto', lineHeight: '1.2' }}>{tag}</Tag>
                         ))}
                         {report.tags.length > 2 && (
-                          <Tag>+{report.tags.length - 2}</Tag>
+                          <Tag style={{ fontSize: '11px', margin: 0, padding: '2px 6px', height: 'auto', lineHeight: '1.2' }}>+{report.tags.length - 2}</Tag>
                         )}
                       </div>
                     </div>
@@ -464,18 +486,18 @@ const Reports: React.FC = () => {
   )
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div style={{ padding: '0', background: '#f5f5f5', minHeight: '100%' }}>
       {/* 页面标题和操作栏 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-6"
+        style={{ marginBottom: '20px' }}
       >
-        <div className="flex items-center justify-between mb-4">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">报告管理</h1>
-            <p className="text-gray-600 mt-1">管理和组织您的所有报告</p>
+            <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#262626', margin: 0 }}>报告管理</h1>
+            <p style={{ color: '#8c8c8c', marginTop: '4px', marginBottom: 0 }}>管理和组织您的所有报告</p>
           </div>
           <EnhancedButton 
             type="primary" 
@@ -490,8 +512,8 @@ const Reports: React.FC = () => {
         </div>
 
         {/* 筛选和搜索栏 */}
-        <Card className="shadow-sm">
-          <div className="flex flex-wrap items-center gap-4">
+        <Card style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
             <Search
               placeholder="搜索报告标题或描述"
               allowClear
@@ -534,11 +556,11 @@ const Reports: React.FC = () => {
               onChange={setDateRange}
             />
             
-            <div className="flex items-center space-x-2 ml-auto">
-              <span className="text-gray-600 text-sm">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+              <span style={{ color: '#8c8c8c', fontSize: '14px' }}>
                 共 {filteredReports.length} 个报告
               </span>
-              <Button.Group>
+              <Space.Compact>
                 <EnhancedButton
                   type={viewMode === 'table' ? 'primary' : 'default'}
                   icon={<UnorderedListOutlined />}
@@ -555,7 +577,7 @@ const Reports: React.FC = () => {
                 >
                   卡片
                 </EnhancedButton>
-              </Button.Group>
+              </Space.Compact>
             </div>
           </div>
         </Card>
@@ -566,11 +588,11 @@ const Reports: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4"
+          style={{ marginBottom: '16px' }}
         >
-          <Card className="bg-blue-50 border-blue-200">
-            <div className="flex items-center justify-between">
-              <span className="text-blue-700">
+          <Card style={{ background: '#e6f7ff', borderColor: '#91d5ff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ color: '#1890ff', fontWeight: '500' }}>
                 已选择 {selectedRowKeys.length} 个报告
               </span>
               <Space>

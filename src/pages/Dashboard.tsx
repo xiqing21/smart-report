@@ -82,29 +82,58 @@ const Dashboard: React.FC = () => {
 
 
   return (
-    <div className="p-6 bg-gray-50 min-h-full">
+    <div style={{ padding: '24px', backgroundColor: '#fafafa', minHeight: '100%' }}>
       {/* 欢迎区域 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-8"
+        style={{ marginBottom: '32px' }}
       >
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white relative overflow-hidden">
+        <div style={{
+          background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
+          borderRadius: '16px',
+          padding: '32px',
+          color: 'white',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
           {/* 背景装饰 */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '256px',
+            height: '256px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '50%',
+            transform: 'translate(128px, -128px)'
+          }}></div>
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '192px',
+            height: '192px',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '50%',
+            transform: 'translate(-96px, 96px)'
+          }}></div>
           
-          <div className="relative z-10">
-            <h1 className="text-3xl font-bold mb-2">欢迎回来！</h1>
-            <p className="text-blue-100 text-lg mb-6">今天是个开始新项目的好日子，让我们一起创造精彩的报告吧</p>
+          <div style={{ position: 'relative', zIndex: 10 }}>
+            <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px' }}>欢迎回来！</h1>
+            <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>今天是个开始新项目的好日子，让我们一起创造精彩的报告吧</p>
             
-            <div className="flex flex-wrap gap-4">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
               <Button 
                 type="primary" 
                 size="large" 
                 icon={<PlusOutlined />}
-                className="bg-white/20 border-white/30 hover:bg-white/30 backdrop-blur-sm"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
+                  backdropFilter: 'blur(4px)'
+                }}
                 onClick={() => navigate('/editor')}
               >
                 创建新报告
@@ -112,7 +141,11 @@ const Dashboard: React.FC = () => {
               <Button 
                 size="large" 
                 icon={<FileTextOutlined />}
-                className="bg-transparent border-white/50 text-white hover:bg-white/10 hover:border-white"
+                style={{
+                  backgroundColor: 'transparent',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  color: 'white'
+                }}
                 onClick={() => navigate('/templates')}
               >
                 浏览模板
@@ -127,11 +160,11 @@ const Dashboard: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="mb-8"
+        style={{ marginBottom: '32px' }}
       >
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={6}>
-            <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+            <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
               <AnimatedStatistic
                 title="总报告数"
                 value={128}
@@ -141,49 +174,49 @@ const Dashboard: React.FC = () => {
                 trendValue={12}
                 delay={0}
               />
-              <div className="text-xs text-gray-500 mt-2">较上月增长 12%</div>
+              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 12%</div>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+            <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
               <AnimatedStatistic
                 title="本月创建"
                 value={23}
-                prefix={<PlusOutlined className="text-green-500" />}
-                suffix={<ArrowUpOutlined className="text-green-500 text-sm" />}
+                prefix={<PlusOutlined style={{ color: '#52c41a' }} />}
+                suffix={<ArrowUpOutlined style={{ color: '#52c41a', fontSize: '14px' }} />}
                 trend="up"
                 trendValue={8}
                 delay={0.1}
               />
-              <div className="text-xs text-gray-500 mt-2">较上月增长 8%</div>
+              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 8%</div>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+            <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
               <AnimatedStatistic
                 title="总浏览量"
                 value={1563}
-                prefix={<EyeOutlined className="text-purple-500" />}
-                suffix={<ArrowUpOutlined className="text-green-500 text-sm" />}
+                prefix={<EyeOutlined style={{ color: '#722ed1' }} />}
+                suffix={<ArrowUpOutlined style={{ color: '#52c41a', fontSize: '14px' }} />}
                 trend="up"
                 trendValue={15}
                 delay={0.2}
               />
-              <div className="text-xs text-gray-500 mt-2">较上月增长 15%</div>
+              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 15%</div>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+            <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
               <AnimatedStatistic
                 title="团队成员"
                 value={8}
-                prefix={<TeamOutlined className="text-orange-500" />}
-                suffix={<ArrowUpOutlined className="text-green-500 text-sm" />}
+                prefix={<TeamOutlined style={{ color: '#fa8c16' }} />}
+                suffix={<ArrowUpOutlined style={{ color: '#52c41a', fontSize: '14px' }} />}
                 trend="up"
                 trendValue={2}
                 delay={0.3}
               />
-              <div className="text-xs text-gray-500 mt-2">新增 2 名成员</div>
+              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>新增 2 名成员</div>
             </Card>
           </Col>
         </Row>
@@ -197,7 +230,7 @@ const Dashboard: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <InteractiveCard effect="lift" className="h-full">
+            <InteractiveCard effect="lift" style={{ height: '100%' }}>
               <Card title="快捷操作" bordered={false}>
                 <Row gutter={[16, 16]}>
                   {quickActions.map((action, index) => (
@@ -205,21 +238,43 @@ const Dashboard: React.FC = () => {
                       <motion.div
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
-                        className="cursor-pointer"
+                        style={{ cursor: 'pointer' }}
                         onClick={action.action}
                       >
                         <Card 
                           size="small" 
-                          className="text-center border-2 border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300"
+                          style={{
+                            textAlign: 'center',
+                            border: '2px solid #f0f0f0',
+                            transition: 'all 0.3s'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#91d5ff'
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '#f0f0f0'
+                            e.currentTarget.style.boxShadow = 'none'
+                          }}
                         >
                           <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 text-white text-xl"
-                            style={{ backgroundColor: action.color }}
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              margin: '0 auto 12px',
+                              color: 'white',
+                              fontSize: '20px',
+                              backgroundColor: action.color
+                            }}
                           >
                             {action.icon}
                           </div>
-                          <h4 className="font-semibold text-gray-800 mb-1">{action.title}</h4>
-                          <p className="text-xs text-gray-500">{action.description}</p>
+                          <h4 style={{ fontWeight: '600', color: '#262626', marginBottom: '4px' }}>{action.title}</h4>
+                          <p style={{ fontSize: '12px', color: '#8c8c8c' }}>{action.description}</p>
                         </Card>
                       </motion.div>
                     </Col>
@@ -237,7 +292,7 @@ const Dashboard: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <InteractiveCard effect="glow" className="h-full">
+            <InteractiveCard effect="glow" style={{ height: '100%' }}>
               <Card 
                 title="最近报告" 
                 extra={
@@ -253,7 +308,18 @@ const Dashboard: React.FC = () => {
                   animationType="slideRight"
                   renderItem={(item) => (
                     <List.Item
-                      className="hover:bg-gray-50 rounded-lg px-3 py-2 transition-colors duration-200 cursor-pointer"
+                      style={{
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        transition: 'background-color 0.2s',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#fafafa'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
                       onClick={() => navigate(`/editor/${item.id}`)}
                       actions={[
                         <Button type="text" size="small" icon={<EyeOutlined />}>
@@ -272,8 +338,8 @@ const Dashboard: React.FC = () => {
                           />
                         }
                         title={
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-800 truncate">
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ fontWeight: '500', color: '#262626', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {item.title}
                             </span>
                             <StatusTag 
@@ -283,9 +349,9 @@ const Dashboard: React.FC = () => {
                           </div>
                         }
                         description={
-                          <div className="text-xs text-gray-500">
-                            <span className="mr-4">
-                              <ClockCircleOutlined className="mr-1" />
+                          <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                            <span style={{ marginRight: '16px' }}>
+                              <ClockCircleOutlined style={{ marginRight: '4px' }} />
                               {item.updateTime}
                             </span>
                             <span>作者: {item.author}</span>
@@ -306,30 +372,30 @@ const Dashboard: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.8 }}
-        className="mt-8"
+        style={{ marginTop: '32px' }}
       >
         <Row gutter={[24, 24]}>
           <Col xs={24} lg={16}>
             <Card title="本月目标进度">
-              <div className="space-y-6">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-700">创建报告</span>
-                    <span className="text-gray-500">23/30</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ color: '#595959' }}>创建报告</span>
+                    <span style={{ color: '#8c8c8c' }}>23/30</span>
                   </div>
                   <Progress percent={77} strokeColor="#1890ff" />
                 </div>
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-700">团队协作</span>
-                    <span className="text-gray-500">15/20</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ color: '#595959' }}>团队协作</span>
+                    <span style={{ color: '#8c8c8c' }}>15/20</span>
                   </div>
                   <Progress percent={75} strokeColor="#52c41a" />
                 </div>
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-700">AI分析使用</span>
-                    <span className="text-gray-500">8/15</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ color: '#595959' }}>AI分析使用</span>
+                    <span style={{ color: '#8c8c8c' }}>8/15</span>
                   </div>
                   <Progress percent={53} strokeColor="#722ed1" />
                 </div>
@@ -337,33 +403,57 @@ const Dashboard: React.FC = () => {
             </Card>
           </Col>
           <Col xs={24} lg={8}>
-            <Card title="最近成就" className="h-full">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <TrophyOutlined className="text-yellow-600" />
+            <Card title="最近成就" style={{ height: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: '#fff7e6',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <TrophyOutlined style={{ color: '#d48806' }} />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-800">高产作者</div>
-                    <div className="text-xs text-gray-500">本月创建20+报告</div>
+                    <div style={{ fontWeight: '500', color: '#262626' }}>高产作者</div>
+                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>本月创建20+报告</div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <TeamOutlined className="text-blue-600" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: '#e6f7ff',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <TeamOutlined style={{ color: '#1890ff' }} />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-800">团队合作者</div>
-                    <div className="text-xs text-gray-500">参与5个协作项目</div>
+                    <div style={{ fontWeight: '500', color: '#262626' }}>团队合作者</div>
+                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>参与5个协作项目</div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                    <BarChartOutlined className="text-purple-600" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: '#f9f0ff',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <BarChartOutlined style={{ color: '#722ed1' }} />
                   </div>
                   <div>
-                    <div className="font-medium text-gray-800">数据专家</div>
-                    <div className="text-xs text-gray-500">使用AI分析10次</div>
+                    <div style={{ fontWeight: '500', color: '#262626' }}>数据专家</div>
+                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>使用AI分析10次</div>
                   </div>
                 </div>
               </div>

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@playwright/test": "^1.54.2",
     "@types/react-router-dom": "^5.3.3",
     "antd": "^5.27.0",
     "dayjs": "^1.11.13",

@@ -82,7 +82,7 @@ const MainLayout: React.FC = () => {
   }
 
   return (
-    <Layout className="min-h-screen">
+    <Layout style={{ minHeight: '100vh' }}>
       {/* 侧边栏 */}
       <Sider
         trigger={null}
@@ -97,14 +97,21 @@ const MainLayout: React.FC = () => {
       >
         {/* Logo区域 */}
         <motion.div
-          className="flex items-center justify-center h-16 bg-gradient-to-r from-blue-600 to-blue-700"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '64px',
+            background: 'linear-gradient(to right, #1890ff, #096dd9)',
+            color: 'white'
+          }}
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
         >
           {collapsed ? (
-            <div className="text-white text-xl font-bold">智</div>
+            <div style={{ fontSize: '20px', fontWeight: 'bold' }}>智</div>
           ) : (
-            <div className="text-white text-lg font-bold">智能报告系统</div>
+            <div style={{ fontSize: '18px', fontWeight: 'bold' }}>智能报告系统</div>
           )}
         </motion.div>
 
@@ -130,9 +137,12 @@ const MainLayout: React.FC = () => {
             background: '#fff',
             borderBottom: '1px solid #f0f0f0',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
           }}
         >
-          <div className="flex items-center justify-between h-full">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
             {/* 左侧：折叠按钮 */}
             <Button
               type="text"
@@ -146,7 +156,7 @@ const MainLayout: React.FC = () => {
             />
 
             {/* 右侧：通知和用户信息 */}
-            <div className="flex items-center space-x-4">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 101 }}>
               {/* 通知铃铛 */}
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <Badge count={3} size="small">
@@ -167,22 +177,39 @@ const MainLayout: React.FC = () => {
                 menu={{ items: userMenuItems }}
                 placement="bottomRight"
                 arrow
+                overlayStyle={{ zIndex: 1050 }}
               >
                 <motion.div
-                  className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-50"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    transition: 'background-color 0.2s',
+                    position: 'relative',
+                    zIndex: 102
+                  }}
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f5f5f5'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                  }}
                 >
                   <Avatar
                     size={32}
                     icon={<UserOutlined />}
                     style={{ backgroundColor: '#1890ff' }}
                   />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-900">
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '14px', fontWeight: '500', color: '#262626' }}>
                       管理员
                     </span>
-                    <span className="text-xs text-gray-500">admin@example.com</span>
+                    <span style={{ fontSize: '12px', color: '#8c8c8c' }}>admin@example.com</span>
                   </div>
                 </motion.div>
               </Dropdown>
@@ -192,21 +219,23 @@ const MainLayout: React.FC = () => {
 
         {/* 主内容区域 */}
         <Content
-          style={
-            {
-              margin: '24px',
-              padding: '24px',
-              background: '#fff',
-              borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-              minHeight: 'calc(100vh - 112px)',
-            }
-          }
+          style={{
+            margin: '16px 24px 24px 24px',
+            padding: '20px',
+            background: '#fff',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+            minHeight: 'calc(100vh - 128px)',
+            position: 'relative',
+            zIndex: 1,
+            overflow: 'auto'
+          }}
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            style={{ position: 'relative', zIndex: 2 }}
           >
             <Outlet />
           </motion.div>
