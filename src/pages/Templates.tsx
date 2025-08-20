@@ -545,14 +545,132 @@ const Templates: React.FC = () => {
               staggerDelay={0.1}
               animationType="fade"
               renderItem={(template, index) => (
-                <Col xs={24} sm={12} lg={8} xl={6} key={template.id}>
+                <Col 
+                xs={24} 
+                sm={viewMode === 'list' ? 24 : 12} 
+                md={viewMode === 'list' ? 24 : 8} 
+                lg={viewMode === 'list' ? 24 : 6} 
+                xl={viewMode === 'list' ? 24 : 4} 
+                xxl={viewMode === 'list' ? 24 : 3} 
+                key={template.id}
+              >
                   <InteractiveCard
-                    className="h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                    effect="glow"
-                    hoverable
-                  >
+                  className={`${viewMode === 'list' ? 'w-full' : 'h-full'} hover:shadow-lg transition-shadow duration-300 cursor-pointer`}
+                  effect="glow"
+                  hoverable
+                >
+                  {viewMode === 'list' ? (
+                    <Card
+                      bodyStyle={{ padding: '16px' }}
+                      className="w-full"
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ 
+                          width: '80px', 
+                          height: '80px', 
+                          background: 'linear-gradient(135deg, #e6f7ff 0%, #f0f5ff 100%)',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          position: 'relative'
+                        }}>
+                          <img
+                            src={template.thumbnail}
+                            alt={template.title}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                          />
+                          {template.isPremium && (
+                            <Tag 
+                             color="gold" 
+                             style={{ position: 'absolute', top: '4px', right: '4px', fontSize: '10px' }}
+                           >
+                             高级
+                           </Tag>
+                          )}
+                        </div>
+                        
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <h3 
+                              style={{ 
+                                fontSize: '16px', 
+                                fontWeight: '600', 
+                                margin: 0, 
+                                color: '#262626',
+                                cursor: 'pointer',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                maxWidth: '60%'
+                              }}
+                              onClick={() => previewTemplate(template)}
+                              title={template.title}
+                            >
+                              {template.title}
+                            </h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                              <Space size="small">
+                                <Tooltip title="预览">
+                                  <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => previewTemplate(template)} />
+                                </Tooltip>
+                                <Tooltip title="使用模板">
+                                  <Button type="primary" size="small" icon={<DownloadOutlined />} onClick={() => useTemplate(template)} />
+                                </Tooltip>
+                                <LikeButton initialLiked={template.isLiked} likeCount={template.likes} onLike={() => toggleLike(template.id)} />
+                                <BookmarkButton initialBookmarked={template.isFavorite} onBookmark={() => toggleFavorite(template.id)} />
+                              </Space>
+                            </div>
+                          </div>
+                          
+                          <p style={{ 
+                            color: '#666', 
+                            fontSize: '14px', 
+                            margin: '0 0 12px 0',
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            lineHeight: '20px',
+                            height: '40px'
+                          }}>
+                            {template.description}
+                          </p>
+                          
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Avatar size={20} icon={<UserOutlined />} />
+                                <span style={{ fontSize: '13px', color: '#666' }}>{template.author}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#999' }}>
+                                <DownloadOutlined style={{ fontSize: '12px' }} />
+                                <span style={{ fontSize: '12px' }}>{template.downloads}</span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#999' }}>
+                                <CalendarOutlined style={{ fontSize: '12px' }} />
+                                <span style={{ fontSize: '12px' }}>{template.updatedAt}</span>
+                              </div>
+                              <Rate disabled value={template.rating} style={{ fontSize: '12px' }} />
+                            </div>
+                            
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                               {template.tags.slice(0, 3).map((tag: string) => (
+                                 <Tag key={tag} style={{ fontSize: '11px', margin: 0 }}>{tag}</Tag>
+                               ))}
+                               {template.tags.length > 3 && (
+                                 <Tag style={{ fontSize: '11px', margin: 0 }}>+{template.tags.length - 3}</Tag>
+                               )}
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ) : (
                     <TemplateCard template={template} index={index} />
-                  </InteractiveCard>
+                  )}
+                </InteractiveCard>
                 </Col>
               )}
             />

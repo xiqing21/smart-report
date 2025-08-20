@@ -20,6 +20,7 @@ const { Header, Sider, Content } = Layout
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false)
+  const [notificationVisible, setNotificationVisible] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -158,19 +159,63 @@ const MainLayout: React.FC = () => {
             {/* 右侧：通知和用户信息 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 101 }}>
               {/* 通知铃铛 */}
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Badge count={3} size="small">
-                  <Button
-                    type="text"
-                    icon={<BellOutlined />}
-                    style={{
-                      fontSize: '16px',
-                      width: 40,
-                      height: 40,
-                    }}
-                  />
-                </Badge>
-              </motion.div>
+              <Dropdown
+                open={notificationVisible}
+                onOpenChange={setNotificationVisible}
+                placement="bottomRight"
+                arrow
+                overlayStyle={{ zIndex: 1050 }}
+                dropdownRender={() => (
+                  <div style={{
+                    background: '#fff',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    padding: '12px',
+                    minWidth: '300px',
+                    maxHeight: '400px',
+                    overflowY: 'auto'
+                  }}>
+                    <div style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '8px', marginBottom: '8px' }}>
+                      <span style={{ fontWeight: '500', fontSize: '14px' }}>通知消息</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ padding: '8px', borderRadius: '4px', background: '#f6f8fa', cursor: 'pointer' }}>
+                        <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '4px' }}>新报告已生成</div>
+                        <div style={{ fontSize: '12px', color: '#666' }}>您的"销售数据分析"报告已完成生成</div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>2分钟前</div>
+                      </div>
+                      <div style={{ padding: '8px', borderRadius: '4px', background: '#f6f8fa', cursor: 'pointer' }}>
+                        <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '4px' }}>系统更新</div>
+                        <div style={{ fontSize: '12px', color: '#666' }}>智能报告系统已更新到v2.1版本</div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>1小时前</div>
+                      </div>
+                      <div style={{ padding: '8px', borderRadius: '4px', background: '#f6f8fa', cursor: 'pointer' }}>
+                        <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '4px' }}>团队邀请</div>
+                        <div style={{ fontSize: '12px', color: '#666' }}>张三邀请您加入"市场分析"项目</div>
+                        <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>3小时前</div>
+                      </div>
+                    </div>
+                    <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '8px', marginTop: '8px', textAlign: 'center' }}>
+                      <Button type="link" size="small" style={{ fontSize: '12px' }}>查看全部通知</Button>
+                    </div>
+                  </div>
+                )}
+              >
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                  <Badge count={3} size="small">
+                    <Button
+                      type="text"
+                      icon={<BellOutlined />}
+                      onClick={() => setNotificationVisible(!notificationVisible)}
+                      style={{
+                        fontSize: '16px',
+                        width: 40,
+                        height: 40,
+                      }}
+                    />
+                  </Badge>
+                </motion.div>
+              </Dropdown>
 
               {/* 用户头像和下拉菜单 */}
               <Dropdown
@@ -183,10 +228,10 @@ const MainLayout: React.FC = () => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
+                    gap: '6px',
                     cursor: 'pointer',
-                    padding: '8px 12px',
-                    borderRadius: '8px',
+                    padding: '4px 8px',
+                    borderRadius: '6px',
                     transition: 'background-color 0.2s',
                     position: 'relative',
                     zIndex: 102
@@ -201,15 +246,15 @@ const MainLayout: React.FC = () => {
                   }}
                 >
                   <Avatar
-                    size={32}
+                    size={28}
                     icon={<UserOutlined />}
                     style={{ backgroundColor: '#1890ff' }}
                   />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '14px', fontWeight: '500', color: '#262626' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '500', color: '#262626', marginBottom: '1px' }}>
                       管理员
                     </span>
-                    <span style={{ fontSize: '12px', color: '#8c8c8c' }}>admin@example.com</span>
+                    <span style={{ fontSize: '11px', color: '#8c8c8c' }}>admin@example.com</span>
                   </div>
                 </motion.div>
               </Dropdown>

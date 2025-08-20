@@ -356,7 +356,7 @@ const Reports: React.FC = () => {
           staggerDelay={0.1}
           animationType="scale"
           renderItem={(report, index) => (
-            <Col xs={24} sm={12} lg={8} xl={6} key={report.id}>
+            <Col xs={24} sm={12} md={8} lg={6} xl={4} xxl={3} key={report.id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -411,33 +411,33 @@ const Reports: React.FC = () => {
                     </div>
                   }
                   description={
-                    <div style={{ minHeight: '280px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ minHeight: '200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <p 
                         className="text-gray-600 text-sm" 
                         style={{ 
-                          height: '40px',
+                          height: '32px',
                           overflow: 'hidden',
                           display: '-webkit-box',
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: 'vertical',
-                          lineHeight: '20px',
-                          marginBottom: '12px'
+                          lineHeight: '16px',
+                          marginBottom: '8px'
                         }}
                       >
                         {report.description}
                       </p>
                       
-                      <div className="flex items-center justify-between" style={{ marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '4px' }}>
                         <StatusTag 
                           status={report.status === 'published' ? 'completed' : report.status === 'draft' ? 'new' : 'processing'}
                           animated
                         />
-                        <Tag color="blue" style={{ fontSize: '12px' }}>{report.category}</Tag>
+                        <Tag color="blue" style={{ fontSize: '11px', margin: 0 }}>{report.category}</Tag>
                       </div>
                       
                       {report.progress && (
-                        <div style={{ marginBottom: '12px' }}>
-                          <div className="flex justify-between text-xs text-gray-500 mb-2">
+                        <div style={{ marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#666', marginBottom: '4px' }}>
                             <span>进度</span>
                             <span style={{ fontWeight: '500' }}>{report.progress}%</span>
                           </div>
@@ -445,31 +445,31 @@ const Reports: React.FC = () => {
                         </div>
                       )}
                       
-                      <div className="flex items-center justify-between text-xs text-gray-500" style={{ marginBottom: '8px' }}>
-                        <div className="flex items-center" style={{ gap: '4px' }}>
-                          <UserOutlined style={{ fontSize: '12px' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#666', marginBottom: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <UserOutlined style={{ fontSize: '11px' }} />
                           <span style={{ fontWeight: '500' }}>{report.author}</span>
                         </div>
-                        <div className="flex items-center" style={{ gap: '4px' }}>
-                          <EyeOutlined style={{ fontSize: '12px' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <EyeOutlined style={{ fontSize: '11px' }} />
                           <span>{report.views}</span>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between text-xs text-gray-400" style={{ marginBottom: '12px' }}>
-                        <div className="flex items-center" style={{ gap: '4px' }}>
-                          <ClockCircleOutlined style={{ fontSize: '12px' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#999', marginBottom: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <ClockCircleOutlined style={{ fontSize: '11px' }} />
                           <span>{dayjs(report.updateTime).format('MM-DD HH:mm')}</span>
                         </div>
                         <span style={{ fontWeight: '500' }}>{report.size}</span>
                       </div>
                       
-                      <div className="flex flex-wrap" style={{ gap: '4px', marginTop: 'auto' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: 'auto' }}>
                         {report.tags.slice(0, 2).map((tag: string) => (
-                          <Tag key={tag} style={{ fontSize: '11px', margin: 0, padding: '2px 6px', height: 'auto', lineHeight: '1.2' }}>{tag}</Tag>
+                          <Tag key={tag} style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>{tag}</Tag>
                         ))}
                         {report.tags.length > 2 && (
-                          <Tag style={{ fontSize: '11px', margin: 0, padding: '2px 6px', height: 'auto', lineHeight: '1.2' }}>+{report.tags.length - 2}</Tag>
+                          <Tag style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>+{report.tags.length - 2}</Tag>
                         )}
                       </div>
                     </div>
