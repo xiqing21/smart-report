@@ -370,7 +370,7 @@ const Reports: React.FC = () => {
                   hoverable
                 >
                   <Card
-                    bodyStyle={{ padding: '16px' }}
+                    styles={{ body: { padding: '16px' } }}
                     cover={
                       <div className="h-24 bg-gradient-to-r from-blue-50 to-purple-50 flex items-center justify-center">
                         <FileTextOutlined className="text-3xl text-blue-400" />

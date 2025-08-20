@@ -165,7 +165,7 @@ const MainLayout: React.FC = () => {
                 placement="bottomRight"
                 arrow
                 overlayStyle={{ zIndex: 1050 }}
-                dropdownRender={() => (
+                popupRender={() => (
                   <div style={{
                     background: '#fff',
                     borderRadius: '8px',

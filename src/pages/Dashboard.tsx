@@ -230,8 +230,8 @@ const Dashboard: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <InteractiveCard effect="lift" style={{ height: '100%' }}>
-              <Card title="快捷操作" bordered={false}>
+            <InteractiveCard effect="lift">
+              <Card title="快捷操作" variant="borderless">
                 <Row gutter={[16, 16]}>
                   {quickActions.map((action, index) => (
                     <Col xs={12} key={index}>
@@ -292,7 +292,7 @@ const Dashboard: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <InteractiveCard effect="glow" style={{ height: '100%' }}>
+            <InteractiveCard effect="glow">
               <Card 
                 title="最近报告" 
                 extra={
@@ -300,7 +300,7 @@ const Dashboard: React.FC = () => {
                     查看全部
                   </Button>
                 }
-                bordered={false}
+                variant="borderless"
               >
                 <AnimatedList
                   dataSource={recentReports}

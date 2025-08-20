@@ -42,7 +42,6 @@ import { useNavigate } from 'react-router-dom';
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
-const { TabPane } = Tabs;
 
 interface Template {
   id: string;
@@ -512,24 +511,21 @@ const Templates: React.FC = () => {
           onChange={setSelectedCategory}
           size="large"
           type="card"
-        >
-          {categories.map(category => (
-            <TabPane
-              tab={
-                <span>
-                  {category.icon}
-                  <span style={{ marginLeft: '8px' }}>{category.label}</span>
-                  <Badge
-                    count={category.value === 'all' ? templates.length : templates.filter(t => t.category === category.value).length}
-                    style={{ marginLeft: '8px' }}
-                    showZero
-                  />
-                </span>
-              }
-              key={category.value}
-            />
-          ))}
-        </Tabs>
+          items={categories.map(category => ({
+            key: category.value,
+            label: (
+              <span>
+                {category.icon}
+                <span style={{ marginLeft: '8px' }}>{category.label}</span>
+                <Badge
+                  count={category.value === 'all' ? templates.length : templates.filter(t => t.category === category.value).length}
+                  style={{ marginLeft: '8px' }}
+                  showZero
+                />
+              </span>
+            )
+          }))}
+        />
       </motion.div>
 
       {/* 模板网格 */}
@@ -561,7 +557,7 @@ const Templates: React.FC = () => {
                 >
                   {viewMode === 'list' ? (
                     <Card
-                      bodyStyle={{ padding: '16px' }}
+                      styles={{ body: { padding: '16px' } }}
                       className="w-full"
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
