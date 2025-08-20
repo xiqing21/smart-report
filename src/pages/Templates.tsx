@@ -536,20 +536,13 @@ const Templates: React.FC = () => {
       >
         {paginatedTemplates.length > 0 ? (
           <>
-            <AnimatedList
-              dataSource={paginatedTemplates}
-              staggerDelay={0.1}
-              animationType="fade"
-              renderItem={(template, index) => (
-                <Col 
-                xs={24} 
-                sm={viewMode === 'list' ? 24 : 12} 
-                md={viewMode === 'list' ? 24 : 8} 
-                lg={viewMode === 'list' ? 24 : 6} 
-                xl={viewMode === 'list' ? 24 : 4} 
-                xxl={viewMode === 'list' ? 24 : 3} 
-                key={template.id}
-              >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <AnimatedList
+                dataSource={paginatedTemplates}
+                staggerDelay={0.1}
+                animationType="fade"
+                renderItem={(template, index) => (
+                  <div key={template.id} style={{ width: '100%' }}>
                   <InteractiveCard
                   className={`${viewMode === 'list' ? 'w-full' : 'h-full'} hover:shadow-lg transition-shadow duration-300 cursor-pointer`}
                   effect="glow"
@@ -667,9 +660,10 @@ const Templates: React.FC = () => {
                     <TemplateCard template={template} index={index} />
                   )}
                 </InteractiveCard>
-                </Col>
-              )}
-            />
+                  </div>
+                )}
+              />
+            </div>
             
             {/* 分页 */}
             {sortedTemplates.length > pageSize && (

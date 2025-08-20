@@ -349,140 +349,141 @@ const Reports: React.FC = () => {
   }
 
   const renderCardView = () => (
-    <Row gutter={[16, 16]} style={{ margin: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <AnimatePresence>
         <AnimatedList
           dataSource={filteredReports}
           staggerDelay={0.1}
           animationType="scale"
           renderItem={(report, index) => (
-            <Col xs={24} sm={12} md={8} lg={6} xl={4} xxl={3} key={report.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                whileHover={{ y: -4 }}
-              >
+            <motion.div
+              key={report.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              whileHover={{ y: -2 }}
+              style={{ width: '100%' }}
+            >
                 <InteractiveCard
-                  className="h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                  className="hover:shadow-lg transition-shadow duration-300 cursor-pointer"
                   effect="lift"
                   hoverable
                 >
                   <Card
                     styles={{ body: { padding: '16px' } }}
-                    cover={
-                      <div className="h-24 bg-gradient-to-r from-blue-50 to-purple-50 flex items-center justify-center">
-                        <FileTextOutlined className="text-3xl text-blue-400" />
-                      </div>
-                    }
-                    actions={[
-                      <Tooltip title="编辑" key="edit">
-                        <EditOutlined onClick={() => handleEdit(report)} />
-                      </Tooltip>,
-                      <Tooltip title="分享" key="share">
-                        <ShareAltOutlined onClick={() => handleShare(report)} />
-                      </Tooltip>,
-                      <Tooltip title="下载" key="download">
-                        <DownloadOutlined onClick={() => handleDownload(report)} />
-                      </Tooltip>,
-                      <LikeButton key="like" initialLiked={false} likeCount={Math.floor(Math.random() * 20)} />,
-                      <BookmarkButton key="bookmark" initialBookmarked={false} />,
-                      <Dropdown menu={getActionMenu(report)} trigger={['click']} key="more">
-                        <MoreOutlined />
-                      </Dropdown>
-                    ]}
+                    style={{ width: '100%' }}
                   >
-                <Card.Meta
-                  title={
-                    <div 
-                      className="font-semibold text-base leading-tight mb-2" 
-                      title={report.title}
-                      style={{ 
-                        height: '44px', 
-                        overflow: 'hidden',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        lineHeight: '22px'
-                      }}
-                    >
-                      {report.title}
-                    </div>
-                  }
-                  description={
-                    <div style={{ minHeight: '200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <p 
-                        className="text-gray-600 text-sm" 
-                        style={{ 
-                          height: '32px',
-                          overflow: 'hidden',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          lineHeight: '16px',
-                          marginBottom: '8px'
-                        }}
-                      >
-                        {report.description}
-                      </p>
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '4px' }}>
-                        <StatusTag 
-                          status={report.status === 'published' ? 'completed' : report.status === 'draft' ? 'new' : 'processing'}
-                          animated
-                        />
-                        <Tag color="blue" style={{ fontSize: '11px', margin: 0 }}>{report.category}</Tag>
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                      {/* 左侧图标区域 */}
+                      <div style={{ 
+                        width: '80px', 
+                        height: '80px', 
+                        background: 'linear-gradient(135deg, #e6f7ff 0%, #f0f5ff 100%)',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <FileTextOutlined style={{ fontSize: '32px', color: '#1890ff' }} />
                       </div>
                       
-                      {report.progress && (
-                        <div style={{ marginBottom: '8px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#666', marginBottom: '4px' }}>
-                            <span>进度</span>
-                            <span style={{ fontWeight: '500' }}>{report.progress}%</span>
+                      {/* 右侧内容区域 */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                          <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#262626' }}>
+                            {report.title}
+                          </h4>
+                          <StatusTag 
+                            status={report.status === 'published' ? 'completed' : report.status === 'draft' ? 'new' : 'processing'}
+                            animated
+                          />
+                        </div>
+                        
+                        <p style={{ color: '#8c8c8c', fontSize: '14px', marginBottom: '12px', lineHeight: '1.4' }}>
+                          {report.description}
+                        </p>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                          <Tag color="blue" style={{ fontSize: '11px' }}>{report.category}</Tag>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#666' }}>
+                            <UserOutlined style={{ fontSize: '11px' }} />
+                            <span>{report.author}</span>
                           </div>
-                          <Progress percent={report.progress} size="small" strokeColor="#1890ff" />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#666' }}>
+                            <EyeOutlined style={{ fontSize: '11px' }} />
+                            <span>{report.views}</span>
+                          </div>
                         </div>
-                      )}
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#666', marginBottom: '6px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <UserOutlined style={{ fontSize: '11px' }} />
-                          <span style={{ fontWeight: '500' }}>{report.author}</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <EyeOutlined style={{ fontSize: '11px' }} />
-                          <span>{report.views}</span>
-                        </div>
-                      </div>
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#999', marginBottom: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <ClockCircleOutlined style={{ fontSize: '11px' }} />
-                          <span>{dayjs(report.updateTime).format('MM-DD HH:mm')}</span>
-                        </div>
-                        <span style={{ fontWeight: '500' }}>{report.size}</span>
-                      </div>
-                      
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: 'auto' }}>
-                        {report.tags.slice(0, 2).map((tag: string) => (
-                          <Tag key={tag} style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>{tag}</Tag>
-                        ))}
-                        {report.tags.length > 2 && (
-                          <Tag style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>+{report.tags.length - 2}</Tag>
+                        
+                        {report.progress && (
+                          <div style={{ marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#666', marginBottom: '4px' }}>
+                              <span>进度</span>
+                              <span style={{ fontWeight: '500' }}>{report.progress}%</span>
+                            </div>
+                            <Progress percent={report.progress} size="small" strokeColor="#1890ff" />
+                          </div>
                         )}
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#999', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <ClockCircleOutlined style={{ fontSize: '11px' }} />
+                            <span>{dayjs(report.updateTime).format('MM-DD HH:mm')}</span>
+                          </div>
+                          <span style={{ fontWeight: '500' }}>{report.size}</span>
+                        </div>
+                        
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '12px' }}>
+                          {report.tags.slice(0, 2).map((tag: string) => (
+                            <Tag key={tag} style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>{tag}</Tag>
+                          ))}
+                          {report.tags.length > 2 && (
+                            <Tag style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>+{report.tags.length - 2}</Tag>
+                          )}
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                          <Tooltip title="编辑">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<EditOutlined />}
+                              onClick={() => handleEdit(report)}
+                            />
+                          </Tooltip>
+                          <Tooltip title="分享">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<ShareAltOutlined />}
+                              onClick={() => handleShare(report)}
+                            />
+                          </Tooltip>
+                          <Tooltip title="下载">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<DownloadOutlined />}
+                              onClick={() => handleDownload(report)}
+                            />
+                          </Tooltip>
+                          <LikeButton initialLiked={false} likeCount={Math.floor(Math.random() * 20)} />
+                          <BookmarkButton initialBookmarked={false} />
+                          <Dropdown menu={getActionMenu(report)} trigger={['click']}>
+                            <Button type="text" size="small" icon={<MoreOutlined />} />
+                          </Dropdown>
+                        </div>
                       </div>
                     </div>
-                  }
-                />
-                </Card>
+                  </Card>
                 </InteractiveCard>
-              </motion.div>
-            </Col>
+            </motion.div>
           )}
         />
       </AnimatePresence>
-    </Row>
+    </div>
   )
 
   return (
