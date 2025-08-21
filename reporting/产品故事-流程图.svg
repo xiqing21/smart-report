@@ -1,0 +1,58 @@
+<svg width="1200" height="300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; }
+      .node-text { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; font-weight: bold; }
+      .user-node { fill: #ffe6cc; stroke: #d79b00; stroke-width: 2; }
+      .pain-node { fill: #f8cecc; stroke: #b85450; stroke-width: 2; }
+      .solution-node { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 2; }
+      .scenario-node { fill: #e1d5e7; stroke: #9673a6; stroke-width: 2; }
+      .kpi-node { fill: #d5e8d4; stroke: #82b366; stroke-width: 2; }
+      .flow-arrow { stroke: #6c8ebf; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6c8ebf" />
+    </marker>
+  </defs>
+
+  <!-- 标题 -->
+  <text x="600" y="30" class="title">产品故事流程 - 从用户画像到成功指标</text>
+
+  <!-- 节点 -->
+  <rect x="60" y="100" width="160" height="70" rx="15" class="user-node"/>
+  <text x="140" y="125" class="node-text">目标用户画像</text>
+  <text x="140" y="145" class="node-text">• 业务分析师</text>
+  <text x="140" y="160" class="node-text">• 运营管理者</text>
+
+  <rect x="260" y="100" width="160" height="70" rx="15" class="pain-node"/>
+  <text x="340" y="125" class="node-text">核心痛点</text>
+  <text x="340" y="145" class="node-text">• 报告制作耗时</text>
+  <text x="340" y="160" class="node-text">• 格式不统一</text>
+
+  <rect x="460" y="100" width="180" height="70" rx="15" class="solution-node"/>
+  <text x="550" y="125" class="node-text">解决方案亮点</text>
+  <text x="550" y="145" class="node-text">• AI智能分析</text>
+  <text x="550" y="160" class="node-text">• 模板化生成</text>
+
+  <rect x="680" y="100" width="180" height="70" rx="15" class="scenario-node"/>
+  <text x="770" y="125" class="node-text">关键场景/用例</text>
+  <text x="770" y="145" class="node-text">• 月度业务报告</text>
+  <text x="770" y="160" class="node-text">• 项目总结汇报</text>
+
+  <rect x="900" y="100" width="180" height="70" rx="15" class="kpi-node"/>
+  <text x="990" y="125" class="node-text">成功指标(KPI)</text>
+  <text x="990" y="145" class="node-text">• 制作时间↓80%</text>
+  <text x="990" y="160" class="node-text">• 用户满意度↑90%</text>
+
+  <!-- 连线 -->
+  <path d="M 220 135 L 260 135" class="flow-arrow"/>
+  <path d="M 420 135 L 460 135" class="flow-arrow"/>
+  <path d="M 640 135 L 680 135" class="flow-arrow"/>
+  <path d="M 860 135 L 900 135" class="flow-arrow"/>
+
+  <!-- 价值主张 -->
+  <rect x="200" y="220" width="800" height="50" fill="#fff2cc" stroke="#d6b656" stroke-width="2" rx="10"/>
+  <text x="600" y="240" class="node-text">核心价值主张</text>
+  <text x="600" y="260" class="node-text">通过AI驱动的智能报告系统，将传统手工报告制作从数天缩短至数小时，提升80%效率的同时确保内容质量与格式统一</text>
+
+</svg>
