@@ -1,0 +1,129 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.1.1 Chrome/132.0.6834.210 Electron/34.3.3 Safari/537.36" version="26.1.1">
+  <diagram name="国网营销技术架构图" id="0">
+    <mxGraphModel dx="1181" dy="644" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="国网营销智能报告系统 - 技术架构" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="30" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="frontend_layer" value="营销前端展示层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="100" width="1440" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="f1" value="Vite + React + TypeScript    国网UI组件库    营销报告界面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="frontend_layer" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" value="营销数据可视化    Tailwind CSS    营销协作工具" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="frontend_layer" vertex="1">
+          <mxGeometry x="260" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" value="国网品牌风格    移动端营销应用    营销操作便捷性" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="frontend_layer" vertex="1">
+          <mxGeometry x="480" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" value="营销工作流优化    Zustand状态管理    营销业务组件" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="frontend_layer" vertex="1">
+          <mxGeometry x="700" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="auth_layer" value="营销身份认证层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="240" width="1440" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="Supabase Auth    国网SSO集成    统一认证" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="auth_layer" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="营销角色权限管理    营销数据访问控制    JWT Token管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="auth_layer" vertex="1">
+          <mxGeometry x="260" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="营销会话控制    国网安全标准    第三方OAuth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="auth_layer" vertex="1">
+          <mxGeometry x="480" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bff_layer" value="营销业务编排层（BFF/API）" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="380" width="1440" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" value="营销业务编排    营销权限校验    营销审计日志" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="bff_layer" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" value="营销RESTful接口    营销数据统一格式    营销中间件" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="bff_layer" vertex="1">
+          <mxGeometry x="260" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" value="营销2.0接口    智能电表API    客户服务系统接口" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="bff_layer" vertex="1">
+          <mxGeometry x="480" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" value="营销请求拦截    营销参数校验    营销错误处理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="bff_layer" vertex="1">
+          <mxGeometry x="700" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ai_layer" value="营销AI智能分析层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="520" width="1440" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ai1" value="用电量异常识别    客户流失风险预警    售电收入趋势分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="ai_layer" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ai2" value="营销洞察生成    客户满意度预测    营销策略建议" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="ai_layer" vertex="1">
+          <mxGeometry x="260" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ai3" value="国网标准营销模板    营销图表自动生成    异步任务队列" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="ai_layer" vertex="1">
+          <mxGeometry x="480" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ai4" value="光明大模型 API + LangChain    营销专用提示工程    营销AI推理引擎" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="ai_layer" vertex="1">
+          <mxGeometry x="700" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ai5" value="营销批处理    营销缓存机制    营销负载均衡" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="ai_layer" vertex="1">
+          <mxGeometry x="920" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="data_layer" value="营销数据存储层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="680" width="1440" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="PostgreSQL    营销用户数据    营销项目元数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="data_layer" vertex="1">
+          <mxGeometry x="40" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="营销2.0系统    用电量数据    售电收入" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="data_layer" vertex="1">
+          <mxGeometry x="220" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" value="智能电表数据    实时用电数据    用电行为分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="data_layer" vertex="1">
+          <mxGeometry x="400" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" value="客户服务系统    客户满意度    投诉处理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="data_layer" vertex="1">
+          <mxGeometry x="580" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d5" value="AWS S3/阿里云OSS    营销报告文件    营销PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="data_layer" vertex="1">
+          <mxGeometry x="760" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d6" value="Redis缓存    营销会话    营销热点数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="data_layer" vertex="1">
+          <mxGeometry x="940" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d7" value="营销数据湖    营销历史数据    营销知识库" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="data_layer" vertex="1">
+          <mxGeometry x="1120" y="50" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="obs_layer" value="营销可观测性层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="860" width="1440" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="o1" value="营销性能监控    营销错误追踪    营销业务指标" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;dashed=1;" parent="obs_layer" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="o2" value="营销日志管理    营销日志聚合    营销检索分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;dashed=1;" parent="obs_layer" vertex="1">
+          <mxGeometry x="260" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="o3" value="营销告警机制    营销阈值监控    营销故障通知" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;dashed=1;" parent="obs_layer" vertex="1">
+          <mxGeometry x="480" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="o4" value="营销用户行为分析    营销报告质量监控    营销系统使用统计" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;dashed=1;" parent="obs_layer" vertex="1">
+          <mxGeometry x="700" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="flow1" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;" parent="1" source="f1" target="a1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow2" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;" parent="1" source="a1" target="b1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow3" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;" parent="1" source="b1" target="ai1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow4" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;entryX=0.559;entryY=0.05;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="ai1" target="d1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="210" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow5" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#999999;endArrow=block;dashed=1;rounded=1;flowAnimation=1;" parent="1" source="d1" target="o1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

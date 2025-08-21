@@ -1,0 +1,130 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.1.1 Chrome/132.0.6834.210 Electron/34.3.3 Safari/537.36" version="26.1.1">
+  <diagram name="国网营销Demo演示路线图" id="0">
+    <mxGraphModel dx="941" dy="644" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="国网营销智能报告系统 - Demo演示路线" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="550" y="30" width="500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="step1" value="步骤1：登录认证" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="100" width="700" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="s1_1" value="国网SSO统一登录    营销用户身份验证    权限角色分配" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="step1" vertex="1">
+          <mxGeometry x="40" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s1_2" value="营销工作台界面    个人仪表板    待办事项" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="step1" vertex="1">
+          <mxGeometry x="220" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s1_3" value="营销权限展示    功能模块访问    数据范围控制" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="step1" vertex="1">
+          <mxGeometry x="400" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="step2" value="步骤2：营销数据连接" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="820" y="100" width="700" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="s2_1" value="营销2.0系统连接    用电量数据获取    售电收入数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="step2" vertex="1">
+          <mxGeometry x="40" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s2_2" value="智能电表数据    实时用电监控    异常用电识别" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="step2" vertex="1">
+          <mxGeometry x="220" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s2_3" value="客户服务数据    满意度调查    投诉处理记录" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="step2" vertex="1">
+          <mxGeometry x="400" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="step3" value="步骤3：营销AI智能分析" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="260" width="700" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="s3_1" value="用电量异常检测    • 异常用电模式识别    • 窃电风险预警    • 用电行为分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="step3" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="s3_2" value="客户流失预警    • 流失风险评分    • 客户价值分析    • 挽留策略建议" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="step3" vertex="1">
+          <mxGeometry x="240" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="s3_3" value="营销洞察生成    • 市场趋势分析    • 竞争对手分析    • 营销机会识别" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="step3" vertex="1">
+          <mxGeometry x="440" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="step4" value="步骤4：智能报告生成" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="820" y="260" width="700" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="s4_1" value="国网标准模板    • 营销月报模板    • 异常分析模板    • 客户分析模板" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="step4" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="s4_2" value="智能图表生成    • 用电量趋势图    • 客户分布图    • 收入分析图" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="step4" vertex="1">
+          <mxGeometry x="240" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="s4_3" value="营销建议生成    • 策略优化建议    • 风险应对措施    • 行动计划" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="step4" vertex="1">
+          <mxGeometry x="440" y="50" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="step5" value="步骤5：营销协作与审核" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="440" width="700" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="s5_1" value="营销团队协作    实时编辑    评论反馈" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="step5" vertex="1">
+          <mxGeometry x="40" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s5_2" value="营销审核流程    多级审批    合规检查" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="step5" vertex="1">
+          <mxGeometry x="220" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s5_3" value="版本控制    修改历史    审核记录" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="step5" vertex="1">
+          <mxGeometry x="400" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="step6" value="步骤6：报告导出与分发" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="820" y="440" width="700" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="s6_1" value="多格式导出    PDF/Word/Excel    营销专用格式" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="step6" vertex="1">
+          <mxGeometry x="40" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s6_2" value="自动分发    邮件推送    系统通知" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="step6" vertex="1">
+          <mxGeometry x="220" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s6_3" value="归档管理    历史报告    知识积累" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="step6" vertex="1">
+          <mxGeometry x="400" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="value_section" value="核心价值展示" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f0f0f0;strokeColor=#333333;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="80" y="600" width="1440" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="效率提升    • 报告生成时间从2天缩短到2小时    • 数据处理自动化率90%    • 人工审核时间减少70%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="value_section" vertex="1">
+          <mxGeometry x="40" y="50" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="质量保障    • AI异常检测准确率95%    • 国网标准合规率100%    • 数据一致性验证" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="value_section" vertex="1">
+          <mxGeometry x="280" y="50" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="智能洞察    • 客户流失预警准确率85%    • 营销机会识别    • 策略优化建议" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="value_section" vertex="1">
+          <mxGeometry x="520" y="50" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="协作优化    • 多角色协同工作    • 实时反馈机制    • 知识沉淀积累" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="value_section" vertex="1">
+          <mxGeometry x="760" y="50" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="成本节约    • 人力成本降低60%    • 运营效率提升3倍    • ROI达到300%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="value_section" vertex="1">
+          <mxGeometry x="1000" y="50" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="flow1" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;curved=1;" parent="1" source="s1_2" target="s2_1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow2" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;curved=1;" parent="1" source="s2_2" target="s3_1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow3" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;curved=1;" parent="1" source="s3_2" target="s4_1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow4" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;curved=1;" parent="1" source="s4_2" target="s5_1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow5" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#1f497d;endArrow=block;rounded=1;flowAnimation=1;curved=1;" parent="1" source="s5_2" target="s6_1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow6" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#d79b00;endArrow=block;rounded=1;flowAnimation=1;curved=1;" parent="1" source="s6_2" target="v1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="highlight1" value="演示重点" style="text;html=1;strokeColor=#d6b656;fillColor=#fff2cc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="80" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="highlight2" value="技术亮点" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="400" y="240" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="highlight3" value="业务价值" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="580" width="80" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
