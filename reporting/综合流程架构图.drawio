@@ -1,172 +1,149 @@
-<mxfile host="app.diagrams.net" modified="2025-08-21" agent="trae-ai">
-  <diagram name="综合流程架构图">
-    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
-      <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-        
-        <!-- 标题区域 -->
-        <mxCell id="title" value="智能报告系统 - 端到端流程架构" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="600" y="30" width="400" height="40" as="geometry"/>
-        </mxCell>
-
-        <!-- 用户层 -->
-        <mxCell id="user_layer" value="用户层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;" vertex="1" parent="1">
-          <mxGeometry x="80" y="100" width="1440" height="120" as="geometry"/>
-        </mxCell>
-        <mxCell id="u1" value="提出报告需求\n(目标用户画像)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="user_layer">
-          <mxGeometry x="40" y="50" width="140" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="u2" value="选择模板\n补充数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="user_layer">
-          <mxGeometry x="220" y="50" width="140" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="u3" value="确认草稿\n提供反馈" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="user_layer">
-          <mxGeometry x="580" y="50" width="140" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="u4" value="获取最终报告\n分享导出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="user_layer">
-          <mxGeometry x="1080" y="50" width="140" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- 业务层 -->
-        <mxCell id="business_layer" value="业务层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;" vertex="1" parent="1">
-          <mxGeometry x="80" y="240" width="1440" height="120" as="geometry"/>
-        </mxCell>
-        <mxCell id="b1" value="需求分析\n模板匹配" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="business_layer">
-          <mxGeometry x="400" y="50" width="140" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="b2" value="内容审核\n规范校验" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="business_layer">
-          <mxGeometry x="760" y="50" width="140" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="b3" value="发布归档\n权限管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="business_layer">
-          <mxGeometry x="1260" y="50" width="140" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- 技术层 -->
-        <mxCell id="tech_layer" value="技术层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" vertex="1" parent="1">
-          <mxGeometry x="80" y="380" width="1440" height="200" as="geometry"/>
-        </mxCell>
-        
-        <!-- 前端组件 -->
-        <mxCell id="t1" value="Web前端\nVite+React+Tailwind\n用户界面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="tech_layer">
-          <mxGeometry x="40" y="50" width="160" height="80" as="geometry"/>
-        </mxCell>
-        
-        <!-- 鉴权组件 -->
-        <mxCell id="t2" value="鉴权服务\nSupabase Auth\n身份验证" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="tech_layer">
-          <mxGeometry x="240" y="50" width="160" height="80" as="geometry"/>
-        </mxCell>
-        
-        <!-- BFF/API层 -->
-        <mxCell id="t3" value="BFF/API层\n业务编排\n权限校验" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="tech_layer">
-          <mxGeometry x="440" y="50" width="160" height="80" as="geometry"/>
-        </mxCell>
-        
-        <!-- AI推理 -->
-        <mxCell id="t4" value="AI推理引擎\n模板渲染\n异步任务队列" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="tech_layer">
-          <mxGeometry x="640" y="50" width="160" height="80" as="geometry"/>
-        </mxCell>
-        
-        <!-- 数据存储 -->
-        <mxCell id="t5" value="数据存储\nPostgres\n结构化数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="tech_layer">
-          <mxGeometry x="840" y="50" width="160" height="80" as="geometry"/>
-        </mxCell>
-        
-        <!-- 对象存储 -->
-        <mxCell id="t6" value="对象存储\n报告/附件/PDF\n导出服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="tech_layer">
-          <mxGeometry x="1040" y="50" width="160" height="80" as="geometry"/>
-        </mxCell>
-        
-        <!-- 可观测性 -->
-        <mxCell id="t7" value="可观测性\n日志/指标/告警\n审计追踪" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;dashed=1;" vertex="1" parent="tech_layer">
-          <mxGeometry x="1240" y="50" width="160" height="80" as="geometry"/>
-        </mxCell>
-
-        <!-- 数据流层 -->
-        <mxCell id="data_layer" value="数据流" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f8f8f8;strokeColor=#666666;fontSize=14;" vertex="1" parent="1">
-          <mxGeometry x="80" y="600" width="1440" height="120" as="geometry"/>
-        </mxCell>
-        <mxCell id="d1" value="用户输入\n需求数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="data_layer">
-          <mxGeometry x="120" y="50" width="100" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="d2" value="AI分析\n结果数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="data_layer">
-          <mxGeometry x="420" y="50" width="100" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="d3" value="草稿\n反馈数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="data_layer">
-          <mxGeometry x="720" y="50" width="100" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="d4" value="最终报告\n导出数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="data_layer">
-          <mxGeometry x="1020" y="50" width="100" height="60" as="geometry"/>
-        </mxCell>
-        <mxCell id="d5" value="审计\n追踪数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="data_layer">
-          <mxGeometry x="1320" y="50" width="100" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- 主要流程连线 -->
-        <mxCell id="flow1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1f497d;endArrow=block;" edge="1" parent="1" source="u1" target="b1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="flow2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1f497d;endArrow=block;" edge="1" parent="1" source="u2" target="t4">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="flow3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1f497d;endArrow=block;" edge="1" parent="1" source="u3" target="b2">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="flow4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1f497d;endArrow=block;" edge="1" parent="1" source="u4" target="b3">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- 技术层内部连线 -->
-        <mxCell id="tech_flow1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;" edge="1" parent="1" source="t1" target="t2">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="tech_flow2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;" edge="1" parent="1" source="t2" target="t3">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="tech_flow3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;" edge="1" parent="1" source="t3" target="t4">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="tech_flow4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;" edge="1" parent="1" source="t4" target="t5">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="tech_flow5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;" edge="1" parent="1" source="t5" target="t6">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="tech_flow6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#999999;endArrow=block;dashed=1;" edge="1" parent="1" source="t6" target="t7">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- 数据流连线 -->
-        <mxCell id="data_flow1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;" edge="1" parent="1" source="d1" target="d2">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="data_flow2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;" edge="1" parent="1" source="d2" target="d3">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="data_flow3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;" edge="1" parent="1" source="d3" target="d4">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="data_flow4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;" edge="1" parent="1" source="d4" target="d5">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- 图例 -->
-        <mxCell id="legend" value="图例" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="80" y="750" width="600" height="120" as="geometry"/>
-        </mxCell>
-        <mxCell id="legend1" value="用户交互流程" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1f497d;strokeWidth=3;" vertex="1" parent="legend">
-          <mxGeometry x="20" y="40" width="120" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="legend2" value="技术组件调用" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="legend">
-          <mxGeometry x="160" y="40" width="120" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="legend3" value="数据流转" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#d79b00;strokeWidth=2;" vertex="1" parent="legend">
-          <mxGeometry x="300" y="40" width="120" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="legend4" value="可观测性" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;strokeWidth=1;dashed=1;" vertex="1" parent="legend">
-          <mxGeometry x="440" y="40" width="120" height="30" as="geometry"/>
-        </mxCell>
-
-      </root>
-    </mxGraphModel>
-  </diagram>
+<mxfile host="65bd71144e">
+    <diagram name="综合流程架构图" id="0">
+        <mxGraphModel dx="654" dy="587" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="智能报告系统 - 端到端流程架构" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="600" y="30" width="400" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="user_layer" value="用户层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="100" width="1440" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="u1" value="提出报告需求&lt;br&gt;(目标用户画像)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="user_layer" vertex="1">
+                    <mxGeometry x="40" y="50" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u2" value="选择模板&lt;br&gt;补充数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="user_layer" vertex="1">
+                    <mxGeometry x="220" y="50" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u3" value="确认草稿\n提供反馈" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="user_layer" vertex="1">
+                    <mxGeometry x="580" y="50" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="u4" value="获取最终报告\n分享导出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="user_layer" vertex="1">
+                    <mxGeometry x="1080" y="50" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="business_layer" value="业务层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="240" width="1440" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="b1" value="需求分析\n模板匹配" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="business_layer" vertex="1">
+                    <mxGeometry x="400" y="50" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="b2" value="内容审核\n规范校验" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="business_layer" vertex="1">
+                    <mxGeometry x="760" y="50" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="b3" value="发布归档\n权限管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="business_layer" vertex="1">
+                    <mxGeometry x="1260" y="50" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech_layer" value="技术层" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="380" width="1440" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="t1" value="Web前端\nVite+React+Tailwind\n用户界面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="tech_layer" vertex="1">
+                    <mxGeometry x="40" y="50" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="t2" value="鉴权服务\nSupabase Auth\n身份验证" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="tech_layer" vertex="1">
+                    <mxGeometry x="240" y="50" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="t3" value="BFF/API层\n业务编排\n权限校验" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="tech_layer" vertex="1">
+                    <mxGeometry x="440" y="50" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="t4" value="AI推理引擎\n模板渲染\n异步任务队列" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="tech_layer" vertex="1">
+                    <mxGeometry x="640" y="50" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="t5" value="数据存储\nPostgres\n结构化数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="tech_layer" vertex="1">
+                    <mxGeometry x="840" y="50" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="t6" value="对象存储\n报告/附件/PDF\n导出服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="tech_layer" vertex="1">
+                    <mxGeometry x="1040" y="50" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="t7" value="可观测性\n日志/指标/告警\n审计追踪" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;dashed=1;" parent="tech_layer" vertex="1">
+                    <mxGeometry x="1240" y="50" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="data_layer" value="数据流" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f8f8f8;strokeColor=#666666;fontSize=14;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="600" width="1440" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="d1" value="用户输入\n需求数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="data_layer" vertex="1">
+                    <mxGeometry x="120" y="50" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="d2" value="AI分析\n结果数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="data_layer" vertex="1">
+                    <mxGeometry x="420" y="50" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="d3" value="草稿\n反馈数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="data_layer" vertex="1">
+                    <mxGeometry x="720" y="50" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="d4" value="最终报告\n导出数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="data_layer" vertex="1">
+                    <mxGeometry x="1020" y="50" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="d5" value="审计\n追踪数据" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="data_layer" vertex="1">
+                    <mxGeometry x="1320" y="50" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow1" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1f497d;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="u1" target="b1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="190" y="230"/>
+                            <mxPoint x="550" y="230"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow2" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1f497d;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="u2" target="t4" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="370" y="220"/>
+                            <mxPoint x="770" y="220"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow3" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=default;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="u3" target="b2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow4" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#1f497d;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="u4" target="b3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech_flow1" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="t1" target="t2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech_flow2" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="t2" target="t3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech_flow3" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="t3" target="t4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech_flow4" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="t4" target="t5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech_flow5" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="t5" target="t6" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="tech_flow6" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#999999;endArrow=block;dashed=1;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="t6" target="t7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="data_flow1" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="d1" target="d2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="data_flow2" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="d2" target="d3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="data_flow3" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="d3" target="d4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="data_flow4" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#d79b00;endArrow=block;flowAnimation=1;rounded=1;shadow=0;" parent="1" source="d4" target="d5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend" value="图例" style="swimlane;fontStyle=1;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="750" width="600" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend1" value="用户交互流程" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1f497d;strokeWidth=3;" parent="legend" vertex="1">
+                    <mxGeometry x="20" y="40" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend2" value="技术组件调用" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;strokeWidth=2;" parent="legend" vertex="1">
+                    <mxGeometry x="160" y="40" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend3" value="数据流转" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#d79b00;strokeWidth=2;" parent="legend" vertex="1">
+                    <mxGeometry x="300" y="40" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend4" value="可观测性" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;strokeWidth=1;dashed=1;" parent="legend" vertex="1">
+                    <mxGeometry x="440" y="40" width="120" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
 </mxfile>
