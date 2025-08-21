@@ -15,6 +15,9 @@ import {
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
+// 从 @/hooks/useAuth 导入 useAuth hook
+import { useAuth } from '@/hooks/useAuth'
+import { toast } from 'sonner'
 
 const { Header, Sider, Content } = Layout
 
@@ -23,6 +26,7 @@ const MainLayout: React.FC = () => {
   const [notificationVisible, setNotificationVisible] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
+  const { user, signOut } = useAuth()
 
   // 菜单项配置
   const menuItems = [
@@ -53,6 +57,27 @@ const MainLayout: React.FC = () => {
     },
   ]
 
+  // 处理用户菜单点击
+  const handleUserMenuClick = async ({ key }: { key: string }) => {
+    switch (key) {
+      case 'profile':
+        navigate('/profile')
+        break
+      case 'settings':
+        // TODO: 实现系统设置页面
+        toast.info('系统设置功能即将上线')
+        break
+      case 'logout':
+        try {
+          await signOut()
+          navigate('/login')
+        } catch (error: any) {
+          toast.error(error.message || '退出登录失败')
+        }
+        break
+    }
+  }
+
   // 用户下拉菜单
   const userMenuItems = [
     {
@@ -72,9 +97,6 @@ const MainLayout: React.FC = () => {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: '退出登录',
-      onClick: () => {
-        navigate('/login')
-      },
     },
   ]
 
@@ -219,7 +241,7 @@ const MainLayout: React.FC = () => {
 
               {/* 用户头像和下拉菜单 */}
               <Dropdown
-                menu={{ items: userMenuItems }}
+                menu={{ items: userMenuItems, onClick: handleUserMenuClick }}
                 placement="bottomRight"
                 arrow
                 overlayStyle={{ zIndex: 1050 }}
@@ -247,14 +269,15 @@ const MainLayout: React.FC = () => {
                 >
                   <Avatar
                     size={28}
-                    icon={<UserOutlined />}
                     style={{ backgroundColor: '#1890ff' }}
-                  />
+                  >
+                    {user?.profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                  </Avatar>
                   <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
                     <span style={{ fontSize: '13px', fontWeight: '500', color: '#262626', marginBottom: '1px' }}>
-                      管理员
+                      {user?.profile?.full_name || '用户'}
                     </span>
-                    <span style={{ fontSize: '11px', color: '#8c8c8c' }}>admin@example.com</span>
+                    <span style={{ fontSize: '11px', color: '#8c8c8c' }}>{user?.email}</span>
                   </div>
                 </motion.div>
               </Dropdown>

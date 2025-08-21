@@ -162,31 +162,6 @@ npx playwright install
 - [系统架构文档](./document/智能报告生成系统%20(v1.0%20-%20202507).md)
 - [Playwright MCP 问题解决文档](./Playwright-MCP-问题解决文档.md)
 
-## 🏗️ 架构图
-
-项目包含完整的架构设计图：
-- [业务架构图](./architecture/业务架构图.drawio)
-- [产品架构图](./architecture/产品架构图.drawio)
-- [技术架构图](./architecture/技术架构图.drawio)
-
-## 🤝 贡献指南
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
-
-## 👥 团队
-
-- **开发团队** - 负责系统开发和维护
-- **产品团队** - 负责需求分析和产品设计
-- **测试团队** - 负责质量保证和测试
-
 ## 📞 联系我们
 
 如有问题或建议，请通过以下方式联系我们：
@@ -197,3 +172,30 @@ npx playwright install
 ---
 
 **智能报告系统** - 让报告创建更简单、更智能、更高效！ 🚀
+
+## 🧩 常见问题排查
+
+### 1) 登录页样式不生效 / 页面看起来像“默认表单”
+- 典型症状：背景纯白，按钮/阴影/圆角等 Tailwind 样式都没有效果；或首次打开浏览器控制台看到加载 `/src/main.tsx` 失败。
+- 根因定位：
+  1) 升级到 Tailwind CSS v4 后，仍使用 v3 的指令写法（`@tailwind base; @tailwind components; @tailwind utilities;`）。导致实用类未被生成，页面展示为朴素样式。修复为 v4 推荐写法 `@import "tailwindcss";`。
+     - 修改位置：<mcfile name="global.css" path="/home/zhengyihan/cloud_enviroment/sx-yx2.0/smart-report/src/styles/global.css"></mcfile>
+  2) 开发服务器端口占用，Vite 自动切到新的端口（如从 5173 切到 5174），浏览器仍访问旧端口，出现 `net::ERR_ABORTED` 指向 `/src/main.tsx`。
+- 修复步骤：
+  1) 在 <mcfile name="global.css" path="/home/zhengyihan/cloud_enviroment/sx-yx2.0/smart-report/src/styles/global.css"></mcfile> 顶部使用：`@import "tailwindcss";`
+  2) 重新启动开发服务器 `npm run dev`，并使用终端提示的实际地址访问（默认 5173，若被占用会自动切换，例如 5174）。
+- 验证清单：
+  - 访问示例：`http://localhost:5174/login`（以终端输出为准）。
+  - 浏览器 DevTools > Elements 中能看到 `bg-gradient-to-br`、`shadow-2xl` 等类；Styles 面板能看到来自 Tailwind 的规则。
+  - Network 面板中全局样式已成功加载。
+  - 强制刷新（Win: Ctrl+F5 / Mac: Cmd+Shift+R）。
+
+> 说明：登录页左侧的“品牌区”在 <mcfile name="Login.tsx" path="/home/zhengyihan/cloud_enviroment/sx-yx2.0/smart-report/src/pages/Login.tsx"></mcfile> 中默认只在 `lg`(≥1024px) 及以上屏幕显示（类名：`hidden lg:flex`）。若浏览器窗口较窄，看不到品牌区属于预期行为。需要更早展示可将其改为 `hidden md:flex` 或 `flex`。
+
+### 2) Google 图标异常放大
+- 原因：SVG 未设置显式宽高，在某些环境被当作可伸缩块级元素放大。
+- 处理：在 <mcfile name="Login.tsx" path="/home/zhengyihan/cloud_enviroment/sx-yx2.0/smart-report/src/pages/Login.tsx"></mcfile> 的 Google 按钮里，为 SVG 增加 `width/height` 与 `preserveAspectRatio="xMidYMid meet"`，避免溢出。
+
+### 3) 端口相关错误（`net::ERR_ABORTED` 指向 /src/main.tsx）
+- 原因：默认端口 5173 被占用时，Vite 会自动切到 5174/5175…
+- 处理：始终以终端输出为准访问地址；如需固定端口，可在脚本中指定端口或先释放占用端口后再启动。

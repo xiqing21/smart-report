@@ -2,6 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
+import { Toaster } from 'sonner'
+import { AuthProvider } from './contexts/AuthContext'
 import './styles/global.css'
 import App from './App.tsx'
 
@@ -34,7 +36,15 @@ const theme = {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider theme={theme} locale={zhCN}>
-      <App />
+      <AuthProvider>
+        <App />
+        <Toaster 
+          position="top-right" 
+          richColors 
+          closeButton 
+          duration={4000}
+        />
+      </AuthProvider>
     </ConfigProvider>
   </StrictMode>,
 )

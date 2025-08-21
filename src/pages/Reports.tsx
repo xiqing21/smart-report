@@ -12,8 +12,6 @@ import {
   Dropdown,
   Modal,
   message,
-  Row,
-  Col,
   Tooltip,
   Progress
 } from 'antd'
