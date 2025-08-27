@@ -1,0 +1,143 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.1.1 Chrome/132.0.6834.210 Electron/34.3.3 Safari/537.36" version="26.1.1">
+  <diagram name="多智能体协作架构" id="multi-agent-architecture">
+    <mxGraphModel dx="984" dy="1706" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="国网智能营销报告生成系统 - 多智能体协作架构" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1f4e79;" parent="1" vertex="1">
+          <mxGeometry x="540" y="-280" width="600" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="R_qTJZufCYwNH7m97fde-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.081;entryY=0.988;entryDx=0;entryDy=0;entryPerimeter=0;flowAnimation=1;startArrow=oval;startFill=1;strokeWidth=2;curved=1;" parent="1" source="data-layer-bg" target="platform-bg" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="data-layer-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="133" y="640" width="1494" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="data-layer-title" value="数据源层" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#01579b;" parent="1" vertex="1">
+          <mxGeometry x="153" y="650" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="marketing-system" value="营销2.0系统    用电量、售电收入    客户档案、业务数据" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="253" y="690" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="smart-meter" value="智能电表系统    实时用电数据    用电行为分析" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="433" y="690" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="customer-service" value="客户服务系统    满意度、投诉    服务记录、工单" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="613" y="690" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment-mgmt" value="设备管理系统    供电设备状态    故障记录、检修" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="793" y="690" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="collection-system" value="采集2.0系统    电量采集    计量数据、抄表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="973" y="690" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;strokeWidth=3;" parent="1" vertex="1">
+          <mxGeometry x="117" y="252" width="1494" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-title" value="多智能体协作平台" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#7b1fa2;" parent="1" vertex="1">
+          <mxGeometry x="764" y="262" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="data-agent" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;🔍 数据采集智能体&lt;br&gt;• 普华两年技术沉淀&lt;br&gt;• 智能化数据采集方案&lt;br&gt;• 多源异构系统适配&lt;br&gt;• 实时数据同步处理&lt;br&gt;• 智能数据清洗算法&lt;br&gt;• 数据质量自动监控&lt;br&gt;• 90%以上数据准确率&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#2e7d32;fontSize=11;align=left;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="157" y="302" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="analysis-agent" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;📊 指标分析智能体&lt;br&gt;• 营销业务4000+核心指标&lt;br&gt;• 智慧运营平台2000+指标&lt;br&gt;• 覆盖营销业扩、计量、电量电费、稽查、标签等90%业务场景&lt;br&gt;• 多维度指标分析模型&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=11;align=left;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="377" y="302" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-agent" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;📋 政策解读智能体&lt;br&gt;• 普华总部专业团队&lt;br&gt;• 定期政策解读分享&lt;br&gt;• 完善政策知识库&lt;br&gt;• 政策更新机制&lt;br&gt;• 实时合规性检查&lt;br&gt;• 风险评估预警&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f57c00;fontSize=11;align=left;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="597" y="302" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="monitor-agent" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;🔍 数据监测智能体&lt;br&gt;• 全链路数据血缘追踪&lt;br&gt;• 智能质量评分体系&lt;br&gt;• 实时监控告警机制&lt;br&gt;• 数据治理优化建议&lt;br&gt;• 问题根因智能分析&lt;br&gt;• 自动修复处理能力&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffebee;strokeColor=#d32f2f;fontSize=11;align=left;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="817" y="302" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="R_qTJZufCYwNH7m97fde-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=oval;startFill=1;strokeWidth=2;flowAnimation=1;curved=1;" parent="1" source="report-agent" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="262" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="report-agent" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;📝 报告生成智能体&lt;br&gt;• 智能模板匹配引擎&lt;br&gt;• 多格式PDF、word、Excel专业输出&lt;br&gt;• 个性化定制配置&lt;br&gt;• 自动排版美化&lt;br&gt;• 国网标准合规&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#689f38;fontSize=11;align=left;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="1052" y="302" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="output-layer-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#2e7d32;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="117" y="-33" width="1494" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="output-layer-title" value="智能报告输出层" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#2e7d32;" parent="1" vertex="1">
+          <mxGeometry x="111" y="-70" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="data-input" value="📥 多源数据接入    • Excel文件上传    • API接口对接    • 数据库直连    • 实时数据流" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="187" y="17" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ai-processing" value="🤖 智能体协作    • 五大智能体协同    • 自动化处理    • 智能分析建模    • 实时质量监控" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="357" y="17" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="report-output" value="📊 智能报告生成    • 多维度分析报告    • 政策合规报告    • 监测预警报告    • 专业标准报告" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="527" y="17" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="format-export" value="📤 多格式输出    • PDF专业报告    • Word编辑文档&amp;nbsp; • Excel数据表" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="697" y="17" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="collaboration" value="👥&amp;nbsp; &amp;nbsp;权限管理控制    • 版本历史追踪    • 一键分享发布" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="867" y="17" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="efficiency-panel" value="⚡ 系统优势    • 大幅时间节省    • 显著准确性提升    • 高投资回报率    • 智能化程度高" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f57c00;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1077" y="-13" width="150" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="process-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#6c757d;strokeWidth=1;" parent="1" vertex="1">
+          <mxGeometry x="121" y="-210" width="1494" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="process-title" value="智能协作流程" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#495057;" parent="1" vertex="1">
+          <mxGeometry x="768" y="-200" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="step1" value="1️⃣ 数据接入    多源数据整合" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976d2;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="141" y="-170" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="step2" value="2️⃣ 智能分析    指标计算建模" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e8;strokeColor=#2e7d32;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="311" y="-170" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="step3" value="3️⃣ 政策解读    合规性检查" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#f57c00;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="481" y="-170" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="step4" value="4️⃣ 质量监控    数据治理优化" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffebee;strokeColor=#d32f2f;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="641" y="-170" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="step5" value="5️⃣ 报告生成    智能模板匹配" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#689f38;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="801" y="-170" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="step7" value="6️⃣ 发布分享    多格式输出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0f2f1;strokeColor=#00695c;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="974" y="-170" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="process-flow1" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#495057;strokeWidth=2;flowAnimation=1;edgeStyle=orthogonalEdgeStyle;curved=1;startArrow=oval;startFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="step1" target="step2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="314" y="-141" as="sourcePoint" />
+            <mxPoint x="344" y="-141" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="process-flow2" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#495057;strokeWidth=2;flowAnimation=1;edgeStyle=orthogonalEdgeStyle;curved=1;startArrow=oval;startFill=1;" parent="1" source="step2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="444" y="-141" as="sourcePoint" />
+            <mxPoint x="481" y="-150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="process-flow3" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#495057;strokeWidth=2;flowAnimation=1;edgeStyle=orthogonalEdgeStyle;curved=1;startArrow=oval;startFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="step3" target="step4" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="574" y="-141" as="sourcePoint" />
+            <mxPoint x="604" y="-141" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="process-flow4" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#495057;strokeWidth=2;flowAnimation=1;edgeStyle=orthogonalEdgeStyle;curved=1;startArrow=oval;startFill=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="step5" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="761" y="-150" as="sourcePoint" />
+            <mxPoint x="734" y="-141" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="process-flow6" value="" style="endArrow=classic;html=1;rounded=0;strokeColor=#495057;strokeWidth=2;flowAnimation=1;edgeStyle=orthogonalEdgeStyle;curved=1;startArrow=oval;startFill=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="step7" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="921" y="-150" as="sourcePoint" />
+            <mxPoint x="894" y="-140.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
