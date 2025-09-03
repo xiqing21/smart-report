@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Card,
   Row,
@@ -12,7 +13,7 @@ import {
   Tag,
   Tabs,
   Space,
-
+  Statistic,
   Alert,
   Modal,
   Form,
@@ -23,7 +24,7 @@ import {
   Badge
 } from 'antd';
 import {
-
+  UploadOutlined,
   DatabaseOutlined,
   BarChartOutlined,
   LineChartOutlined,
@@ -31,7 +32,7 @@ import {
   PlayCircleOutlined,
   StopOutlined,
   DownloadOutlined,
-
+  SettingOutlined,
   BulbOutlined,
   RobotOutlined,
   FileTextOutlined,
@@ -46,7 +47,6 @@ import { EnhancedButton, InteractiveCard, StatusTag, AnimatedProgress } from '..
 import { AnimatedStatistic } from '../components/AdvancedAnimations';
 import { motion } from 'framer-motion';
 import type { UploadProps } from 'antd';
-import AgentProgressModal from '../components/AgentProgressModal';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -76,133 +76,151 @@ interface AnalysisTask {
 }
 
 const AIAnalysis: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('datasource');
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
-  const [analysisType, setAnalysisType] = useState<string>('');
-  const [reportType, setReportType] = useState<string>('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showAgentModal, setShowAgentModal] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('analysis');
+  const [analysisRunning, setAnalysisRunning] = useState(false);
   const [configModalVisible, setConfigModalVisible] = useState(false);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [templateModalVisible, setTemplateModalVisible] = useState(false);
+  const [selectedDataSource, setSelectedDataSource] = useState<DataSource | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [form] = Form.useForm();
+  
+  // 从路由状态获取分析完成状态
+  const analysisCompleted = location.state?.analysisCompleted || false;
+  const showResults = location.state?.showResults || false;
 
-  // 五大智能体定义
-  const intelligentAgents = [
-    {
-      id: 'data-collector',
-      name: '数据采集智能体',
-      description: '负责从各种数据源采集电力数据',
-      status: 'active',
-      tasks: ['电网运行数据采集', '用电量统计', '设备状态监控'],
-      efficiency: 95.8,
-      icon: 'DatabaseOutlined'
-    },
-    {
-      id: 'data-processor',
-      name: '数据处理智能体',
-      description: '对采集的数据进行清洗和预处理',
-      status: 'active',
-      tasks: ['数据清洗', '异常值检测', '数据标准化'],
-      efficiency: 92.3,
-      icon: 'ApiOutlined'
-    },
-    {
-      id: 'analyzer',
-      name: '分析智能体',
-      description: '执行深度数据分析和模式识别',
-      status: 'active',
-      tasks: ['负荷预测', '故障分析', '效率评估'],
-      efficiency: 89.7,
-      icon: 'BarChartOutlined'
-    },
-    {
-      id: 'insight-generator',
-      name: '洞察生成智能体',
-      description: '基于分析结果生成业务洞察',
-      status: 'active',
-      tasks: ['趋势识别', '风险评估', '优化建议'],
-      efficiency: 91.2,
-      icon: 'BulbOutlined'
-    },
-    {
-      id: 'report-writer',
-      name: '报告生成智能体',
-      description: '自动生成专业的分析报告',
-      status: 'active',
-      tasks: ['报告撰写', '图表生成', '格式优化'],
-      efficiency: 94.1,
-      icon: 'FileTextOutlined'
+  useEffect(() => {
+    if (showResults && analysisCompleted) {
+      setActiveTab('results');
     }
-  ];
+  }, [showResults, analysisCompleted]);
 
-  // 山西国网数据源
-  const dataSources: DataSource[] = [
+  const [dataSources] = useState<DataSource[]>([
     {
       id: '1',
-      name: '山西电网运行数据.xlsx',
-      type: 'file',
+      name: '山西电网负荷数据',
+      type: 'database',
       status: 'connected',
-      size: '15.8MB',
+      size: '2.5GB',
       lastUpdated: '2024-01-15 14:30',
       records: 125420
     },
     {
-      id: '2',
-      name: '国网山西省电力公司数据库',
-      type: 'database',
+      id: '2', 
+      name: '设备运行状态数据',
+      type: 'file',
       status: 'connected',
-      lastUpdated: '2024-01-15 16:45',
-      records: 2896500
+      size: '1.2GB',
+      lastUpdated: '2024-01-15 12:15',
+      records: 89650
     },
     {
       id: '3',
-      name: '电力调度API接口',
+      name: '能耗监测API',
       type: 'api',
-      status: 'connected',
-      lastUpdated: '2024-01-15 17:20',
-      records: 458920
+      status: 'disconnected',
+      lastUpdated: '2024-01-14 18:45'
     }
-  ];
+  ]);
 
-  const analysisTasks: AnalysisTask[] = [
+  const [analysisTasks] = useState<AnalysisTask[]>([
     {
       id: '1',
       name: '电网负荷趋势分析',
-      dataSource: '山西电网运行数据.xlsx',
+      dataSource: '山西电网负荷数据',
       analysisType: '趋势分析',
       status: 'completed',
       progress: 100,
-      startTime: '2024-01-15 14:35',
-      duration: '5分钟',
-      insights: 12
+      startTime: '2024-01-15 09:30',
+      duration: '12分钟',
+      insights: 8
     },
     {
       id: '2',
-      name: '用电行为模式分析',
-      dataSource: '国网山西省电力公司数据库',
-      analysisType: '行为分析',
-      status: 'running',
-      progress: 75,
-      startTime: '2024-01-15 16:50'
-    },
-    {
-      id: '3',
-      name: '电力需求预测分析',
-      dataSource: '电力调度API接口',
+      name: '设备故障预测',
+      dataSource: '设备运行状态数据', 
       analysisType: '预测分析',
-      status: 'pending',
-      progress: 0,
-      startTime: ''
+      status: 'running',
+      progress: 65,
+      startTime: '2024-01-15 14:20'
     }
-  ];
+  ]);
 
-  const sampleData = [
-    { key: '1', region: '太原供电区', load: 1250, consumption: 18750000, growth: '+15.2%' },
-    { key: '2', region: '大同供电区', load: 890, consumption: 22250000, growth: '+8.7%' },
-    { key: '3', region: '临汾供电区', load: 1560, consumption: 9360000, growth: '+22.1%' },
-    { key: '4', region: '运城供电区', load: 2340, consumption: 9360000, growth: '+12.5%' },
-    { key: '5', region: '晋中供电区', load: 3200, consumption: 8000000, growth: '+18.9%' }
-  ];
+  const handleStartAnalysis = () => {
+    setAnalysisRunning(true);
+    message.success('分析任务已启动');
+    
+    // 模拟分析过程
+    setTimeout(() => {
+      setAnalysisRunning(false);
+      message.success('分析完成！');
+    }, 3000);
+  };
+
+  const handleEditReport = () => {
+    navigate('/report-editor', {
+      state: {
+        analysisData: {
+          type: 'ai-analysis',
+          template: selectedTemplate,
+          data: {
+            loadGrowth: 15.2,
+            cleanEnergyRatio: 12.8,
+            regions: [
+              { name: '太原', load: '2,450 MW', growth: '+8.5%' },
+              { name: '大同', load: '1,890 MW', growth: '+12.3%' },
+              { name: '临汾', load: '1,650 MW', growth: '+6.7%' }
+            ]
+          }
+        }
+      }
+    });
+  };
+
+  const handleDownloadReport = () => {
+    message.success('报告下载已开始');
+    // 实际下载逻辑
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    setTemplateModalVisible(false);
+    message.success('模板已选择');
+  };
+
+  const uploadProps: UploadProps = {
+    name: 'file',
+    multiple: true,
+    action: '/api/upload',
+    onChange(info) {
+      const { status } = info.file;
+      if (status === 'done') {
+        message.success(`${info.file.name} 文件上传成功`);
+      } else if (status === 'error') {
+        message.error(`${info.file.name} 文件上传失败`);
+      }
+    },
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'connected': return 'green';
+      case 'disconnected': return 'red';
+      case 'error': return 'orange';
+      default: return 'default';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'connected': return '已连接';
+      case 'disconnected': return '未连接';
+      case 'error': return '连接错误';
+      default: return '未知';
+    }
+  };
 
   const dataSourceColumns = [
     {
@@ -211,10 +229,10 @@ const AIAnalysis: React.FC = () => {
       key: 'name',
       render: (text: string, record: DataSource) => (
         <Space>
-          {record.type === 'file' && <FileTextOutlined />}
           {record.type === 'database' && <DatabaseOutlined />}
+          {record.type === 'file' && <FileTextOutlined />}
           {record.type === 'api' && <ApiOutlined />}
-          <span>{text}</span>
+          <Text strong>{text}</Text>
         </Space>
       )
     },
@@ -224,31 +242,33 @@ const AIAnalysis: React.FC = () => {
       key: 'type',
       render: (type: string) => {
         const typeMap = {
-          file: { text: '文件', color: 'blue' },
-          database: { text: '数据库', color: 'green' },
-          api: { text: 'API', color: 'orange' }
+          database: '数据库',
+          file: '文件',
+          api: 'API接口'
         };
-        return <Tag color={typeMap[type as keyof typeof typeMap].color}>{typeMap[type as keyof typeof typeMap].text}</Tag>;
+        return <Tag>{typeMap[type as keyof typeof typeMap]}</Tag>;
       }
     },
     {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        const statusMap = {
-          connected: { text: '已连接', color: 'success' },
-          disconnected: { text: '未连接', color: 'default' },
-          error: { text: '错误', color: 'error' }
-        };
-        return <Badge status={statusMap[status as keyof typeof statusMap].color as any} text={statusMap[status as keyof typeof statusMap].text} />;
-      }
+      render: (status: string) => (
+          <>
+            <StatusTag status={status === 'connected' ? 'completed' : 'pending'} />
+            <span className="ml-2">{getStatusText(status)}</span>
+          </>
+        )
     },
     {
-      title: '记录数',
-      dataIndex: 'records',
-      key: 'records',
-      render: (records: number) => records?.toLocaleString() || '-'
+      title: '数据量',
+      key: 'size',
+      render: (record: DataSource) => (
+        <Space direction="vertical" size={0}>
+          <Text>{record.size || '-'}</Text>
+          {record.records && <Text type="secondary">{record.records.toLocaleString()} 条记录</Text>}
+        </Space>
+      )
     },
     {
       title: '最后更新',
@@ -258,13 +278,24 @@ const AIAnalysis: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any) => (
+      render: (record: DataSource) => (
         <Space>
           <Tooltip title="预览数据">
-            <Button type="text" icon={<EyeOutlined />} onClick={() => setPreviewModalVisible(true)} />
+            <Button 
+              type="text" 
+              icon={<EyeOutlined />} 
+              onClick={() => {
+                setSelectedDataSource(record);
+                setPreviewModalVisible(true);
+              }}
+            />
           </Tooltip>
-          <Tooltip title="编辑配置">
-            <Button type="text" icon={<EditOutlined />} onClick={() => setConfigModalVisible(true)} />
+          <Tooltip title="配置">
+            <Button 
+              type="text" 
+              icon={<SettingOutlined />}
+              onClick={() => setConfigModalVisible(true)}
+            />
           </Tooltip>
           <Tooltip title="删除">
             <Button type="text" danger icon={<DeleteOutlined />} />
@@ -296,40 +327,59 @@ const AIAnalysis: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
-        const mappedStatus = status === 'connected' ? 'completed' : status === 'error' ? 'pending' : 'processing';
-        return <StatusTag status={mappedStatus} animated />;
+        const statusMap = {
+          running: { color: 'processing', text: '运行中' },
+          completed: { color: 'success', text: '已完成' },
+          failed: { color: 'error', text: '失败' },
+          pending: { color: 'default', text: '等待中' }
+        };
+        const config = statusMap[status as keyof typeof statusMap];
+        return <Badge status={config.color as any} text={config.text} />;
       }
     },
     {
       title: '进度',
       dataIndex: 'progress',
       key: 'progress',
-      render: (progress: number) => <AnimatedProgress percent={progress} status={progress === 100 ? 'success' : 'active'} />
+      render: (progress: number) => (
+         <AnimatedProgress percent={progress} />
+       )
     },
     {
-      title: '洞察数量',
+      title: '开始时间',
+      dataIndex: 'startTime',
+      key: 'startTime'
+    },
+    {
+      title: '耗时',
+      dataIndex: 'duration',
+      key: 'duration',
+      render: (duration: string) => duration || '-'
+    },
+    {
+      title: '洞察数',
       dataIndex: 'insights',
       key: 'insights',
-      render: (insights: number) => insights ? <Tag color="gold">{insights}个洞察</Tag> : '-'
+      render: (insights: number) => insights ? <Badge count={insights} color="green" /> : '-'
     },
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: AnalysisTask) => (
+      render: (record: AnalysisTask) => (
         <Space>
           {record.status === 'running' && (
-            <Button type="text" icon={<StopOutlined />} danger>
+            <Button type="text" danger icon={<StopOutlined />} size="small">
               停止
             </Button>
           )}
           {record.status === 'completed' && (
             <>
-              <EnhancedButton type="text" icon={<EyeOutlined />} variant="glow" size="small">
-                查看结果
-              </EnhancedButton>
-              <EnhancedButton type="text" icon={<DownloadOutlined />} variant="pulse" size="small">
-                导出
-              </EnhancedButton>
+              <Button type="text" icon={<EyeOutlined />} size="small">
+                查看
+              </Button>
+              <Button type="text" icon={<DownloadOutlined />} size="small">
+                下载
+              </Button>
             </>
           )}
         </Space>
@@ -337,465 +387,603 @@ const AIAnalysis: React.FC = () => {
     }
   ];
 
-  const previewColumns = [
-    { title: '供电区域', dataIndex: 'region', key: 'region' },
-    { title: '负荷(MW)', dataIndex: 'load', key: 'load' },
-    { title: '用电量(kWh)', dataIndex: 'consumption', key: 'consumption', render: (value: number) => `${value.toLocaleString()}` },
-    { title: '增长率', dataIndex: 'growth', key: 'growth', render: (value: string) => <Tag color={value.startsWith('+') ? 'green' : 'red'}>{value}</Tag> }
-  ];
-
-  const uploadProps: UploadProps = {
-    name: 'file',
-    multiple: false,
-    accept: '.xlsx,.xls,.csv,.json',
-    beforeUpload: () => {
-      message.success('文件上传成功！');
-      return false;
-    }
-  };
-
-  const handleStartAnalysis = () => {
-    if (!selectedDataSource || !analysisType || !reportType) {
-      message.warning('请选择数据源、分析类型和报告类型');
-      return;
-    }
-    setIsAnalyzing(true);
-    setShowAgentModal(true);
-    message.success('启动智能体协作分析...');
-  };
-
-  const handleAgentComplete = () => {
-    setIsAnalyzing(false);
-    setShowAgentModal(false);
-    message.success('智能体协作分析完成！正在跳转到报告编辑器...');
-    // 这里可以添加导航到报告编辑器的逻辑
-    // navigate('/editor');
-  };
-
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Header */}
-        <div className="mb-6">
-          <Title level={2} className="mb-2 flex items-center">
-            <RobotOutlined className="mr-3 text-blue-600" />
-            AI分析中心
-          </Title>
-          <Paragraph className="text-gray-600 mb-0">
-            智能数据分析，自动生成洞察报告，助力业务决策
-          </Paragraph>
-        </div>
+    <div className="p-6">
+      <div className="mb-6">
+        <Title level={2}>AI 智能分析中心</Title>
+        <Paragraph className="text-gray-600">
+          基于先进的机器学习算法，为山西电网提供深度数据洞察和智能决策支持
+        </Paragraph>
+      </div>
 
-        {/* Quick Stats */}
-        <Row gutter={[16, 16]} className="mb-6">
-          <Col xs={24} sm={12} lg={6}>
-            <InteractiveCard effect="lift">
-              <AnimatedStatistic
-                title="数据源总数"
-                value={3}
-                prefix={<DatabaseOutlined className="text-blue-600" />}
-                valueStyle={{ color: '#1890ff' }}
-                trend="up"
-                trendValue={12.5}
-              />
-            </InteractiveCard>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <InteractiveCard effect="glow">
-              <AnimatedStatistic
-                title="分析任务"
-                value={3}
-                prefix={<BarChartOutlined className="text-green-600" />}
-                valueStyle={{ color: '#52c41a' }}
-                trend="up"
-                trendValue={2.1}
-              />
-            </InteractiveCard>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <InteractiveCard effect="lift">
-              <AnimatedStatistic
-                title="生成洞察"
-                value={12}
-                prefix={<BulbOutlined className="text-orange-600" />}
-                valueStyle={{ color: '#fa8c16' }}
-                trend="up"
-                trendValue={50}
-              />
-            </InteractiveCard>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <InteractiveCard effect="glow">
-              <AnimatedStatistic
-                title="数据记录"
-                value={3480840}
-                prefix={<TableOutlined className="text-purple-600" />}
-                valueStyle={{ color: '#722ed1' }}
-                trend="up"
-                trendValue={25.8}
-              />
-            </InteractiveCard>
-          </Col>
-        </Row>
-
-        {/* Main Content */}
-        <Card className="border-0 shadow-sm">
-          <Tabs activeKey={activeTab} onChange={setActiveTab} size="large">
-            <TabPane tab={<span><RobotOutlined />智能体协作</span>} key="agents">
-              <Row gutter={[24, 24]}>
-                <Col span={24}>
-                  <Alert
-                    message="五大智能体协作系统"
-                    description="数据采集 → 数据处理 → 深度分析 → 洞察生成 → 报告输出的全自动化流程"
-                    type="info"
-                    showIcon
-                    className="mb-6"
-                  />
+      {/* 智能体状态概览 */}
+      <Row gutter={[16, 16]} className="mb-6">
+        <Col span={24}>
+          <Card title="五大智能体协作状态" className="shadow-sm">
+            <Row gutter={[16, 16]}>
+              {[
+                { name: '数据采集智能体', status: '运行中', efficiency: 98, color: '#52c41a' },
+                { name: '模式识别智能体', status: '分析中', efficiency: 95, color: '#1890ff' },
+                { name: '预测建模智能体', status: '待机', efficiency: 92, color: '#faad14' },
+                { name: '异常检测智能体', status: '运行中', efficiency: 97, color: '#722ed1' },
+                { name: '报告生成智能体', status: '待机', efficiency: 94, color: '#eb2f96' }
+              ].map((agent, index) => (
+                <Col span={4.8} key={index}>
+                  <InteractiveCard hoverable className="text-center">
+                    <div className="mb-2">
+                      <RobotOutlined style={{ fontSize: '24px', color: agent.color }} />
+                    </div>
+                    <Text strong className="block mb-1">{agent.name}</Text>
+                    <div>
+                       <StatusTag status={agent.status === '运行中' ? 'processing' : 'pending'} />
+                       <span className="ml-2">{agent.status}</span>
+                     </div>
+                    <div className="mt-2">
+                      <AnimatedStatistic
+                        title="效率"
+                        value={agent.efficiency}
+                        suffix="%"
+                        valueStyle={{ fontSize: '14px', color: agent.color }}
+                      />
+                    </div>
+                  </InteractiveCard>
                 </Col>
-                {intelligentAgents.map((agent, index) => (
-                  <Col xs={24} lg={12} xl={8} key={agent.id}>
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <InteractiveCard effect="lift">
-                        <Card
-                          title={
-                            <Space>
-                              <RobotOutlined className="text-blue-600" />
-                              <span>{agent.name}</span>
-                              <Badge status="success" text="运行中" />
-                            </Space>
-                          }
-                          extra={
-                            <Tag color="green">{agent.efficiency}%</Tag>
-                          }
-                          className="h-full"
-                        >
-                          <div className="mb-4">
-                            <Text type="secondary">{agent.description}</Text>
-                          </div>
-                          <div className="mb-4">
-                            <Text strong>当前任务：</Text>
-                            <div className="mt-2">
-                              {agent.tasks.map((task, taskIndex) => (
-                                <Tag key={taskIndex} color="blue" className="mb-1">
-                                  {task}
-                                </Tag>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="mb-2">
-                            <Text strong>运行效率</Text>
-                          </div>
-                          <AnimatedProgress
-                             percent={agent.efficiency}
-                             status="active"
-                           />
-                        </Card>
-                      </InteractiveCard>
-                    </motion.div>
-                  </Col>
-                ))}
-              </Row>
-            </TabPane>
-            <TabPane tab={<span><DatabaseOutlined />数据源管理</span>} key="datasource">
-              <div className="mb-4">
-                <Row gutter={[16, 16]} align="middle">
-                  <Col flex="auto">
-                    <Space>
-                      <Upload {...uploadProps}>
-                        <EnhancedButton icon={<CloudUploadOutlined />} type="primary" variant="glow">
-                          上传文件
-                        </EnhancedButton>
-                      </Upload>
-                      <EnhancedButton icon={<DatabaseOutlined />} onClick={() => setConfigModalVisible(true)} variant="pulse">
-                        连接数据库
-                      </EnhancedButton>
-                      <EnhancedButton icon={<ApiOutlined />} variant="bounce">
-                        配置API
-                      </EnhancedButton>
-                    </Space>
-                  </Col>
-                  <Col>
-                    <Input.Search
-                      placeholder="搜索数据源"
-                      style={{ width: 200 }}
-                      allowClear
-                    />
-                  </Col>
-                </Row>
-              </div>
-              <Table
-                columns={dataSourceColumns}
-                dataSource={dataSources}
-                rowKey="id"
-                pagination={false}
-                className="border border-gray-200 rounded-lg"
-              />
-            </TabPane>
+              ))}
+            </Row>
+          </Card>
+        </Col>
+      </Row>
 
-            <TabPane tab={<span><BarChartOutlined />智能分析</span>} key="analysis">
-              <Row gutter={[24, 24]}>
-                <Col xs={24} lg={8}>
-                  <Card title="分析配置" className="h-full">
-                    <Form layout="vertical">
-                      <Form.Item label="选择数据源" required>
-                        <Select
-                          placeholder="请选择数据源"
-                          value={selectedDataSource}
-                          onChange={setSelectedDataSource}
-                          className="w-full"
-                        >
-                          {dataSources.filter(ds => ds.status === 'connected').map(ds => (
-                            <Option key={ds.id} value={ds.name}>{ds.name}</Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item label="分析类型" required>
-                        <Select
-                          placeholder="请选择分析类型"
-                          value={analysisType}
-                          onChange={setAnalysisType}
-                          className="w-full"
-                        >
-                          <Option value="trend">趋势分析</Option>
-                          <Option value="behavior">行为分析</Option>
-                          <Option value="prediction">预测分析</Option>
-                          <Option value="correlation">关联分析</Option>
-                          <Option value="clustering">聚类分析</Option>
-                        </Select>
-                      </Form.Item>
-                      <Form.Item label="报告类型" required>
-                        <Select
-                          placeholder="请选择报告类型"
-                          value={reportType}
-                          onChange={setReportType}
-                          className="w-full"
-                        >
-                          <Option value="load_analysis">电网负荷分析报告</Option>
-                          <Option value="equipment_status">设备运行状态报告</Option>
-                          <Option value="energy_efficiency">能效分析报告</Option>
-                          <Option value="fault_prediction">故障预测报告</Option>
-                          <Option value="comprehensive">综合运营报告</Option>
-                        </Select>
-                      </Form.Item>
-                      <Form.Item label="分析描述">
-                        <TextArea
-                          rows={3}
-                          placeholder="描述您希望分析的具体问题或目标..."
-                        />
-                      </Form.Item>
-                      <Form.Item>
+      <Card className="shadow-sm">
+        <Tabs activeKey={activeTab} onChange={setActiveTab}>
+          <TabPane tab={<span><BarChartOutlined />智能分析</span>} key="analysis">
+            <Row gutter={[24, 24]}>
+              <Col span={16}>
+                <Card title="分析配置" className="h-full">
+                  <Form form={form} layout="vertical">
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item label="数据源" name="dataSource">
+                          <Select placeholder="选择数据源">
+                            {dataSources.map(ds => (
+                              <Option key={ds.id} value={ds.id}>{ds.name}</Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="分析类型" name="analysisType">
+                          <Select placeholder="选择分析类型">
+                            <Option value="trend">趋势分析</Option>
+                            <Option value="behavior">行为分析</Option>
+                            <Option value="prediction">预测分析</Option>
+                            <Option value="correlation">关联分析</Option>
+                            <Option value="clustering">聚类分析</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item label="报告类型" name="reportType">
+                          <Select placeholder="选择报告类型">
+                            <Option value="load">电网负荷分析</Option>
+                            <Option value="equipment">设备状态分析</Option>
+                            <Option value="efficiency">能效分析</Option>
+                            <Option value="safety">安全风险评估</Option>
+                            <Option value="optimization">优化建议</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="分析描述" name="description">
+                          <TextArea rows={3} placeholder="描述分析目标和要求..." />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={24}>
+                        <Form.Item label="报告模板" name="template">
+                          <Select
+                            placeholder="选择报告模板（可选）"
+                            allowClear
+                            onChange={(value) => setSelectedTemplate(value)}
+                          >
+                            <Option value="comprehensive">📊 综合分析报告</Option>
+                            <Option value="load-analysis">⚡ 负荷分析专项报告</Option>
+                            <Option value="equipment-health">🔧 设备健康评估报告</Option>
+                            <Option value="energy-efficiency">💡 能效优化报告</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Form.Item>
+                      <Space className="w-full" direction="vertical">
                         <EnhancedButton
                           type="primary"
-                          icon={<PlayCircleOutlined />}
-                          onClick={handleStartAnalysis}
-                          loading={isAnalyzing}
                           size="large"
+                          icon={<PlayCircleOutlined />}
+                          loading={analysisRunning}
+                          onClick={handleStartAnalysis}
                           variant="gradient"
                         >
-                          {isAnalyzing ? '分析中...' : '开始分析'}
+                          {analysisRunning ? '分析中...' : '开始分析'}
                         </EnhancedButton>
-                      </Form.Item>
-                    </Form>
-                  </Card>
-                </Col>
-                <Col xs={24} lg={16}>
-                  <Card title="分析任务" className="h-full">
-                    <Table
-                      columns={taskColumns}
-                      dataSource={analysisTasks}
-                      rowKey="id"
-                      pagination={false}
-                      size="small"
-                    />
-                  </Card>
-                </Col>
-              </Row>
-            </TabPane>
+                        <EnhancedButton
+                          size="large"
+                          icon={<FileTextOutlined />}
+                          onClick={() => navigate('/templates')}
+                          variant="bounce"
+                        >
+                          浏览更多模板
+                        </EnhancedButton>
+                      </Space>
+                    </Form.Item>
+                  </Form>
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card title="分析任务" className="h-full">
+                  <Table
+                    dataSource={analysisTasks}
+                    columns={taskColumns.slice(0, 4)}
+                    pagination={false}
+                    size="small"
+                    rowKey="id"
+                  />
+                </Card>
+              </Col>
+            </Row>
+          </TabPane>
 
-            <TabPane tab={<span><BulbOutlined />分析结果</span>} key="results">
-              <Row gutter={[24, 24]}>
-                <Col xs={24} lg={16}>
-                  <Card title="电网负荷趋势分析结果" extra={<Button icon={<DownloadOutlined />}>导出报告</Button>}>
-                    <Alert
-                      message="分析完成"
-                      description="基于125,420条电网运行数据，AI识别出12个关键洞察，包括负荷峰谷特征、区域用电模式等。"
-                      type="success"
-                      showIcon
-                      className="mb-4"
-                    />
+          <TabPane tab={<span><BulbOutlined />分析结果</span>} key="results">
+            {showResults && analysisCompleted ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                {/* 五大智能体协作完成展示 */}
+                <Card className="mb-6 bg-gradient-to-r from-blue-50 to-green-50 border-0">
+                  <div className="text-center py-6">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.3, type: "spring" }}
+                      className="text-6xl mb-4"
+                    >
+                      🎉
+                    </motion.div>
+                    <Title level={2} className="text-green-600 mb-2">智能分析完成！</Title>
+                    <Paragraph className="text-lg text-gray-600 mb-4">
+                      五大智能体已成功协作完成山西电网数据分析，生成专业报告
+                    </Paragraph>
                     
-                    <div className="mb-4">
-                      <Title level={4}>关键洞察</Title>
-                      <Row gutter={[16, 16]}>
-                        <Col xs={24} sm={12}>
-                          <motion.div whileHover={{ scale: 1.02 }}>
-                            <Card size="small" className="bg-blue-50 border-blue-200">
-                              <div className="flex items-center">
-                                <LineChartOutlined className="text-2xl text-blue-600 mr-3" />
-                                <div>
-                                  <Text strong>负荷增长趋势</Text>
-                                  <br />
-                                  <Text type="secondary">冬季用电负荷同比增长15.2%</Text>
-                                </div>
-                              </div>
+                    {/* 智能体协作展示 */}
+                    <Row gutter={[16, 16]} className="mb-6">
+                      {[
+                        { name: '数据采集智能体', efficiency: 98.5, status: '✅ 完成' },
+                        { name: '模式识别智能体', efficiency: 96.2, status: '✅ 完成' },
+                        { name: '预测建模智能体', efficiency: 94.8, status: '✅ 完成' },
+                        { name: '异常检测智能体', efficiency: 97.3, status: '✅ 完成' },
+                        { name: '报告生成智能体', efficiency: 95.7, status: '✅ 完成' }
+                      ].map((agent, index) => (
+                        <Col span={4.8} key={index}>
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 * index }}
+                          >
+                            <Card className="text-center bg-white shadow-sm hover:shadow-md transition-shadow">
+                              <RobotOutlined className="text-2xl text-blue-500 mb-2" />
+                              <Text strong className="block text-sm mb-1">{agent.name}</Text>
+                              <div className="text-green-600 text-xs mb-2">{agent.status}</div>
+                              <Progress 
+                                type="circle" 
+                                size={40} 
+                                percent={agent.efficiency} 
+                                format={percent => `${percent}%`}
+                                strokeColor="#52c41a"
+                              />
                             </Card>
                           </motion.div>
                         </Col>
-                        <Col xs={24} sm={12}>
-                          <motion.div whileHover={{ scale: 1.02 }}>
-                            <Card size="small" className="bg-green-50 border-green-200">
-                              <div className="flex items-center">
-                                <PieChartOutlined className="text-2xl text-green-600 mr-3" />
-                                <div>
-                                  <Text strong>供电结构优化</Text>
-                                  <br />
-                                  <Text type="secondary">清洁能源占比提升12%</Text>
-                                </div>
-                              </div>
-                            </Card>
-                          </motion.div>
-                        </Col>
-                      </Row>
-                    </div>
+                      ))}
+                    </Row>
 
-                    <Divider />
-                    
-                    <Title level={4}>数据详情</Title>
-                    <Table
-                      columns={previewColumns}
-                      dataSource={sampleData}
-                      pagination={false}
-                      size="small"
-                      className="border border-gray-200 rounded-lg"
-                    />
-                  </Card>
-                </Col>
-                <Col xs={24} lg={8}>
-                  <Space direction="vertical" size="middle" className="w-full">
-                    <Card title="AI建议" size="small">
-                      <Space direction="vertical" size="small" className="w-full">
+                    {/* 操作按钮 */}
+                    <Space size="large">
+                      <EnhancedButton
+                        type="primary"
+                        size="large"
+                        icon={<EditOutlined />}
+                        onClick={handleEditReport}
+                        variant="gradient"
+                      >
+                        立即编辑报告
+                      </EnhancedButton>
+                      <EnhancedButton
+                          size="large"
+                          icon={<FileTextOutlined />}
+                          onClick={() => setTemplateModalVisible(true)}
+                          variant="glow"
+                        >
+                          选择模板
+                        </EnhancedButton>
+                       <EnhancedButton
+                          size="large"
+                          icon={<EyeOutlined />}
+                          onClick={() => navigate('/reports')}
+                          variant="pulse"
+                        >
+                          查看报告
+                        </EnhancedButton>
+                       <EnhancedButton
+                          size="large"
+                          icon={<DownloadOutlined />}
+                          onClick={handleDownloadReport}
+                          variant="glow"
+                        >
+                          下载报告
+                        </EnhancedButton>
+                    </Space>
+                  </div>
+                </Card>
+
+                {/* 分析完成提示 */}
+                <Alert
+                  message="分析完成"
+                  description="基于 125,420 条电网数据，智能体协作识别出 12 个关键洞察，生成专业分析报告"
+                  type="success"
+                  showIcon
+                  className="mb-6"
+                />
+
+                {/* 关键洞察 */}
+                <Row gutter={[16, 16]} className="mb-6">
+                  <Col span={12}>
+                    <motion.div whileHover={{ scale: 1.02 }}>
+                      <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+                        <Statistic
+                          title="负荷增长趋势"
+                          value={15.2}
+                          suffix="%"
+                          valueStyle={{ color: '#1890ff' }}
+                          prefix={<LineChartOutlined />}
+                        />
+                        <Text className="text-gray-600">相比去年同期显著上升</Text>
+                      </Card>
+                    </motion.div>
+                  </Col>
+                  <Col span={12}>
+                    <motion.div whileHover={{ scale: 1.02 }}>
+                      <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
+                        <Statistic
+                          title="清洁能源占比提升"
+                          value={12.8}
+                          suffix="%"
+                          valueStyle={{ color: '#52c41a' }}
+                          prefix={<PieChartOutlined />}
+                        />
+                        <Text className="text-gray-600">新能源接入持续增长</Text>
+                      </Card>
+                    </motion.div>
+                  </Col>
+                </Row>
+
+                {/* 数据详情 */}
+                <Row gutter={[16, 16]} className="mb-6">
+                  <Col span={16}>
+                    <Card title="详细数据分析">
+                      <Table
+                        dataSource={[
+                          { key: '1', region: '太原', load: '2,450 MW', growth: '+8.5%', status: '正常' },
+                          { key: '2', region: '大同', load: '1,890 MW', growth: '+12.3%', status: '偏高' },
+                          { key: '3', region: '临汾', load: '1,650 MW', growth: '+6.7%', status: '正常' }
+                        ]}
+                        columns={[
+                          { title: '地区', dataIndex: 'region', key: 'region' },
+                          { title: '当前负荷', dataIndex: 'load', key: 'load' },
+                          { title: '增长率', dataIndex: 'growth', key: 'growth' },
+                          { title: '状态', dataIndex: 'status', key: 'status',
+                            render: (status: string) => (
+                              <Tag color={status === '正常' ? 'green' : 'orange'}>{status}</Tag>
+                            )
+                          }
+                        ]}
+                        pagination={false}
+                        size="small"
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={8}>
+                    <Card title="AI 建议">
+                      <Space direction="vertical" className="w-full">
                         <Alert
-                          message="重点关注太原供电区负荷管理"
-                          description="建议优化调度策略，预计可降低5%峰值负荷"
+                          message="太原地区负荷优化"
+                          description="建议在峰值时段启动备用电源"
                           type="info"
                           showIcon
-                          className="text-sm"
+                          className="mb-2"
                         />
                         <Alert
-                          message="加强临汾供电区设备维护"
-                          description="当前增长率22.1%，建议提前扩容"
+                          message="临汾设备维护"
+                          description="检测到异常波动，建议安排检修"
                           type="warning"
                           showIcon
-                          className="text-sm"
                         />
                       </Space>
                     </Card>
-                    
-                    <Card title="分析统计" size="small">
-                      <Space direction="vertical" size="small" className="w-full">
-                        <div className="flex justify-between">
-                          <Text>数据准确度</Text>
-                          <Text strong>98.5%</Text>
-                        </div>
-                        <Progress percent={98.5} size="small" />
-                        <div className="flex justify-between">
-                          <Text>置信度</Text>
-                          <Text strong>95.2%</Text>
-                        </div>
-                        <Progress percent={95.2} size="small" />
-                        <div className="flex justify-between">
-                          <Text>处理时间</Text>
+                  </Col>
+                </Row>
+
+                {/* 快速操作面板 */}
+                <Row gutter={[16, 16]} className="mb-6">
+                  <Col span={24}>
+                    <Card title="🚀 快速操作" className="shadow-sm">
+                      <Row gutter={[16, 16]}>
+                        <Col span={6}>
+                          <EnhancedButton
+                            icon={<FileTextOutlined />}
+                            onClick={() => navigate('/templates')}
+                            variant="bounce"
+                            className="w-full h-16"
+                          >
+                            <div className="text-center">
+                              <div>模板中心</div>
+                              <Text type="secondary" className="text-xs">选择专业模板</Text>
+                            </div>
+                          </EnhancedButton>
+                        </Col>
+                        <Col span={6}>
+                          <EnhancedButton
+                            icon={<EditOutlined />}
+                            onClick={() => navigate('/report-editor')}
+                            variant="gradient"
+                            className="w-full h-16"
+                          >
+                            <div className="text-center">
+                              <div>报告编辑</div>
+                              <Text type="secondary" className="text-xs">创建新报告</Text>
+                            </div>
+                          </EnhancedButton>
+                        </Col>
+                        <Col span={6}>
+                          <EnhancedButton
+                            icon={<EyeOutlined />}
+                            onClick={() => navigate('/reports')}
+                            variant="pulse"
+                            className="w-full h-16"
+                          >
+                            <div className="text-center">
+                              <div>报告管理</div>
+                              <Text type="secondary" className="text-xs">查看所有报告</Text>
+                            </div>
+                          </EnhancedButton>
+                        </Col>
+                        <Col span={6}>
+                          <EnhancedButton
+                            icon={<RobotOutlined />}
+                            onClick={() => navigate('/agent-monitor')}
+                            variant="glow"
+                            className="w-full h-16"
+                          >
+                            <div className="text-center">
+                              <div>智能体监控</div>
+                              <Text type="secondary" className="text-xs">实时状态监控</Text>
+                            </div>
+                          </EnhancedButton>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                </Row>
+
+                {/* 分析统计 */}
+                <Row gutter={[16, 16]}>
+                  <Col span={24}>
+                    <Card title="分析统计信息">
+                      <Space size="large">
+                        <Card className="text-center">
+                          <Statistic title="数据准确度" value={98.5} suffix="%" />
+                          <Progress percent={98.5} size="small" className="mt-2" />
+                        </Card>
+                        <Card className="text-center">
+                          <Statistic title="置信度" value={95.2} suffix="%" />
+                          <Progress percent={95.2} size="small" className="mt-2" />
+                        </Card>
+                        <Card className="text-center">
+                          <div className="mb-2">
+                            <Text strong>处理时间</Text>
+                          </div>
                           <Text strong>5分钟</Text>
-                        </div>
+                        </Card>
                       </Space>
                     </Card>
-                  </Space>
-                </Col>
-              </Row>
-            </TabPane>
-          </Tabs>
-        </Card>
+                  </Col>
+                </Row>
+              </motion.div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">📊</div>
+                <Title level={3} className="text-gray-500 mb-2">暂无分析结果</Title>
+                <Paragraph className="text-gray-400 mb-4">
+                  请先在智能分析页面启动分析任务
+                </Paragraph>
+                <EnhancedButton 
+                  type="primary" 
+                  onClick={() => setActiveTab('analysis')}
+                  variant="gradient"
+                >
+                  开始分析
+                </EnhancedButton>
+              </div>
+            )}
+          </TabPane>
 
-        {/* Data Source Config Modal */}
-        <Modal
-          title="数据库连接配置"
-          open={configModalVisible}
-          onCancel={() => setConfigModalVisible(false)}
-          footer={[
-            <Button key="cancel" onClick={() => setConfigModalVisible(false)}>
-              取消
-            </Button>,
-            <Button key="test" type="default">
-              测试连接
-            </Button>,
-            <Button key="submit" type="primary">
-              保存配置
-            </Button>
-          ]}
-        >
-          <Form form={form} layout="vertical">
-            <Form.Item label="数据库类型" name="dbType" rules={[{ required: true }]}>
-              <Select placeholder="请选择数据库类型">
-                <Option value="mysql">MySQL</Option>
-                <Option value="postgresql">PostgreSQL</Option>
-                <Option value="oracle">Oracle</Option>
-                <Option value="sqlserver">SQL Server</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="主机地址" name="host" rules={[{ required: true }]}>
-              <Input placeholder="localhost" />
-            </Form.Item>
-            <Form.Item label="端口" name="port" rules={[{ required: true }]}>
-              <Input placeholder="3306" />
-            </Form.Item>
-            <Form.Item label="数据库名" name="database" rules={[{ required: true }]}>
-              <Input placeholder="database_name" />
-            </Form.Item>
-            <Form.Item label="用户名" name="username" rules={[{ required: true }]}>
-              <Input placeholder="username" />
-            </Form.Item>
-            <Form.Item label="密码" name="password" rules={[{ required: true }]}>
-              <Input.Password placeholder="password" />
-            </Form.Item>
-          </Form>
-        </Modal>
-
-        {/* Data Preview Modal */}
-        <Modal
-          title="数据预览"
-          open={previewModalVisible}
-          onCancel={() => setPreviewModalVisible(false)}
-          width={800}
-          footer={[
-            <Button key="close" onClick={() => setPreviewModalVisible(false)}>
-              关闭
-            </Button>
-          ]}
-        >
-          <Table
-              columns={previewColumns}
-              dataSource={sampleData}
-              pagination={{ pageSize: 5 }}
-              size="small"
+          <TabPane tab={<span><DatabaseOutlined />数据源管理</span>} key="datasource">
+            <Row gutter={[16, 16]} className="mb-4">
+              <Col span={24}>
+                <Space>
+                  <EnhancedButton type="primary" icon={<DatabaseOutlined />}>
+                    添加数据库
+                  </EnhancedButton>
+                  <Upload {...uploadProps}>
+                    <EnhancedButton icon={<UploadOutlined />}>
+                      上传文件
+                    </EnhancedButton>
+                  </Upload>
+                  <EnhancedButton icon={<ApiOutlined />}>
+                    配置API
+                  </EnhancedButton>
+                </Space>
+              </Col>
+            </Row>
+            <Table
+              dataSource={dataSources}
+              columns={dataSourceColumns}
+              rowKey="id"
+              pagination={{ pageSize: 10 }}
             />
-          </Modal>
+          </TabPane>
+        </Tabs>
+      </Card>
 
-          {/* Agent Progress Modal */}
-          <AgentProgressModal
-            visible={showAgentModal}
-            onComplete={handleAgentComplete}
-            onClose={() => setShowAgentModal(false)}
-          />
-        </motion.div>
-      </div>
+      {/* Data Source Config Modal */}
+      <Modal
+        title="数据库连接配置"
+        open={configModalVisible}
+        onCancel={() => setConfigModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setConfigModalVisible(false)}>
+            取消
+          </Button>,
+          <Button key="test" type="default">
+            测试连接
+          </Button>,
+          <Button key="save" type="primary">
+            保存配置
+          </Button>
+        ]}
+      >
+        <Form layout="vertical">
+          <Form.Item label="数据库类型">
+            <Select defaultValue="mysql">
+              <Option value="mysql">MySQL</Option>
+              <Option value="postgresql">PostgreSQL</Option>
+              <Option value="oracle">Oracle</Option>
+              <Option value="sqlserver">SQL Server</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="服务器地址">
+            <Input placeholder="localhost" />
+          </Form.Item>
+          <Form.Item label="端口">
+            <Input placeholder="3306" />
+          </Form.Item>
+          <Form.Item label="数据库名">
+            <Input placeholder="database_name" />
+          </Form.Item>
+          <Form.Item label="用户名">
+            <Input placeholder="username" />
+          </Form.Item>
+          <Form.Item label="密码">
+            <Input.Password placeholder="password" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Data Preview Modal */}
+      <Modal
+        title={`数据预览 - ${selectedDataSource?.name}`}
+        open={previewModalVisible}
+        onCancel={() => setPreviewModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="close" onClick={() => setPreviewModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
+      >
+        <Table
+          dataSource={[
+            { key: '1', timestamp: '2024-01-15 14:30:00', load: '2450.5', voltage: '220.1', current: '11.2' },
+            { key: '2', timestamp: '2024-01-15 14:31:00', load: '2455.2', voltage: '219.8', current: '11.3' },
+            { key: '3', timestamp: '2024-01-15 14:32:00', load: '2448.9', voltage: '220.3', current: '11.1' }
+          ]}
+          columns={[
+            { title: '时间戳', dataIndex: 'timestamp', key: 'timestamp' },
+            { title: '负荷(MW)', dataIndex: 'load', key: 'load' },
+            { title: '电压(kV)', dataIndex: 'voltage', key: 'voltage' },
+            { title: '电流(A)', dataIndex: 'current', key: 'current' }
+          ]}
+          pagination={{ pageSize: 5 }}
+          size="small"
+        />
+      </Modal>
+
+      {/* Template Selection Modal */}
+      <Modal
+        title="选择报告模板"
+        open={templateModalVisible}
+        onCancel={() => setTemplateModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="cancel" onClick={() => setTemplateModalVisible(false)}>
+            取消
+          </Button>
+        ]}
+      >
+        <Row gutter={[16, 16]}>
+          {[
+            {
+              id: 'comprehensive',
+              name: '综合分析报告',
+              description: '包含负荷分析、设备状态、能效评估等全面内容',
+              preview: '📊 数据概览 + 📈 趋势分析 + 🔧 设备状态 + 💡 优化建议'
+            },
+            {
+              id: 'load-analysis',
+              name: '负荷分析专项报告',
+              description: '专注于电网负荷变化趋势和峰谷分析',
+              preview: '⚡ 负荷趋势 + 📊 峰谷分析 + 🎯 预测模型'
+            },
+            {
+              id: 'equipment-health',
+              name: '设备健康评估报告',
+              description: '设备运行状态监测和故障预警分析',
+              preview: '🔧 设备状态 + ⚠️ 故障预警 + 🛠️ 维护建议'
+            },
+            {
+              id: 'energy-efficiency',
+              name: '能效优化报告',
+              description: '能源利用效率分析和优化方案',
+              preview: '💡 能效分析 + 🌱 清洁能源 + 📈 优化方案'
+            }
+          ].map((template) => (
+            <Col span={12} key={template.id}>
+              <Card
+                hoverable
+                className={`cursor-pointer transition-all ${
+                  selectedTemplate === template.id ? 'border-blue-500 shadow-lg' : ''
+                }`}
+                onClick={() => handleTemplateSelect(template.id)}
+              >
+                <div className="mb-3">
+                  <Text strong className="text-lg">{template.name}</Text>
+                </div>
+                <Paragraph className="text-gray-600 mb-3">
+                  {template.description}
+                </Paragraph>
+                <div className="bg-gray-50 p-3 rounded text-sm">
+                  <Text type="secondary">预览：{template.preview}</Text>
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Modal>
+    </div>
   );
 };
 

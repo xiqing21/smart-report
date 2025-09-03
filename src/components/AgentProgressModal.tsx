@@ -114,8 +114,8 @@ const AgentProgressModal: React.FC<AgentProgressModalProps> = ({ visible, onClos
     }
   ];
 
-  // 随机生成处理时间（2-8秒）
-  const getRandomDuration = () => Math.floor(Math.random() * 6000) + 2000;
+  // 随机生成处理时间（8-15秒）
+  const getRandomDuration = () => Math.floor(Math.random() * 7000) + 8000;
 
   // 开始处理
   const startProcessing = () => {
@@ -124,17 +124,17 @@ const AgentProgressModal: React.FC<AgentProgressModalProps> = ({ visible, onClos
     setAgentProgress({});
     setCompletedAgents([]);
 
-    // 并行启动所有智能体
+    // 串行启动智能体，增加真实感
     agents.forEach((agent, index) => {
       const duration = getRandomDuration();
-      const startDelay = index * 500; // 错开启动时间
+      const startDelay = index * 1500; // 增加错开时间
 
       setTimeout(() => {
-        // 开始进度动画
+        // 开始进度动画，更慢更真实
         const progressInterval = setInterval(() => {
           setAgentProgress(prev => {
             const currentProgress = prev[agent.id] || 0;
-            const increment = Math.random() * 8 + 2; // 2-10的随机增量
+            const increment = Math.random() * 3 + 1; // 1-4的随机增量，更慢
             const newProgress = Math.min(currentProgress + increment, 100);
             
             if (newProgress >= 100) {
@@ -150,7 +150,7 @@ const AgentProgressModal: React.FC<AgentProgressModalProps> = ({ visible, onClos
             
             return { ...prev, [agent.id]: newProgress };
           });
-        }, 150); // 固定150ms间隔，更流畅
+        }, 300); // 增加到300ms间隔，更慢更真实
       }, startDelay);
     });
   };
@@ -180,6 +180,15 @@ const AgentProgressModal: React.FC<AgentProgressModalProps> = ({ visible, onClos
   const handleComplete = () => {
     onComplete();
     onClose();
+  };
+
+  // 获取当前任务描述
+  const getCurrentTask = (agent: Agent, progress: number) => {
+    const taskIndex = Math.floor((progress / 100) * agent.tasks.length);
+    if (taskIndex >= agent.tasks.length) {
+      return '✅ 处理完成';
+    }
+    return `🔄 ${agent.tasks[taskIndex]}`;
   };
 
   return (
@@ -286,12 +295,31 @@ const AgentProgressModal: React.FC<AgentProgressModalProps> = ({ visible, onClos
                               
                               {isActive && (
                                 <motion.div
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
+                                  initial={{ opacity: 0, y: 5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.3 }}
                                   style={{ fontSize: '11px', color: '#666' }}
                                 >
-                                  {isCompleted ? '✅ 处理完成' : 
-                                    agent.tasks[Math.floor((progress / 100) * agent.tasks.length)] || '准备中...'}
+                                  {isCompleted ? '✅ 处理完成' : getCurrentTask(agent, progress)}
+                                </motion.div>
+                              )}
+                              
+                              {/* 添加处理详情 */}
+                              {isActive && !isCompleted && (
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 0.5 }}
+                                  style={{ 
+                                    fontSize: '10px', 
+                                    color: '#999', 
+                                    marginTop: '4px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between'
+                                  }}
+                                >
+                                  <span>进度: {Math.round(progress)}%</span>
+                                  <span>耗时: {Math.floor(progress * 0.15)}s</span>
                                 </motion.div>
                               )}
                             </div>
