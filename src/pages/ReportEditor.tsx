@@ -50,7 +50,7 @@ import {
   CommentOutlined,
   HistoryOutlined
 } from '@ant-design/icons';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -71,12 +71,60 @@ interface EditorState {
 
 const ReportEditor: React.FC = () => {
   const { id } = useParams();
+  const location = useLocation();
+  
+  // 获取从AI分析传递过来的数据
+  const analysisData = location.state?.analysisData;
+  
+  // 生成AI分析报告内容
+  const generateAIReportContent = () => {
+    if (analysisData && analysisData.type === 'ai-analysis') {
+      const { data } = analysisData;
+      return `# 山西电网智能分析报告
+
+## 执行摘要
+本报告基于AI智能分析系统对山西电网数据进行深度分析，涵盖负荷增长、清洁能源占比及区域分布等关键指标。
+
+## 关键发现
+
+### 1. 负荷增长分析
+- **总体增长率**: ${data.loadGrowth}%
+- **增长趋势**: 呈现稳定上升态势，符合区域经济发展预期
+
+### 2. 清洁能源发展
+- **清洁能源占比**: ${data.cleanEnergyRatio}%
+- **发展潜力**: 具备进一步提升空间，建议加大投入
+
+### 3. 区域负荷分布
+${data.regions.map(region => 
+  `- **${region.name}**: 负荷 ${region.load}，增长率 ${region.growth}`
+).join('\n')}
+
+## 趋势预测
+基于历史数据和AI模型分析，预计未来12个月内：
+1. 电网负荷将继续保持稳定增长
+2. 清洁能源占比有望提升至15%以上
+3. 各区域发展将更加均衡
+
+## 建议与措施
+1. **优化电网结构**: 重点关注高增长区域的电网建设
+2. **推进清洁能源**: 加大风电、光伏等清洁能源项目投入
+3. **智能化升级**: 持续完善智能电网监控和预警系统
+
+## 结论
+通过AI智能分析，山西电网整体运行状况良好，各项指标符合预期。建议继续加强智能化建设，提升电网运行效率和可靠性。
+
+---
+*本报告由AI智能分析系统自动生成，数据截止时间：${new Date().toLocaleDateString()}*`;
+    }
+    return id ? '这是一个示例报告内容。您可以在这里编辑您的报告内容，支持富文本编辑功能。\n\n本报告包含以下几个部分：\n1. 数据分析概述\n2. 关键指标解读\n3. 趋势预测\n4. 建议与总结\n\n请根据您的需要进行编辑和调整。' : '';
+  };
 
   const editorRef = useRef<HTMLDivElement>(null);
   
   const [editorState, setEditorState] = useState<EditorState>({
-    title: id ? '智能报告分析 - 2024年度总结' : '新建报告',
-    content: id ? '这是一个示例报告内容。您可以在这里编辑您的报告内容，支持富文本编辑功能。\n\n本报告包含以下几个部分：\n1. 数据分析概述\n2. 关键指标解读\n3. 趋势预测\n4. 建议与总结\n\n请根据您的需要进行编辑和调整。' : '',
+    title: analysisData ? '山西电网智能分析报告' : (id ? '智能报告分析 - 2024年度总结' : '新建报告'),
+    content: generateAIReportContent(),
     fontSize: 14,
     fontFamily: 'Microsoft YaHei',
     textColor: '#333333',

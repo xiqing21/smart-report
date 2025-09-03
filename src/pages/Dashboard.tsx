@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Row, Col, Button, Progress, List, Statistic, Badge } from 'antd'
+import { Card, Row, Col, Button, Progress, List, Statistic, Badge, Dropdown, Menu } from 'antd'
 import {
   PlusOutlined,
   FileTextOutlined,
@@ -14,7 +14,10 @@ import {
   MonitorOutlined,
   RocketOutlined,
   SettingOutlined,
-  ThunderboltOutlined
+  ThunderboltOutlined,
+  DownOutlined,
+  FileAddOutlined,
+  DatabaseOutlined
 } from '@ant-design/icons'
 import { AnimatedStatistic, AnimatedList, AnimatedAvatar } from '../components/AdvancedAnimations'
 import { InteractiveCard, StatusTag } from '../components/InteractiveEnhancements'
@@ -121,7 +124,7 @@ const Dashboard: React.FC = () => {
       description: '智能数据分析和洞察',
       icon: <BarChartOutlined />,
       color: '#fa8c16',
-      action: () => navigate('/ai-analysis')
+      action: () => navigate('/analysis')
     },
     {
       title: '智能体监控',
@@ -136,7 +139,37 @@ const Dashboard: React.FC = () => {
     // 报告生成完成后的处理逻辑
     console.log('报告生成完成，跳转到AI分析中心查看结果')
     // 跳转到AI分析中心页面，并传递完成状态
-    navigate('/ai-analysis', { state: { analysisCompleted: true, showResults: true } })
+    navigate('/analysis', { state: { analysisCompleted: true, showResults: true } })
+  }
+
+  // 快速创建报告菜单
+  const quickCreateMenu = {
+    items: [
+      {
+        key: 'ai-analysis',
+        label: 'AI智能分析报告',
+        icon: <BarChartOutlined />,
+        onClick: () => navigate('/analysis')
+      },
+      {
+        key: 'template-report',
+        label: '基于模板创建',
+        icon: <FileTextOutlined />,
+        onClick: () => navigate('/templates')
+      },
+      {
+        key: 'blank-report',
+        label: '空白报告编辑',
+        icon: <FileAddOutlined />,
+        onClick: () => navigate('/editor')
+      },
+      {
+        key: 'data-import',
+        label: '数据导入分析',
+        icon: <DatabaseOutlined />,
+        onClick: () => navigate('/analysis?tab=data-import')
+      }
+    ]
   }
 
   return (
@@ -183,19 +216,20 @@ const Dashboard: React.FC = () => {
             <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>五大智能体已就绪，让我们一起创造专业的山西电网分析报告吧</p>
             
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-              <Button 
-                size="large" 
-                type="primary" 
-                icon={<RocketOutlined />}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                  backdropFilter: 'blur(4px)'
-                }}
-                onClick={() => setAgentModalVisible(true)}
-              >
-                快速创建报告
-              </Button>
+              <Dropdown menu={quickCreateMenu} trigger={['click']} placement="bottomLeft">
+                <Button 
+                  size="large" 
+                  type="primary" 
+                  icon={<RocketOutlined />}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    backdropFilter: 'blur(4px)'
+                  }}
+                >
+                  快速创建报告 <DownOutlined />
+                </Button>
+              </Dropdown>
               <Button 
                 size="large" 
                 icon={<FileTextOutlined />}
@@ -216,7 +250,7 @@ const Dashboard: React.FC = () => {
                   borderColor: 'rgba(255, 255, 255, 0.5)',
                   color: 'white'
                 }}
-                onClick={() => navigate('/ai-analysis')}
+                onClick={() => navigate('/analysis')}
               >
                 AI分析中心
               </Button>

@@ -61,6 +61,8 @@ interface DataSource {
   size?: string;
   lastUpdated: string;
   records?: number;
+  fileExtension?: string;
+  fileName?: string;
 }
 
 interface AnalysisTask {
@@ -100,25 +102,40 @@ const AIAnalysis: React.FC = () => {
   const [dataSources] = useState<DataSource[]>([
     {
       id: '1',
-      name: '山西电网负荷数据',
+      name: '山西电网负荷数据.db',
       type: 'database',
       status: 'connected',
       size: '2.5GB',
       lastUpdated: '2024-01-15 14:30',
-      records: 125420
+      records: 125420,
+      fileExtension: 'db',
+      fileName: '山西电网负荷数据'
     },
     {
       id: '2', 
-      name: '设备运行状态数据',
+      name: '设备运行状态数据.xlsx',
       type: 'file',
       status: 'connected',
       size: '1.2GB',
       lastUpdated: '2024-01-15 12:15',
-      records: 89650
+      records: 89650,
+      fileExtension: 'xlsx',
+      fileName: '设备运行状态数据'
     },
     {
       id: '3',
-      name: '能耗监测API',
+      name: '能耗监测数据.csv',
+      type: 'file',
+      status: 'connected',
+      size: '856MB',
+      lastUpdated: '2024-01-15 10:20',
+      records: 67890,
+      fileExtension: 'csv',
+      fileName: '能耗监测数据'
+    },
+    {
+      id: '4',
+      name: '实时监控API',
       type: 'api',
       status: 'disconnected',
       lastUpdated: '2024-01-14 18:45'
@@ -129,7 +146,7 @@ const AIAnalysis: React.FC = () => {
     {
       id: '1',
       name: '电网负荷趋势分析',
-      dataSource: '山西电网负荷数据',
+      dataSource: '山西电网负荷数据.db',
       analysisType: '趋势分析',
       status: 'completed',
       progress: 100,
@@ -140,11 +157,20 @@ const AIAnalysis: React.FC = () => {
     {
       id: '2',
       name: '设备故障预测',
-      dataSource: '设备运行状态数据', 
+      dataSource: '设备运行状态数据.xlsx', 
       analysisType: '预测分析',
       status: 'running',
       progress: 65,
       startTime: '2024-01-15 14:20'
+    },
+    {
+      id: '3',
+      name: '能耗数据分析',
+      dataSource: '能耗监测数据.csv',
+      analysisType: '统计分析',
+      status: 'pending',
+      progress: 0,
+      startTime: '2024-01-15 15:30'
     }
   ]);
 
@@ -155,12 +181,25 @@ const AIAnalysis: React.FC = () => {
     // 模拟分析过程
     setTimeout(() => {
       setAnalysisRunning(false);
-      message.success('分析完成！');
+      message.success('分析完成！正在跳转到结果页面...');
+      
+      // 自动跳转到分析结果页面
+      setTimeout(() => {
+        setActiveTab('results');
+        // 更新路由状态以显示分析完成
+        navigate('/analysis', {
+          state: {
+            analysisCompleted: true,
+            showResults: true
+          },
+          replace: true
+        });
+      }, 1000);
     }, 3000);
   };
 
   const handleEditReport = () => {
-    navigate('/report-editor', {
+    navigate('/editor', {
       state: {
         analysisData: {
           type: 'ai-analysis',
@@ -227,14 +266,38 @@ const AIAnalysis: React.FC = () => {
       title: '数据源名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: DataSource) => (
-        <Space>
-          {record.type === 'database' && <DatabaseOutlined />}
-          {record.type === 'file' && <FileTextOutlined />}
-          {record.type === 'api' && <ApiOutlined />}
-          <Text strong>{text}</Text>
-        </Space>
-      )
+      render: (text: string, record: DataSource) => {
+        const getFileIcon = (extension?: string) => {
+          switch (extension) {
+            case 'xlsx':
+            case 'xls':
+              return <TableOutlined style={{ color: '#52c41a' }} />;
+            case 'csv':
+              return <FileTextOutlined style={{ color: '#1890ff' }} />;
+            case 'db':
+            case 'sql':
+              return <DatabaseOutlined style={{ color: '#722ed1' }} />;
+            default:
+              return <FileTextOutlined />;
+          }
+        };
+
+        return (
+          <Space>
+            {record.type === 'database' && <DatabaseOutlined />}
+            {record.type === 'file' && getFileIcon(record.fileExtension)}
+            {record.type === 'api' && <ApiOutlined />}
+            <div>
+              <Text strong>{record.fileName || text}</Text>
+              {record.fileExtension && (
+                <Tag color="blue" className="ml-2">
+                  .{record.fileExtension}
+                </Tag>
+              )}
+            </div>
+          </Space>
+        );
+      }
     },
     {
       title: '类型',
@@ -396,40 +459,214 @@ const AIAnalysis: React.FC = () => {
         </Paragraph>
       </div>
 
-      {/* 智能体状态概览 */}
+      {/* 智能体协作动画展示 */}
       <Row gutter={[16, 16]} className="mb-6">
         <Col span={24}>
           <Card title="五大智能体协作状态" className="shadow-sm">
-            <Row gutter={[16, 16]}>
-              {[
-                { name: '数据采集智能体', status: '运行中', efficiency: 98, color: '#52c41a' },
-                { name: '模式识别智能体', status: '分析中', efficiency: 95, color: '#1890ff' },
-                { name: '预测建模智能体', status: '待机', efficiency: 92, color: '#faad14' },
-                { name: '异常检测智能体', status: '运行中', efficiency: 97, color: '#722ed1' },
-                { name: '报告生成智能体', status: '待机', efficiency: 94, color: '#eb2f96' }
-              ].map((agent, index) => (
-                <Col span={4.8} key={index}>
-                  <InteractiveCard hoverable className="text-center">
-                    <div className="mb-2">
-                      <RobotOutlined style={{ fontSize: '24px', color: agent.color }} />
-                    </div>
-                    <Text strong className="block mb-1">{agent.name}</Text>
-                    <div>
-                       <StatusTag status={agent.status === '运行中' ? 'processing' : 'pending'} />
-                       <span className="ml-2">{agent.status}</span>
-                     </div>
-                    <div className="mt-2">
-                      <AnimatedStatistic
-                        title="效率"
-                        value={agent.efficiency}
-                        suffix="%"
-                        valueStyle={{ fontSize: '14px', color: agent.color }}
-                      />
-                    </div>
-                  </InteractiveCard>
-                </Col>
-              ))}
-            </Row>
+            <div className="relative" style={{ minHeight: '300px', padding: '20px' }}>
+              {/* 协作连接线动画 */}
+              <svg 
+                className="absolute inset-0 w-full h-full pointer-events-none" 
+                style={{ zIndex: 1 }}
+              >
+                {/* 数据流动路径 */}
+                <defs>
+                  <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#1890ff" stopOpacity="0" />
+                    <stop offset="50%" stopColor="#1890ff" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#1890ff" stopOpacity="0" />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge> 
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/> 
+                    </feMerge>
+                  </filter>
+                </defs>
+                
+                {/* 连接线 */}
+                <motion.path
+                  d="M 100 150 Q 250 100 400 150 Q 550 200 700 150 Q 850 100 1000 150"
+                  stroke="#1890ff"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeDasharray="5,5"
+                  filter="url(#glow)"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ 
+                    pathLength: analysisRunning ? 1 : 0.3,
+                    opacity: analysisRunning ? 1 : 0.5,
+                    strokeDashoffset: analysisRunning ? [0, -20] : 0
+                  }}
+                  transition={{ 
+                    pathLength: { duration: 2, ease: "easeInOut" },
+                    strokeDashoffset: { duration: 1, repeat: Infinity, ease: "linear" }
+                  }}
+                />
+                
+                {/* 数据流动粒子 */}
+                {analysisRunning && [
+                  { x: 100, delay: 0 },
+                  { x: 300, delay: 0.5 },
+                  { x: 500, delay: 1 },
+                  { x: 700, delay: 1.5 },
+                  { x: 900, delay: 2 }
+                ].map((particle, i) => (
+                  <motion.circle
+                    key={i}
+                    r="4"
+                    fill="url(#flowGradient)"
+                    initial={{ cx: particle.x, cy: 150, opacity: 0 }}
+                    animate={{
+                      cx: [particle.x, particle.x + 200, particle.x + 400],
+                      opacity: [0, 1, 0]
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: particle.delay,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                ))}
+              </svg>
+              
+              {/* 智能体卡片 */}
+              <Row gutter={[16, 16]} className="relative" style={{ zIndex: 2 }}>
+                {[
+                  { 
+                    name: '数据采集智能体', 
+                    status: '运行中', 
+                    color: '#52c41a', 
+                    position: 0,
+                    currentTask: analysisRunning ? '采集电网负荷数据' : '监控数据源状态',
+                    processedCount: analysisRunning ? '1,247条记录' : '待机'
+                  },
+                  { 
+                    name: '模式识别智能体', 
+                    status: analysisRunning ? '分析中' : '待机', 
+                    color: '#1890ff', 
+                    position: 1,
+                    currentTask: analysisRunning ? '识别负荷变化模式' : '等待数据输入',
+                    processedCount: analysisRunning ? '发现3种模式' : '待机'
+                  },
+                  { 
+                    name: '预测建模智能体', 
+                    status: analysisRunning ? '建模中' : '待机', 
+                    color: '#faad14', 
+                    position: 2,
+                    currentTask: analysisRunning ? '构建负荷预测模型' : '等待模式数据',
+                    processedCount: analysisRunning ? '训练进度85%' : '待机'
+                  },
+                  { 
+                    name: '异常检测智能体', 
+                    status: analysisRunning ? '检测中' : '运行中', 
+                    color: '#722ed1', 
+                    position: 3,
+                    currentTask: analysisRunning ? '检测负荷异常点' : '实时监控异常',
+                    processedCount: analysisRunning ? '发现2个异常' : '正常运行'
+                  },
+                  { 
+                    name: '报告生成智能体', 
+                    status: analysisRunning ? '生成中' : '待机', 
+                    color: '#eb2f96', 
+                    position: 4,
+                    currentTask: analysisRunning ? '生成分析报告' : '等待分析结果',
+                    processedCount: analysisRunning ? '报告完成60%' : '待机'
+                  }
+                ].map((agent, index) => (
+                  <Col span={4.8} key={index}>
+                    <motion.div
+                      initial={{ scale: 1, y: 0 }}
+                      animate={{
+                        scale: analysisRunning && agent.status.includes('中') ? [1, 1.05, 1] : 1,
+                        y: analysisRunning && agent.status.includes('中') ? [0, -5, 0] : 0
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: analysisRunning && agent.status.includes('中') ? Infinity : 0,
+                        delay: index * 0.3
+                      }}
+                    >
+                      <InteractiveCard hoverable className="text-center relative overflow-hidden">
+                        {/* 工作状态光效 */}
+                        {analysisRunning && agent.status.includes('中') && (
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r opacity-20"
+                            style={{
+                              background: `linear-gradient(45deg, transparent, ${agent.color}, transparent)`
+                            }}
+                            animate={{
+                              x: [-100, 300]
+                            }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        )}
+                        
+                        <div className="mb-2 relative">
+                          <motion.div
+                            animate={{
+                              rotate: analysisRunning && agent.status.includes('中') ? 360 : 0
+                            }}
+                            transition={{
+                              duration: 3,
+                              repeat: analysisRunning && agent.status.includes('中') ? Infinity : 0,
+                              ease: "linear"
+                            }}
+                          >
+                            <RobotOutlined style={{ fontSize: '24px', color: agent.color }} />
+                          </motion.div>
+                        </div>
+                        
+                        <Text strong className="block mb-1">{agent.name}</Text>
+                        <div>
+                          <StatusTag 
+                            status={agent.status.includes('中') ? 'processing' : 
+                                   agent.status === '运行中' ? 'processing' : 'pending'} 
+                          />
+                          <span className="ml-2">{agent.status}</span>
+                        </div>
+                        <div className="mt-2">
+                          <div className="text-xs text-gray-600 mb-1">当前任务:</div>
+                          <Text className="text-xs" style={{ color: agent.color }}>
+                            {agent.currentTask}
+                          </Text>
+                        </div>
+                        <div className="mt-1">
+                          <div className="text-xs text-gray-600 mb-1">处理状态:</div>
+                          <Text className="text-xs font-medium" style={{ color: agent.color }}>
+                            {agent.processedCount}
+                          </Text>
+                        </div>
+                      </InteractiveCard>
+                    </motion.div>
+                  </Col>
+                ))}
+              </Row>
+              
+              {/* 协作状态提示 */}
+              {analysisRunning && (
+                <motion.div
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                >
+                  <Alert
+                    message="智能体协作进行中"
+                    description="五大智能体正在协同工作，实时处理和分析数据"
+                    type="info"
+                    showIcon
+                    className="shadow-lg"
+                  />
+                </motion.div>
+              )}
+            </div>
           </Card>
         </Col>
       </Row>
@@ -505,7 +742,8 @@ const AIAnalysis: React.FC = () => {
                           icon={<PlayCircleOutlined />}
                           loading={analysisRunning}
                           onClick={handleStartAnalysis}
-                          variant="gradient"
+                          variant="glow"
+                          className="analysis-start-button"
                         >
                           {analysisRunning ? '分析中...' : '开始分析'}
                         </EnhancedButton>
@@ -738,13 +976,39 @@ const AIAnalysis: React.FC = () => {
                         <Col span={6}>
                           <EnhancedButton
                             icon={<EditOutlined />}
-                            onClick={() => navigate('/report-editor')}
+                            onClick={() => navigate('/editor', {
+                              state: {
+                                analysisData: {
+                                  type: 'ai-analysis-result',
+                                  template: selectedTemplate || 'comprehensive',
+                                  data: {
+                                    title: '山西电网智能分析报告',
+                                    analysisType: '综合分析',
+                                    dataSource: '山西电网负荷数据.db',
+                                    loadGrowth: 15.2,
+                                    cleanEnergyRatio: 12.8,
+                                    efficiency: 98.5,
+                                    confidence: 95.2,
+                                    regions: [
+                                      { name: '太原', load: '2,450 MW', growth: '+8.5%', status: '正常' },
+                                      { name: '大同', load: '1,890 MW', growth: '+12.3%', status: '正常' },
+                                      { name: '临汾', load: '1,650 MW', growth: '+6.7%', status: '优化建议' }
+                                    ],
+                                    insights: [
+                                      '太原地区负荷优化：建议在峰值时段启动备用电源',
+                                      '临汾设备维护：检测到异常波动，建议安排检修',
+                                      '整体能效提升：可通过智能调度提升3.2%效率'
+                                    ]
+                                  }
+                                }
+                              }
+                            })}
                             variant="gradient"
                             className="w-full h-16"
                           >
                             <div className="text-center">
-                              <div>报告编辑</div>
-                              <Text type="secondary" className="text-xs">创建新报告</Text>
+                              <div>基于分析创建报告</div>
+                              <Text type="secondary" className="text-xs">导入分析结果</Text>
                             </div>
                           </EnhancedButton>
                         </Col>
