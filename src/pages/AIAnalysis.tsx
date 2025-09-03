@@ -46,6 +46,7 @@ import { EnhancedButton, InteractiveCard, StatusTag, AnimatedProgress } from '..
 import { AnimatedStatistic } from '../components/AdvancedAnimations';
 import { motion } from 'framer-motion';
 import type { UploadProps } from 'antd';
+import AgentProgressModal from '../components/AgentProgressModal';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -78,65 +79,116 @@ const AIAnalysis: React.FC = () => {
   const [activeTab, setActiveTab] = useState('datasource');
   const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const [analysisType, setAnalysisType] = useState<string>('');
+  const [reportType, setReportType] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showAgentModal, setShowAgentModal] = useState(false);
   const [configModalVisible, setConfigModalVisible] = useState(false);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  // Mock data
+  // 五大智能体定义
+  const intelligentAgents = [
+    {
+      id: 'data-collector',
+      name: '数据采集智能体',
+      description: '负责从各种数据源采集电力数据',
+      status: 'active',
+      tasks: ['电网运行数据采集', '用电量统计', '设备状态监控'],
+      efficiency: 95.8,
+      icon: 'DatabaseOutlined'
+    },
+    {
+      id: 'data-processor',
+      name: '数据处理智能体',
+      description: '对采集的数据进行清洗和预处理',
+      status: 'active',
+      tasks: ['数据清洗', '异常值检测', '数据标准化'],
+      efficiency: 92.3,
+      icon: 'ApiOutlined'
+    },
+    {
+      id: 'analyzer',
+      name: '分析智能体',
+      description: '执行深度数据分析和模式识别',
+      status: 'active',
+      tasks: ['负荷预测', '故障分析', '效率评估'],
+      efficiency: 89.7,
+      icon: 'BarChartOutlined'
+    },
+    {
+      id: 'insight-generator',
+      name: '洞察生成智能体',
+      description: '基于分析结果生成业务洞察',
+      status: 'active',
+      tasks: ['趋势识别', '风险评估', '优化建议'],
+      efficiency: 91.2,
+      icon: 'BulbOutlined'
+    },
+    {
+      id: 'report-writer',
+      name: '报告生成智能体',
+      description: '自动生成专业的分析报告',
+      status: 'active',
+      tasks: ['报告撰写', '图表生成', '格式优化'],
+      efficiency: 94.1,
+      icon: 'FileTextOutlined'
+    }
+  ];
+
+  // 山西国网数据源
   const dataSources: DataSource[] = [
     {
       id: '1',
-      name: '销售数据.xlsx',
+      name: '山西电网运行数据.xlsx',
       type: 'file',
       status: 'connected',
-      size: '2.5MB',
+      size: '15.8MB',
       lastUpdated: '2024-01-15 14:30',
-      records: 15420
+      records: 125420
     },
     {
       id: '2',
-      name: 'MySQL数据库',
+      name: '国网山西省电力公司数据库',
       type: 'database',
       status: 'connected',
       lastUpdated: '2024-01-15 16:45',
-      records: 89650
+      records: 2896500
     },
     {
       id: '3',
-      name: 'API接口数据',
+      name: '电力调度API接口',
       type: 'api',
-      status: 'disconnected',
-      lastUpdated: '2024-01-14 09:20',
-      records: 0
+      status: 'connected',
+      lastUpdated: '2024-01-15 17:20',
+      records: 458920
     }
   ];
 
   const analysisTasks: AnalysisTask[] = [
     {
       id: '1',
-      name: '销售趋势分析',
-      dataSource: '销售数据.xlsx',
+      name: '电网负荷趋势分析',
+      dataSource: '山西电网运行数据.xlsx',
       analysisType: '趋势分析',
       status: 'completed',
       progress: 100,
       startTime: '2024-01-15 14:35',
-      duration: '3分钟',
-      insights: 8
+      duration: '5分钟',
+      insights: 12
     },
     {
       id: '2',
-      name: '用户行为分析',
-      dataSource: 'MySQL数据库',
+      name: '用电行为模式分析',
+      dataSource: '国网山西省电力公司数据库',
       analysisType: '行为分析',
       status: 'running',
-      progress: 65,
+      progress: 75,
       startTime: '2024-01-15 16:50'
     },
     {
       id: '3',
-      name: '市场预测分析',
-      dataSource: '销售数据.xlsx',
+      name: '电力需求预测分析',
+      dataSource: '电力调度API接口',
       analysisType: '预测分析',
       status: 'pending',
       progress: 0,
@@ -145,11 +197,11 @@ const AIAnalysis: React.FC = () => {
   ];
 
   const sampleData = [
-    { key: '1', product: 'iPhone 15', sales: 1250, revenue: 1875000, growth: '+15.2%' },
-    { key: '2', product: 'MacBook Pro', sales: 890, revenue: 2225000, growth: '+8.7%' },
-    { key: '3', product: 'iPad Air', sales: 1560, revenue: 936000, growth: '+22.1%' },
-    { key: '4', product: 'Apple Watch', sales: 2340, revenue: 936000, growth: '+12.5%' },
-    { key: '5', product: 'AirPods Pro', sales: 3200, revenue: 800000, growth: '+18.9%' }
+    { key: '1', region: '太原供电区', load: 1250, consumption: 18750000, growth: '+15.2%' },
+    { key: '2', region: '大同供电区', load: 890, consumption: 22250000, growth: '+8.7%' },
+    { key: '3', region: '临汾供电区', load: 1560, consumption: 9360000, growth: '+22.1%' },
+    { key: '4', region: '运城供电区', load: 2340, consumption: 9360000, growth: '+12.5%' },
+    { key: '5', region: '晋中供电区', load: 3200, consumption: 8000000, growth: '+18.9%' }
   ];
 
   const dataSourceColumns = [
@@ -286,9 +338,9 @@ const AIAnalysis: React.FC = () => {
   ];
 
   const previewColumns = [
-    { title: '产品', dataIndex: 'product', key: 'product' },
-    { title: '销量', dataIndex: 'sales', key: 'sales' },
-    { title: '收入', dataIndex: 'revenue', key: 'revenue', render: (value: number) => `¥${value.toLocaleString()}` },
+    { title: '供电区域', dataIndex: 'region', key: 'region' },
+    { title: '负荷(MW)', dataIndex: 'load', key: 'load' },
+    { title: '用电量(kWh)', dataIndex: 'consumption', key: 'consumption', render: (value: number) => `${value.toLocaleString()}` },
     { title: '增长率', dataIndex: 'growth', key: 'growth', render: (value: string) => <Tag color={value.startsWith('+') ? 'green' : 'red'}>{value}</Tag> }
   ];
 
@@ -303,16 +355,21 @@ const AIAnalysis: React.FC = () => {
   };
 
   const handleStartAnalysis = () => {
-    if (!selectedDataSource || !analysisType) {
-      message.warning('请选择数据源和分析类型');
+    if (!selectedDataSource || !analysisType || !reportType) {
+      message.warning('请选择数据源、分析类型和报告类型');
       return;
     }
     setIsAnalyzing(true);
-    message.success('分析任务已启动！');
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      message.success('分析完成！');
-    }, 3000);
+    setShowAgentModal(true);
+    message.success('启动智能体协作分析...');
+  };
+
+  const handleAgentComplete = () => {
+    setIsAnalyzing(false);
+    setShowAgentModal(false);
+    message.success('智能体协作分析完成！正在跳转到报告编辑器...');
+    // 这里可以添加导航到报告编辑器的逻辑
+    // navigate('/editor');
   };
 
   return (
@@ -363,11 +420,11 @@ const AIAnalysis: React.FC = () => {
             <InteractiveCard effect="lift">
               <AnimatedStatistic
                 title="生成洞察"
-                value={8}
+                value={12}
                 prefix={<BulbOutlined className="text-orange-600" />}
                 valueStyle={{ color: '#fa8c16' }}
                 trend="up"
-                trendValue={8}
+                trendValue={50}
               />
             </InteractiveCard>
           </Col>
@@ -375,11 +432,11 @@ const AIAnalysis: React.FC = () => {
             <InteractiveCard effect="glow">
               <AnimatedStatistic
                 title="数据记录"
-                value={105070}
+                value={3480840}
                 prefix={<TableOutlined className="text-purple-600" />}
                 valueStyle={{ color: '#722ed1' }}
                 trend="up"
-                trendValue={15.3}
+                trendValue={25.8}
               />
             </InteractiveCard>
           </Col>
@@ -388,6 +445,65 @@ const AIAnalysis: React.FC = () => {
         {/* Main Content */}
         <Card className="border-0 shadow-sm">
           <Tabs activeKey={activeTab} onChange={setActiveTab} size="large">
+            <TabPane tab={<span><RobotOutlined />智能体协作</span>} key="agents">
+              <Row gutter={[24, 24]}>
+                <Col span={24}>
+                  <Alert
+                    message="五大智能体协作系统"
+                    description="数据采集 → 数据处理 → 深度分析 → 洞察生成 → 报告输出的全自动化流程"
+                    type="info"
+                    showIcon
+                    className="mb-6"
+                  />
+                </Col>
+                {intelligentAgents.map((agent, index) => (
+                  <Col xs={24} lg={12} xl={8} key={agent.id}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <InteractiveCard effect="lift">
+                        <Card
+                          title={
+                            <Space>
+                              <RobotOutlined className="text-blue-600" />
+                              <span>{agent.name}</span>
+                              <Badge status="success" text="运行中" />
+                            </Space>
+                          }
+                          extra={
+                            <Tag color="green">{agent.efficiency}%</Tag>
+                          }
+                          className="h-full"
+                        >
+                          <div className="mb-4">
+                            <Text type="secondary">{agent.description}</Text>
+                          </div>
+                          <div className="mb-4">
+                            <Text strong>当前任务：</Text>
+                            <div className="mt-2">
+                              {agent.tasks.map((task, taskIndex) => (
+                                <Tag key={taskIndex} color="blue" className="mb-1">
+                                  {task}
+                                </Tag>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="mb-2">
+                            <Text strong>运行效率</Text>
+                          </div>
+                          <AnimatedProgress
+                             percent={agent.efficiency}
+                             status="active"
+                           />
+                        </Card>
+                      </InteractiveCard>
+                    </motion.div>
+                  </Col>
+                ))}
+              </Row>
+            </TabPane>
             <TabPane tab={<span><DatabaseOutlined />数据源管理</span>} key="datasource">
               <div className="mb-4">
                 <Row gutter={[16, 16]} align="middle">
@@ -455,6 +571,20 @@ const AIAnalysis: React.FC = () => {
                           <Option value="clustering">聚类分析</Option>
                         </Select>
                       </Form.Item>
+                      <Form.Item label="报告类型" required>
+                        <Select
+                          placeholder="请选择报告类型"
+                          value={reportType}
+                          onChange={setReportType}
+                          className="w-full"
+                        >
+                          <Option value="load_analysis">电网负荷分析报告</Option>
+                          <Option value="equipment_status">设备运行状态报告</Option>
+                          <Option value="energy_efficiency">能效分析报告</Option>
+                          <Option value="fault_prediction">故障预测报告</Option>
+                          <Option value="comprehensive">综合运营报告</Option>
+                        </Select>
+                      </Form.Item>
                       <Form.Item label="分析描述">
                         <TextArea
                           rows={3}
@@ -493,10 +623,10 @@ const AIAnalysis: React.FC = () => {
             <TabPane tab={<span><BulbOutlined />分析结果</span>} key="results">
               <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
-                  <Card title="销售趋势分析结果" extra={<Button icon={<DownloadOutlined />}>导出报告</Button>}>
+                  <Card title="电网负荷趋势分析结果" extra={<Button icon={<DownloadOutlined />}>导出报告</Button>}>
                     <Alert
                       message="分析完成"
-                      description="基于15,420条销售数据，AI识别出8个关键洞察，包括季节性趋势、产品偏好变化等。"
+                      description="基于125,420条电网运行数据，AI识别出12个关键洞察，包括负荷峰谷特征、区域用电模式等。"
                       type="success"
                       showIcon
                       className="mb-4"
@@ -511,9 +641,9 @@ const AIAnalysis: React.FC = () => {
                               <div className="flex items-center">
                                 <LineChartOutlined className="text-2xl text-blue-600 mr-3" />
                                 <div>
-                                  <Text strong>销售增长趋势</Text>
+                                  <Text strong>负荷增长趋势</Text>
                                   <br />
-                                  <Text type="secondary">Q4销售额同比增长15.2%</Text>
+                                  <Text type="secondary">冬季用电负荷同比增长15.2%</Text>
                                 </div>
                               </div>
                             </Card>
@@ -525,9 +655,9 @@ const AIAnalysis: React.FC = () => {
                               <div className="flex items-center">
                                 <PieChartOutlined className="text-2xl text-green-600 mr-3" />
                                 <div>
-                                  <Text strong>产品结构优化</Text>
+                                  <Text strong>供电结构优化</Text>
                                   <br />
-                                  <Text type="secondary">高端产品占比提升8%</Text>
+                                  <Text type="secondary">清洁能源占比提升12%</Text>
                                 </div>
                               </div>
                             </Card>
@@ -553,15 +683,15 @@ const AIAnalysis: React.FC = () => {
                     <Card title="AI建议" size="small">
                       <Space direction="vertical" size="small" className="w-full">
                         <Alert
-                          message="重点关注iPhone 15销售表现"
-                          description="建议加大营销投入，预计可提升20%销量"
+                          message="重点关注太原供电区负荷管理"
+                          description="建议优化调度策略，预计可降低5%峰值负荷"
                           type="info"
                           showIcon
                           className="text-sm"
                         />
                         <Alert
-                          message="优化iPad Air库存管理"
-                          description="当前增长率22.1%，建议增加备货"
+                          message="加强临汾供电区设备维护"
+                          description="当前增长率22.1%，建议提前扩容"
                           type="warning"
                           showIcon
                           className="text-sm"
@@ -583,7 +713,7 @@ const AIAnalysis: React.FC = () => {
                         <Progress percent={95.2} size="small" />
                         <div className="flex justify-between">
                           <Text>处理时间</Text>
-                          <Text strong>3分钟</Text>
+                          <Text strong>5分钟</Text>
                         </div>
                       </Space>
                     </Card>
@@ -651,14 +781,21 @@ const AIAnalysis: React.FC = () => {
           ]}
         >
           <Table
-            columns={previewColumns}
-            dataSource={sampleData}
-            pagination={{ pageSize: 5 }}
-            size="small"
+              columns={previewColumns}
+              dataSource={sampleData}
+              pagination={{ pageSize: 5 }}
+              size="small"
+            />
+          </Modal>
+
+          {/* Agent Progress Modal */}
+          <AgentProgressModal
+            visible={showAgentModal}
+            onComplete={handleAgentComplete}
+            onClose={() => setShowAgentModal(false)}
           />
-        </Modal>
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
   );
 };
 

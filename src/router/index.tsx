@@ -9,6 +9,7 @@ import Reports from '../pages/Reports'
 import ReportEditor from '../pages/ReportEditor'
 import Templates from '../pages/Templates'
 import AIAnalysis from '../pages/AIAnalysis'
+import AgentMonitor from '../pages/AgentMonitor'
 import ProtectedRoute from '../components/ProtectedRoute'
 
 export const router = createBrowserRouter([
@@ -57,6 +58,10 @@ export const router = createBrowserRouter([
       {
         path: 'analysis',
         element: <AIAnalysis />,
+      },
+      {
+        path: 'agent-monitor',
+        element: <AgentMonitor />,
       },
       {
         path: 'profile',

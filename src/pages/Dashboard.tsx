@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, Row, Col, Button, Progress, List } from 'antd'
 import {
   PlusOutlined,
@@ -10,55 +10,58 @@ import {
   ArrowUpOutlined,
   EyeOutlined,
   EditOutlined,
-  ShareAltOutlined
+  ShareAltOutlined,
+  MonitorOutlined
 } from '@ant-design/icons'
 import { AnimatedStatistic, AnimatedList, AnimatedAvatar } from '../components/AdvancedAnimations'
 import { InteractiveCard, StatusTag } from '../components/InteractiveEnhancements'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import AgentProgressModal from '../components/AgentProgressModal'
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
+  const [agentModalVisible, setAgentModalVisible] = useState(false)
 
-  // 模拟数据
+  // 山西国网数据
   const recentReports = [
     {
       id: 1,
-      title: '2024年第一季度销售分析报告',
+      title: '2024年第一季度电网负荷分析报告',
       status: 'published',
       updateTime: '2024-01-15 14:30',
-      views: 156,
-      author: '张三'
+      views: 256,
+      author: '李明华'
     },
     {
       id: 2,
-      title: '用户行为数据洞察报告',
+      title: '山西电网用电行为模式分析报告',
       status: 'draft',
       updateTime: '2024-01-14 09:15',
-      views: 89,
-      author: '李四'
+      views: 189,
+      author: '王建国'
     },
     {
       id: 3,
-      title: '市场竞争力分析报告',
+      title: '清洁能源并网影响评估报告',
       status: 'reviewing',
       updateTime: '2024-01-13 16:45',
-      views: 234,
-      author: '王五'
+      views: 334,
+      author: '张志强'
     }
   ]
 
   const quickActions = [
     {
-      title: '创建新报告',
-      description: '从空白模板开始创建',
+      title: '创建报告',
+      description: '启动五大智能体协作生成报告',
       icon: <PlusOutlined />,
       color: '#1890ff',
-      action: () => navigate('/editor')
+      action: () => setAgentModalVisible(true)
     },
     {
-      title: '使用模板',
-      description: '从预设模板快速开始',
+      title: '模板管理',
+      description: '管理和编辑报告模板',
       icon: <FileTextOutlined />,
       color: '#52c41a',
       action: () => navigate('/templates')
@@ -67,19 +70,24 @@ const Dashboard: React.FC = () => {
       title: 'AI分析',
       description: '智能数据分析和洞察',
       icon: <BarChartOutlined />,
-      color: '#722ed1',
+      color: '#fa8c16',
       action: () => navigate('/ai-analysis')
     },
     {
-      title: '团队协作',
-      description: '邀请团队成员协作',
-      icon: <TeamOutlined />,
-      color: '#fa8c16',
-      action: () => {}
+      title: '智能体监控',
+      description: '查看五大智能体运行状态',
+      icon: <MonitorOutlined />,
+      color: '#13c2c2',
+      action: () => navigate('/agent-monitor')
     }
   ]
 
-
+  const handleAgentComplete = () => {
+    // 报告生成完成后的处理逻辑
+    console.log('报告生成完成，跳转到编辑器')
+    // 跳转到报告编辑器页面
+    navigate('/editor')
+  }
 
   return (
     <div style={{ padding: '24px', backgroundColor: '#fafafa', minHeight: '100%' }}>
@@ -122,21 +130,21 @@ const Dashboard: React.FC = () => {
           
           <div style={{ position: 'relative', zIndex: 10 }}>
             <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px' }}>欢迎回来！</h1>
-            <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>今天是个开始新项目的好日子，让我们一起创造精彩的报告吧</p>
+            <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>五大智能体已就绪，让我们一起创造专业的山西电网分析报告吧</p>
             
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
               <Button 
-                type="primary" 
                 size="large" 
+                type="primary" 
                 icon={<PlusOutlined />}
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
                   borderColor: 'rgba(255, 255, 255, 0.3)',
                   backdropFilter: 'blur(4px)'
                 }}
-                onClick={() => navigate('/editor')}
+                onClick={() => navigate('/ai-analysis')}
               >
-                创建新报告
+                启动AI智能分析
               </Button>
               <Button 
                 size="large" 
@@ -167,40 +175,12 @@ const Dashboard: React.FC = () => {
             <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
               <AnimatedStatistic
                 title="总报告数"
-                value={128}
+                value={186}
                 prefix={<FileTextOutlined className="text-blue-500" />}
                 suffix={<ArrowUpOutlined className="text-green-500 text-sm" />}
                 trend="up"
-                trendValue={12}
-                delay={0}
-              />
-              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 12%</div>
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
-              <AnimatedStatistic
-                title="本月创建"
-                value={23}
-                prefix={<PlusOutlined style={{ color: '#52c41a' }} />}
-                suffix={<ArrowUpOutlined style={{ color: '#52c41a', fontSize: '14px' }} />}
-                trend="up"
-                trendValue={8}
-                delay={0.1}
-              />
-              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 8%</div>
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
-              <AnimatedStatistic
-                title="总浏览量"
-                value={1563}
-                prefix={<EyeOutlined style={{ color: '#722ed1' }} />}
-                suffix={<ArrowUpOutlined style={{ color: '#52c41a', fontSize: '14px' }} />}
-                trend="up"
                 trendValue={15}
-                delay={0.2}
+                delay={0}
               />
               <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 15%</div>
             </Card>
@@ -208,17 +188,32 @@ const Dashboard: React.FC = () => {
           <Col xs={24} sm={12} lg={6}>
             <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
               <AnimatedStatistic
-                title="团队成员"
-                value={8}
-                prefix={<TeamOutlined style={{ color: '#fa8c16' }} />}
+                title="本月创建"
+                value={32}
+                prefix={<PlusOutlined style={{ color: '#52c41a' }} />}
                 suffix={<ArrowUpOutlined style={{ color: '#52c41a', fontSize: '14px' }} />}
                 trend="up"
-                trendValue={2}
-                delay={0.3}
+                trendValue={12}
+                delay={0.1}
               />
-              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>新增 2 名成员</div>
+              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 12%</div>
             </Card>
           </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card style={{ textAlign: 'center', transition: 'box-shadow 0.3s' }}>
+              <AnimatedStatistic
+                title="总浏览量"
+                value={2863}
+                prefix={<EyeOutlined style={{ color: '#722ed1' }} />}
+                suffix={<ArrowUpOutlined style={{ color: '#52c41a', fontSize: '14px' }} />}
+                trend="up"
+                trendValue={22}
+                delay={0.2}
+              />
+              <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '8px' }}>较上月增长 22%</div>
+            </Card>
+          </Col>
+
         </Row>
       </motion.div>
 
@@ -367,100 +362,114 @@ const Dashboard: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 进度和成就 */}
+      {/* 五大智能体状态监控 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.8 }}
         style={{ marginTop: '32px' }}
       >
-        <Row gutter={[24, 24]}>
-          <Col xs={24} lg={16}>
-            <Card title="本月目标进度">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ color: '#595959' }}>创建报告</span>
-                    <span style={{ color: '#8c8c8c' }}>23/30</span>
-                  </div>
-                  <Progress percent={77} strokeColor="#1890ff" />
+        <Card title="五大智能体运行状态" extra={<MonitorOutlined />}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #1890ff, #096dd9)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 8px'
+                }}>
+                  🔍
                 </div>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ color: '#595959' }}>团队协作</span>
-                    <span style={{ color: '#8c8c8c' }}>15/20</span>
-                  </div>
-                  <Progress percent={75} strokeColor="#52c41a" />
-                </div>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ color: '#595959' }}>AI分析使用</span>
-                    <span style={{ color: '#8c8c8c' }}>8/15</span>
-                  </div>
-                  <Progress percent={53} strokeColor="#722ed1" />
-                </div>
+                <div style={{ fontWeight: 'bold', fontSize: '12px' }}>数据采集智能体</div>
+                <div style={{ fontSize: '10px', color: '#52c41a' }}>运行中</div>
               </div>
-            </Card>
-          </Col>
-          <Col xs={24} lg={8}>
-            <Card title="最近成就" style={{ height: '100%' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#fff7e6',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <TrophyOutlined style={{ color: '#d48806' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: '500', color: '#262626' }}>高产作者</div>
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>本月创建20+报告</div>
-                  </div>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #52c41a, #389e0d)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 8px'
+                }}>
+                  📊
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#e6f7ff',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <TeamOutlined style={{ color: '#1890ff' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: '500', color: '#262626' }}>团队合作者</div>
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>参与5个协作项目</div>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#f9f0ff',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <BarChartOutlined style={{ color: '#722ed1' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: '500', color: '#262626' }}>数据专家</div>
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>使用AI分析10次</div>
-                  </div>
-                </div>
+                <div style={{ fontWeight: 'bold', fontSize: '12px' }}>指标分析智能体</div>
+                <div style={{ fontSize: '10px', color: '#52c41a' }}>运行中</div>
               </div>
-            </Card>
-          </Col>
-        </Row>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #722ed1, #531dab)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 8px'
+                }}>
+                  📋
+                </div>
+                <div style={{ fontWeight: 'bold', fontSize: '12px' }}>政策解读智能体</div>
+                <div style={{ fontSize: '10px', color: '#52c41a' }}>运行中</div>
+              </div>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #fa8c16, #d46b08)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 8px'
+                }}>
+                  🔍
+                </div>
+                <div style={{ fontWeight: 'bold', fontSize: '12px' }}>数据检测智能体</div>
+                <div style={{ fontSize: '10px', color: '#52c41a' }}>运行中</div>
+              </div>
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #13c2c2, #08979c)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 8px'
+                }}>
+                  📝
+                </div>
+                <div style={{ fontWeight: 'bold', fontSize: '12px' }}>报告生成智能体</div>
+                <div style={{ fontSize: '10px', color: '#52c41a' }}>运行中</div>
+              </div>
+            </Col>
+          </Row>
+        </Card>
       </motion.div>
+      
+      <AgentProgressModal
+        visible={agentModalVisible}
+        onClose={() => setAgentModalVisible(false)}
+        onComplete={handleAgentComplete}
+      />
     </div>
   )
 }

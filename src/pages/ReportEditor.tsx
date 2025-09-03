@@ -239,14 +239,34 @@ const ReportEditor: React.FC = () => {
       icon: <LinkOutlined />
     },
     {
-      key: 'team',
-      label: '邀请协作',
-      icon: <TeamOutlined />
-    },
-    {
       key: 'export',
       label: '导出PDF',
       icon: <FileTextOutlined />
+    }
+  ];
+
+  // 文档历史版本数据
+  const documentVersions = [
+    {
+      id: '1',
+      version: 'v1.3',
+      timestamp: '2024-01-15 14:30:25',
+      author: '张三',
+      description: '完善数据分析部分，添加图表说明'
+    },
+    {
+      id: '2',
+      version: 'v1.2',
+      timestamp: '2024-01-15 10:15:42',
+      author: '张三',
+      description: '修订结论建议，优化格式'
+    },
+    {
+      id: '3',
+      version: 'v1.1',
+      timestamp: '2024-01-14 16:45:18',
+      author: '张三',
+      description: '初始版本创建'
     }
   ];
 
@@ -536,69 +556,42 @@ const ReportEditor: React.FC = () => {
             </Row>
           </Card>
 
-          {/* 协作信息 */}
-          <Card size="small" style={{ marginBottom: '16px' }}>
-            <Title level={5} style={{ marginBottom: '12px' }}>
-              <TeamOutlined style={{ marginRight: '8px' }} />
-              协作成员
-            </Title>
-            <Space direction="vertical" size="small" style={{ width: '100%' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  background: 'var(--primary-color)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '12px'
-                }}>
-                  张
-                </div>
-                <Text>张三 (编辑中)</Text>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  background: '#52c41a',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '12px'
-                }}>
-                  李
-                </div>
-                <Text type="secondary">李四 (查看中)</Text>
-              </div>
-            </Space>
-          </Card>
-
-          {/* 评论面板 */}
+          {/* 文档历史版本 */}
           <Card size="small">
             <Title level={5} style={{ marginBottom: '12px' }}>
-              <CommentOutlined style={{ marginRight: '8px' }} />
-              评论 (2)
+              <HistoryOutlined style={{ marginRight: '8px' }} />
+              历史版本 ({documentVersions.length})
             </Title>
             <Space direction="vertical" size="small" style={{ width: '100%' }}>
-              <div style={{ padding: '8px', background: '#f0f0f0', borderRadius: '6px' }}>
-                <Text strong style={{ fontSize: '12px' }}>王五</Text>
-                <Text type="secondary" style={{ fontSize: '11px', marginLeft: '8px' }}>2分钟前</Text>
-                <div style={{ marginTop: '4px', fontSize: '12px' }}>
-                  这个数据分析部分需要补充更多细节
+              {documentVersions.map((version, index) => (
+                <div 
+                  key={version.id}
+                  style={{ 
+                    padding: '8px', 
+                    background: index === 0 ? '#e6f7ff' : '#f0f0f0', 
+                    borderRadius: '6px',
+                    border: index === 0 ? '1px solid #91d5ff' : 'none',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => message.info(`切换到版本 ${version.version}`)}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text strong style={{ fontSize: '12px', color: index === 0 ? '#1890ff' : '#333' }}>
+                      {version.version}
+                      {index === 0 && <span style={{ marginLeft: '4px', fontSize: '10px' }}>(当前)</span>}
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: '10px' }}>
+                      {version.timestamp.split(' ')[1]}
+                    </Text>
+                  </div>
+                  <div style={{ marginTop: '4px', fontSize: '11px', color: '#666' }}>
+                    {version.author} • {version.timestamp.split(' ')[0]}
+                  </div>
+                  <div style={{ marginTop: '2px', fontSize: '11px', color: '#999' }}>
+                    {version.description}
+                  </div>
                 </div>
-              </div>
-              <div style={{ padding: '8px', background: '#f0f0f0', borderRadius: '6px' }}>
-                <Text strong style={{ fontSize: '12px' }}>赵六</Text>
-                <Text type="secondary" style={{ fontSize: '11px', marginLeft: '8px' }}>5分钟前</Text>
-                <div style={{ marginTop: '4px', fontSize: '12px' }}>
-                  整体结构很清晰，建议增加图表展示
-                </div>
-              </div>
+              ))}
             </Space>
           </Card>
         </motion.div>
