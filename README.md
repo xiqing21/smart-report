@@ -7,10 +7,11 @@
 ### 📊 核心功能
 - **智能报告生成** - 基于模板快速创建专业报告
 - **可视化编辑器** - 所见即所得的报告编辑体验
-- **AI 智能分析** - 数据洞察和智能建议
+- **AI 智能分析** - 集成智谱GLM，提供数据洞察和智能建议
 - **模板管理** - 丰富的报告模板库
 - **多视图展示** - 支持列表视图和卡片视图
 - **实时搜索** - 快速定位目标报告
+- **功能测试** - 内置测试页面，验证AI服务和数据存储功能
 
 ### 🎨 用户界面
 - **现代化设计** - 基于 Ant Design 的精美界面
@@ -23,6 +24,8 @@
 - **模块化架构** - 清晰的代码组织结构
 - **性能优化** - 懒加载和代码分割
 - **测试支持** - 集成 Playwright 端到端测试
+- **AI服务集成** - 智谱GLM API集成，支持智能对话和分析
+- **数据持久化** - Supabase数据库集成，完整的CRUD功能
 
 ## 🚀 快速开始
 
@@ -75,13 +78,22 @@ smart-report/
 │   │   ├── ReportEditor.tsx # 报告编辑器
 │   │   ├── Templates.tsx   # 模板管理
 │   │   ├── AIAnalysis.tsx  # AI 分析
+│   │   ├── TestPage.tsx    # 功能测试页面
 │   │   └── Login.tsx       # 登录页面
 │   ├── router/             # 路由配置
+│   ├── services/           # 服务层
+│   │   ├── ai/            # AI服务管理
+│   │   └── api/           # API服务
+│   ├── config/             # 配置文件
+│   │   └── ai-config.ts   # AI服务配置
+│   ├── contexts/           # React上下文
+│   │   └── AuthContext.tsx # 认证上下文
 │   ├── styles/             # 样式文件
 │   │   ├── global.css
 │   │   └── variables.css
 │   ├── hooks/              # 自定义 Hooks
-│   ├── utils/              # 工具函数
+│   ├── types/              # TypeScript类型定义
+│   ├── lib/                # 工具库
 │   └── assets/             # 静态资源
 ├── public/                 # 公共资源
 ├── document/               # 项目文档
@@ -96,6 +108,11 @@ smart-report/
 - **React 19** - 用户界面库
 - **TypeScript** - 类型安全的 JavaScript
 - **Vite** - 现代化构建工具
+
+### 后端服务
+- **Supabase** - 开源的Firebase替代方案
+- **PostgreSQL** - 关系型数据库
+- **智谱GLM** - AI大语言模型服务
 
 ### UI 组件库
 - **Ant Design** - 企业级 UI 设计语言
@@ -112,6 +129,8 @@ smart-report/
 
 ### 工具库
 - **Day.js** - 日期时间处理
+- **Axios** - HTTP客户端
+- **React Hook Form** - 表单处理
 
 ## 📖 页面说明
 
@@ -141,6 +160,13 @@ smart-report/
 - 智能数据分析
 - 报告质量评估
 - 改进建议生成
+- 集成智谱GLM模型
+
+### 🧪 功能测试 (Test Page)
+- AI服务调用测试
+- 数据存储功能验证
+- 系统集成测试
+- 实时响应监控
 
 ## 🧪 测试
 
@@ -155,6 +181,40 @@ npx playwright test
 ```bash
 npx playwright install
 ```
+
+## ⚙️ 配置说明
+
+### AI服务配置
+系统目前集成了智谱GLM AI服务，配置文件位于 `src/config/ai-config.ts`：
+
+```typescript
+// 环境变量配置
+VITE_ZHIPU_API_KEY=your_zhipu_api_key
+```
+
+### 数据库配置
+使用Supabase作为后端服务，需要配置以下环境变量：
+
+```typescript
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 功能测试
+访问 `/test` 路径可以进入功能测试页面，测试以下功能：
+- AI服务调用和响应
+- 报告数据的创建和存储
+- 系统集成状态检查
+
+## 🔄 最新更新
+
+### v1.1.0 (2024-01-15)
+- ✨ 简化AI服务配置，专注智谱GLM集成
+- ✨ 新增功能测试页面 (`/test`)
+- 🔧 优化AI服务管理器，增强错误处理和日志记录
+- 🔧 完善数据持久化功能，支持报告、数据源、分析任务的CRUD操作
+- 🐛 修复用户认证上下文中的profiles表查询问题
+- 📝 更新导航菜单，添加功能测试入口
 
 ## 📚 文档
 

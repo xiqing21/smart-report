@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Row, Col, Button, Progress, List, Statistic, Badge, Dropdown, Menu } from 'antd'
+import { Card, Row, Col, Button, List, Badge, Dropdown } from 'antd'
 import {
   PlusOutlined,
   FileTextOutlined,
   BarChartOutlined,
-  TeamOutlined,
-  TrophyOutlined,
   ClockCircleOutlined,
-  ArrowUpOutlined,
   EyeOutlined,
   EditOutlined,
   ShareAltOutlined,
@@ -19,7 +16,7 @@ import {
   FileAddOutlined,
   DatabaseOutlined
 } from '@ant-design/icons'
-import { AnimatedStatistic, AnimatedList, AnimatedAvatar } from '../components/AdvancedAnimations'
+import { AnimatedList, AnimatedAvatar } from '../components/AdvancedAnimations'
 import { InteractiveCard, StatusTag } from '../components/InteractiveEnhancements'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
@@ -39,7 +36,7 @@ const Dashboard: React.FC = () => {
   // 智能体状态动态更新
   useEffect(() => {
     const interval = setInterval(() => {
-      setAgentStats(prev => ({
+      setAgentStats(_prev => ({
         dataCollector: {
           cpu: Math.floor(Math.random() * 30) + 30,
           memory: Math.floor(Math.random() * 25) + 50,

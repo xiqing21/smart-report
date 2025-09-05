@@ -18,7 +18,6 @@ import {
   Modal,
   Form,
   message,
-  Divider,
   Typography,
   Tooltip,
   Badge
@@ -36,7 +35,6 @@ import {
   BulbOutlined,
   RobotOutlined,
   FileTextOutlined,
-  CloudUploadOutlined,
   ApiOutlined,
   TableOutlined,
   EyeOutlined,
@@ -44,7 +42,7 @@ import {
   EditOutlined
 } from '@ant-design/icons';
 import { EnhancedButton, InteractiveCard, StatusTag, AnimatedProgress } from '../components/InteractiveEnhancements';
-import { AnimatedStatistic } from '../components/AdvancedAnimations';
+
 import { motion } from 'framer-motion';
 import type { UploadProps } from 'antd';
 
@@ -243,14 +241,7 @@ const AIAnalysis: React.FC = () => {
     },
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'connected': return 'green';
-      case 'disconnected': return 'red';
-      case 'error': return 'orange';
-      default: return 'default';
-    }
-  };
+
 
   const getStatusText = (status: string) => {
     switch (status) {

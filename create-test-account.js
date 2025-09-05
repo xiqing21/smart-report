@@ -1,6 +1,8 @@
 // 创建测试账号的脚本
-const { createClient } = require('@supabase/supabase-js')
-require('dotenv').config()
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -120,9 +122,8 @@ async function main() {
   console.log('\n🌐 访问地址: http://localhost:5173')
 }
 
-if (require.main === module) {
-  main().then(() => process.exit(0)).catch(err => {
-    console.error('脚本执行失败:', err)
-    process.exit(1)
-  })
-}
+// 直接执行main函数
+main().then(() => process.exit(0)).catch(err => {
+  console.error('脚本执行失败:', err)
+  process.exit(1)
+})

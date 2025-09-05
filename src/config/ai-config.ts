@@ -20,82 +20,18 @@ export interface AIProvider {
   };
 }
 
-// AI服务提供商配置
+// AI服务提供商配置 - 只保留智谱GLM
 export const AI_PROVIDERS: Record<string, AIProvider> = {
-  qwen: {
-    name: 'qwen',
-    displayName: '阿里千问',
-    apiKey: 'sk-7c12945ced9d4c7babbb4ca7f661d055',
-    endpoint: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
-    model: 'qwen-turbo',
-    priority: 1,
-    isActive: true,
-    rateLimit: 100,
-    costPerRequest: 0.002,
-    parameters: {
-      temperature: 0.7,
-      maxTokens: 2000,
-      topP: 0.9
-    }
-  },
-  kimi: {
-    name: 'kimi',
-    displayName: 'Kimi K2',
-    apiKey: 'sk-WZQkZ6W8E47DkB8uATaey76Deo09lht0nJmA6wRugPvI0Gmr',
-    endpoint: 'https://api.moonshot.cn/v1/chat/completions',
-    model: 'moonshot-v1-8k',
-    priority: 2,
-    isActive: true,
-    rateLimit: 80,
-    costPerRequest: 0.003,
-    parameters: {
-      temperature: 0.7,
-      maxTokens: 2000,
-      topP: 0.9
-    }
-  },
   zhipu: {
     name: 'zhipu',
     displayName: '智谱GLM',
     apiKey: '105722980eb8400491bfe3a56c63f13a.NnceHUU3NlhCK55m',
     endpoint: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
     model: 'glm-4',
-    priority: 3,
+    priority: 1,
     isActive: true,
     rateLimit: 60,
     costPerRequest: 0.0025,
-    parameters: {
-      temperature: 0.7,
-      maxTokens: 2000,
-      topP: 0.9
-    }
-  },
-  deepseek: {
-    name: 'deepseek',
-    displayName: 'DeepSeek',
-    apiKey: 'sk-58ef49264a7e416c896b8ce12d4b2f04',
-    endpoint: 'https://api.deepseek.com/v1/chat/completions',
-    model: 'deepseek-chat',
-    priority: 4,
-    isActive: true,
-    rateLimit: 100,
-    costPerRequest: 0.001,
-    parameters: {
-      temperature: 0.7,
-      maxTokens: 2000,
-      topP: 0.9
-    }
-  },
-  gemini: {
-    name: 'gemini',
-    displayName: 'Google Gemini',
-    apiKey: 'AIzaSyDtK7fq5OQCl7_dOWuI6F6TJZIpKUsa2ho',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
-    model: 'gemini-pro',
-    priority: 5,
-    isActive: true,
-    rateLimit: 60,
-    costPerRequest: 0.0015,
     parameters: {
       temperature: 0.7,
       maxTokens: 2000,
@@ -107,7 +43,7 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
 // AI服务配置
 export const AI_CONFIG = {
   // 默认提供商
-  defaultProvider: 'qwen',
+  defaultProvider: 'zhipu',
   
   // 负载均衡策略
   loadBalanceStrategy: 'priority', // 'priority' | 'round_robin' | 'least_used'
@@ -154,7 +90,7 @@ export const AGENT_CONFIG = {
 3. 执行数据清洗和标准化
 4. 生成数据质量报告
 请始终保持专业和准确。`,
-    preferredProvider: 'qwen',
+    preferredProvider: 'zhipu',
     parameters: {
       temperature: 0.3,
       maxTokens: 1500
@@ -172,7 +108,7 @@ export const AGENT_CONFIG = {
 3. 分析季节性和时间序列特征
 4. 提供模式分析报告
 请基于数据提供客观、准确的分析结果。`,
-    preferredProvider: 'kimi',
+    preferredProvider: 'zhipu',
     parameters: {
       temperature: 0.5,
       maxTokens: 2000
@@ -208,7 +144,7 @@ export const AGENT_CONFIG = {
 3. 评估异常的严重程度和影响
 4. 提供异常处理建议
 请保持高度的敏感性和准确性。`,
-    preferredProvider: 'deepseek',
+    preferredProvider: 'zhipu',
     parameters: {
       temperature: 0.3,
       maxTokens: 1800
@@ -226,7 +162,7 @@ export const AGENT_CONFIG = {
 3. 提供可行的建议和结论
 4. 确保报告的逻辑性和可读性
 请生成高质量、专业的分析报告。`,
-    preferredProvider: 'gemini',
+    preferredProvider: 'zhipu',
     parameters: {
       temperature: 0.6,
       maxTokens: 3000
@@ -322,11 +258,7 @@ export const ENV_CONFIG = {
   
   // 环境变量映射
   envKeyMapping: {
-    qwen: 'VITE_QWEN_API_KEY',
-    kimi: 'VITE_KIMI_API_KEY',
-    zhipu: 'VITE_ZHIPU_API_KEY',
-    deepseek: 'VITE_DEEPSEEK_API_KEY',
-    gemini: 'VITE_GEMINI_API_KEY'
+    zhipu: 'VITE_ZHIPU_API_KEY'
   }
 };
 

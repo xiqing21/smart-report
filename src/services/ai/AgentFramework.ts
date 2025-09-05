@@ -1,8 +1,8 @@
 // 智能体协作框架
 // Agent Collaboration Framework
 
-import { aiServiceManager, type AIRequest, type AIResponse } from './AIServiceManager';
-import { AGENT_CONFIG, getAgentConfig, type AgentType } from '../../config/ai-config';
+import { aiServiceManager, type AIRequest } from './AIServiceManager';
+import { getAgentConfig, type AgentType } from '../../config/ai-config';
 
 // 智能体基类
 export abstract class Agent {
@@ -108,7 +108,7 @@ export class DataCollectionAgent extends Agent {
       
       // 5. 生成数据报告
       context.onProgress?.(this.name, 100, '生成数据处理报告');
-      const report = await this.generateDataReport(structureAnalysis, qualityCheck, standardizedData);
+      await this.generateDataReport(structureAnalysis, qualityCheck, standardizedData);
       
       return {
         agentName: this.name,
@@ -153,30 +153,28 @@ export class DataCollectionAgent extends Agent {
 
   private async analyzeDataStructure(data: any): Promise<any> {
     const prompt = `请分析以下数据的结构，包括字段类型、数据分布等：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
-    // 模拟结构分析结果
+    // 模拟结构分析结构
     return {
       fields: this.extractFields(data),
-      types: this.detectFieldTypes(data),
-      analysis: analysis
+      types: this.detectFieldTypes(data)
     };
   }
 
   private async checkDataQuality(data: any): Promise<any> {
     const prompt = `请评估以下数据的质量，包括完整性、准确性、一致性等方面：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const qualityAssessment = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     // 模拟质量检查结果
     return {
       score: Math.floor(Math.random() * 20) + 80, // 80-100分
       issues: this.detectDataIssues(data),
-      cleaningRate: Math.floor(Math.random() * 10) + 90, // 90-100%
-      assessment: qualityAssessment
+      cleaningRate: Math.floor(Math.random() * 10) + 90 // 90-100%
     };
   }
 
-  private async cleanData(data: any, qualityCheck: any): Promise<any> {
+  private async cleanData(data: any, _qualityCheck: any): Promise<any> {
     // 实际的数据清洗逻辑
     const cleanedData = JSON.parse(JSON.stringify(data)); // 深拷贝
     
@@ -193,9 +191,9 @@ export class DataCollectionAgent extends Agent {
     return data;
   }
 
-  private async generateDataReport(structure: any, quality: any, data: any): Promise<string> {
+  private async generateDataReport(structure: any, quality: any, _data: any): Promise<void> {
     const prompt = `基于数据结构分析和质量检查结果，生成数据处理报告：\n结构：${JSON.stringify(structure)}\n质量：${JSON.stringify(quality)}`;
-    return await this.callAI(prompt);
+    await this.callAI(prompt);
   }
 
   private extractFields(data: any): string[] {
@@ -313,7 +311,7 @@ export class PatternRecognitionAgent extends Agent {
 
   private async identifyTimePatterns(data: any): Promise<any[]> {
     const prompt = `分析以下数据中的时间序列模式：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     // 模拟时间模式识别结果
     return [
@@ -324,7 +322,7 @@ export class PatternRecognitionAgent extends Agent {
 
   private async analyzeCyclicPatterns(data: any): Promise<any[]> {
     const prompt = `识别数据中的周期性模式和季节性特征：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     return [
       { period: '24h', amplitude: 0.3, phase: 0 },
@@ -334,7 +332,7 @@ export class PatternRecognitionAgent extends Agent {
 
   private async analyzeCorrelations(data: any): Promise<any[]> {
     const prompt = `分析数据字段之间的相关性：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     return [
       { field1: 'load', field2: 'temperature', correlation: 0.75 },
@@ -344,13 +342,12 @@ export class PatternRecognitionAgent extends Agent {
 
   private async analyzeTrends(data: any): Promise<any> {
     const prompt = `分析数据的整体趋势和变化方向：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     return {
       mainTrend: 'increasing',
       trendStrength: 0.7,
-      changePoints: [{ time: '2024-01-15', type: 'increase' }],
-      analysis
+      changePoints: [{ time: '2024-01-15', type: 'increase' }]
     };
   }
 
@@ -452,7 +449,7 @@ export class PredictiveModelingAgent extends Agent {
     };
   }
 
-  private async trainModel(features: any, modelConfig: any): Promise<any> {
+  private async trainModel(_features: any, modelConfig: any): Promise<any> {
     // 模拟模型训练过程
     await this.delay(1000); // 模拟训练时间
     
@@ -585,7 +582,7 @@ export class AnomalyDetectionAgent extends Agent {
 
   private async detectStatisticalAnomalies(data: any): Promise<any[]> {
     const prompt = `检测数据中的统计异常值（离群点）：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     // 模拟统计异常检测结果
     return [
@@ -602,7 +599,7 @@ export class AnomalyDetectionAgent extends Agent {
 
   private async detectTimeSeriesAnomalies(data: any): Promise<any[]> {
     const prompt = `检测时间序列数据中的异常模式：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     return [
       {
@@ -617,7 +614,7 @@ export class AnomalyDetectionAgent extends Agent {
 
   private async detectPatternAnomalies(data: any): Promise<any[]> {
     const prompt = `识别数据中的模式异常和行为偏差：\n${JSON.stringify(data).substring(0, 1000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     return [
       {
@@ -633,7 +630,7 @@ export class AnomalyDetectionAgent extends Agent {
   private async assessRisks(statistical: any[], timeSeries: any[], pattern: any[]): Promise<any> {
     const allAnomalies = [...statistical, ...timeSeries, ...pattern];
     const prompt = `评估检测到的异常的整体风险等级和影响：\n异常数量: ${allAnomalies.length}\n异常类型: ${allAnomalies.map(a => a.type).join(', ')}`;
-    const riskAnalysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     const highRiskCount = allAnomalies.filter(a => a.severity === 'high').length;
     const overallRisk = highRiskCount > 0 ? 'high' : allAnomalies.length > 3 ? 'medium' : 'low';
@@ -641,8 +638,7 @@ export class AnomalyDetectionAgent extends Agent {
     return {
       overallRisk,
       riskScore: Math.min(allAnomalies.length * 10 + highRiskCount * 20, 100),
-      recommendations: this.generateRecommendations(allAnomalies),
-      analysis: riskAnalysis
+      recommendations: this.generateRecommendations(allAnomalies)
     };
   }
 
@@ -673,7 +669,7 @@ export class ReportGenerationAgent extends Agent {
   description = '生成结构化分析报告';
   agentType: AgentType = 'reportGeneration';
 
-  async process(data: any, context: AgentContext): Promise<AgentResult> {
+  async process(_data: any, context: AgentContext): Promise<AgentResult> {
     const startTime = Date.now();
     this.logProgress('开始生成报告', 0);
     
@@ -745,14 +741,13 @@ export class ReportGenerationAgent extends Agent {
 
   private async integrateResults(results: AgentResult[]): Promise<any> {
     const prompt = `整合以下智能体的分析结果，提取关键信息和洞察：\n${results.map(r => `${r.agentName}: ${r.insights.join(', ')}`).join('\n')}`;
-    const integration = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     return {
       dataQuality: results.find(r => r.agentType === 'dataCollection')?.data,
       patterns: results.find(r => r.agentType === 'patternRecognition')?.data,
       predictions: results.find(r => r.agentType === 'predictiveModeling')?.data,
-      anomalies: results.find(r => r.agentType === 'anomalyDetection')?.data,
-      integration
+      anomalies: results.find(r => r.agentType === 'anomalyDetection')?.data
     };
   }
 
@@ -763,20 +758,19 @@ export class ReportGenerationAgent extends Agent {
 
   private async createDetailedAnalysis(integratedResults: any): Promise<any> {
     const prompt = `创建详细的分析报告，包括数据质量、模式识别、预测分析和异常检测的详细结果：\n${JSON.stringify(integratedResults).substring(0, 2000)}`;
-    const analysis = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     return {
       dataQualitySection: this.createDataQualitySection(integratedResults.dataQuality),
       patternAnalysisSection: this.createPatternAnalysisSection(integratedResults.patterns),
       predictionSection: this.createPredictionSection(integratedResults.predictions),
-      anomalySection: this.createAnomalySection(integratedResults.anomalies),
-      detailedAnalysis: analysis
+      anomalySection: this.createAnomalySection(integratedResults.anomalies)
     };
   }
 
   private async generateRecommendations(integratedResults: any): Promise<string[]> {
     const prompt = `基于分析结果生成具体的建议措施和行动计划：\n${JSON.stringify(integratedResults).substring(0, 2000)}`;
-    const recommendations = await this.callAI(prompt);
+    await this.callAI(prompt);
     
     // 解析AI生成的建议并格式化
     return [

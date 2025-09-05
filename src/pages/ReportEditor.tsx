@@ -46,8 +46,7 @@ import {
   FullscreenOutlined,
   FullscreenExitOutlined,
   ClockCircleOutlined,
-  TeamOutlined,
-  CommentOutlined,
+
   HistoryOutlined
 } from '@ant-design/icons';
 import { useParams, useLocation } from 'react-router-dom';
@@ -96,7 +95,7 @@ const ReportEditor: React.FC = () => {
 - **发展潜力**: 具备进一步提升空间，建议加大投入
 
 ### 3. 区域负荷分布
-${data.regions.map(region => 
+${data.regions.map((region: any) => 
   `- **${region.name}**: 负荷 ${region.load}，增长率 ${region.growth}`
 ).join('\n')}
 

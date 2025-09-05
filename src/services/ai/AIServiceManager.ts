@@ -136,7 +136,9 @@ class CacheManager {
     // 如果缓存已满，删除最旧的条目
     if (this.cache.size >= this.maxSize) {
       const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey);
+      if (oldestKey) {
+        this.cache.delete(oldestKey);
+      }
     }
 
     this.cache.set(key, { data, timestamp: Date.now() });
@@ -221,7 +223,7 @@ class MonitoringManager {
     }
 
     // 计算平均响应时间
-    for (const [provider, stat] of Object.entries(stats.providerStats)) {
+    for (const [, stat] of Object.entries(stats.providerStats)) {
       const successCount = stat.requests - stat.failures;
       if (successCount > 0) {
         stat.avgResponseTime = stat.avgResponseTime / successCount;
@@ -305,20 +307,8 @@ export class AIServiceManager {
     let response: AIResponse;
 
     switch (provider.name) {
-      case 'qwen':
-        response = await this.callQwen(provider, request);
-        break;
-      case 'kimi':
-        response = await this.callKimi(provider, request);
-        break;
       case 'zhipu':
         response = await this.callZhipu(provider, request);
-        break;
-      case 'deepseek':
-        response = await this.callDeepSeek(provider, request);
-        break;
-      case 'gemini':
-        response = await this.callGemini(provider, request);
         break;
       default:
         throw new Error(`Unsupported provider: ${provider.name}`);
@@ -334,105 +324,10 @@ export class AIServiceManager {
     return response;
   }
 
-  private async callQwen(provider: AIProvider, request: AIRequest): Promise<AIResponse> {
-    const apiKey = getAPIKey(provider.name);
-    if (!apiKey) {
-      throw new Error(`API key not found for provider: ${provider.name}`);
-    }
-    
-    const requestBody = {
-      model: provider.model,
-      input: {
-        messages: [
-          ...(request.systemPrompt ? [{ role: 'system', content: request.systemPrompt }] : []),
-          ...(request.context ? [{ role: 'user', content: request.context }] : []),
-          { role: 'user', content: request.prompt }
-        ]
-      },
-      parameters: {
-        temperature: request.parameters?.temperature ?? provider.parameters.temperature,
-        max_tokens: request.parameters?.maxTokens ?? provider.parameters.maxTokens,
-        top_p: request.parameters?.topP ?? provider.parameters.topP
-      }
-    };
 
-    const response = await fetch(provider.endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody),
-      signal: AbortSignal.timeout(AI_CONFIG.timeoutConfig.requestTimeout)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Qwen API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    
-    return {
-      content: data.output.text,
-      usage: {
-        promptTokens: data.usage.input_tokens || 0,
-        completionTokens: data.usage.output_tokens || 0,
-        totalTokens: data.usage.total_tokens || 0
-      },
-      model: provider.model,
-      provider: provider.name,
-      responseTime: 0
-    };
-  }
-
-  private async callKimi(provider: AIProvider, request: AIRequest): Promise<AIResponse> {
-    const apiKey = getAPIKey(provider.name);
-    if (!apiKey) {
-      throw new Error(`API key not found for provider: ${provider.name}`);
-    }
-    
-    const requestBody = {
-      model: provider.model,
-      messages: [
-        ...(request.systemPrompt ? [{ role: 'system', content: request.systemPrompt }] : []),
-        ...(request.context ? [{ role: 'user', content: request.context }] : []),
-        { role: 'user', content: request.prompt }
-      ],
-      temperature: request.parameters?.temperature ?? provider.parameters.temperature,
-      max_tokens: request.parameters?.maxTokens ?? provider.parameters.maxTokens,
-      top_p: request.parameters?.topP ?? provider.parameters.topP
-    };
-
-    const response = await fetch(provider.endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody),
-      signal: AbortSignal.timeout(AI_CONFIG.timeoutConfig.requestTimeout)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Kimi API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    
-    return {
-      content: data.choices[0].message.content,
-      usage: {
-        promptTokens: data.usage.prompt_tokens || 0,
-        completionTokens: data.usage.completion_tokens || 0,
-        totalTokens: data.usage.total_tokens || 0
-      },
-      model: provider.model,
-      provider: provider.name,
-      responseTime: 0
-    };
-  }
 
   private async callZhipu(provider: AIProvider, request: AIRequest): Promise<AIResponse> {
+    const startTime = Date.now();
     const apiKey = getAPIKey(provider.name);
     if (!apiKey) {
       throw new Error(`API key not found for provider: ${provider.name}`);
@@ -450,6 +345,8 @@ export class AIServiceManager {
       top_p: request.parameters?.topP ?? provider.parameters.topP
     };
 
+    console.log('🤖 调用智谱GLM API:', { model: provider.model, prompt: request.prompt.substring(0, 100) + '...' });
+
     const response = await fetch(provider.endpoint, {
       method: 'POST',
       headers: {
@@ -461,117 +358,30 @@ export class AIServiceManager {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('智谱GLM API错误:', response.status, errorText);
       throw new Error(`Zhipu API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+    const responseTime = Date.now() - startTime;
+    
+    console.log('✅ 智谱GLM API响应成功:', { responseTime, contentLength: data.choices?.[0]?.message?.content?.length });
     
     return {
-      content: data.choices[0].message.content,
+      content: data.choices?.[0]?.message?.content || '抱歉，AI服务暂时无法生成回复。',
       usage: {
-        promptTokens: data.usage.prompt_tokens || 0,
-        completionTokens: data.usage.completion_tokens || 0,
-        totalTokens: data.usage.total_tokens || 0
+        promptTokens: data.usage?.prompt_tokens || 0,
+        completionTokens: data.usage?.completion_tokens || 0,
+        totalTokens: data.usage?.total_tokens || 0
       },
       model: provider.model,
       provider: provider.name,
-      responseTime: 0
+      responseTime
     };
   }
 
-  private async callDeepSeek(provider: AIProvider, request: AIRequest): Promise<AIResponse> {
-    const apiKey = getAPIKey(provider.name);
-    if (!apiKey) {
-      throw new Error(`API key not found for provider: ${provider.name}`);
-    }
-    
-    const requestBody = {
-      model: provider.model,
-      messages: [
-        ...(request.systemPrompt ? [{ role: 'system', content: request.systemPrompt }] : []),
-        ...(request.context ? [{ role: 'user', content: request.context }] : []),
-        { role: 'user', content: request.prompt }
-      ],
-      temperature: request.parameters?.temperature ?? provider.parameters.temperature,
-      max_tokens: request.parameters?.maxTokens ?? provider.parameters.maxTokens,
-      top_p: request.parameters?.topP ?? provider.parameters.topP
-    };
 
-    const response = await fetch(provider.endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody),
-      signal: AbortSignal.timeout(AI_CONFIG.timeoutConfig.requestTimeout)
-    });
-
-    if (!response.ok) {
-      throw new Error(`DeepSeek API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    
-    return {
-      content: data.choices[0].message.content,
-      usage: {
-        promptTokens: data.usage.prompt_tokens || 0,
-        completionTokens: data.usage.completion_tokens || 0,
-        totalTokens: data.usage.total_tokens || 0
-      },
-      model: provider.model,
-      provider: provider.name,
-      responseTime: 0
-    };
-  }
-
-  private async callGemini(provider: AIProvider, request: AIRequest): Promise<AIResponse> {
-    const apiKey = getAPIKey(provider.name);
-    if (!apiKey) {
-      throw new Error(`API key not found for provider: ${provider.name}`);
-    }
-    
-    const requestBody = {
-      contents: [{
-        parts: [{
-          text: [request.systemPrompt, request.context, request.prompt].filter(Boolean).join('\n\n')
-        }]
-      }],
-      generationConfig: {
-        temperature: request.parameters?.temperature ?? provider.parameters.temperature,
-        maxOutputTokens: request.parameters?.maxTokens ?? provider.parameters.maxTokens,
-        topP: request.parameters?.topP ?? provider.parameters.topP
-      }
-    };
-
-    const response = await fetch(`${provider.endpoint}?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody),
-      signal: AbortSignal.timeout(AI_CONFIG.timeoutConfig.requestTimeout)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    
-    return {
-      content: data.candidates[0].content.parts[0].text,
-      usage: {
-        promptTokens: data.usageMetadata?.promptTokenCount || 0,
-        completionTokens: data.usageMetadata?.candidatesTokenCount || 0,
-        totalTokens: data.usageMetadata?.totalTokenCount || 0
-      },
-      model: provider.model,
-      provider: provider.name,
-      responseTime: 0
-    };
-  }
 
   private createAIError(error: any, provider: string): AIError {
     return {

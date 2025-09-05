@@ -12,6 +12,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  ExperimentOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -54,6 +55,11 @@ const MainLayout: React.FC = () => {
       key: '/analysis',
       icon: <BarChartOutlined />,
       label: 'AI分析中心',
+    },
+    {
+      key: '/test',
+      icon: <ExperimentOutlined />,
+      label: '🧪 功能测试',
     },
   ]
 

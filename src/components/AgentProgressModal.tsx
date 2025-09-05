@@ -126,7 +126,7 @@ const AgentProgressModal: React.FC<AgentProgressModalProps> = ({ visible, onClos
 
     // 串行启动智能体，增加真实感
     agents.forEach((agent, index) => {
-      const duration = getRandomDuration();
+      getRandomDuration();
       const startDelay = index * 1500; // 增加错开时间
 
       setTimeout(() => {

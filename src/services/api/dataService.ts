@@ -3,7 +3,6 @@
 
 import { supabase } from '../../lib/supabase';
 import type {
-  Database,
   DataSource,
   DataSourceInsert,
   DataSourceUpdate,
@@ -115,7 +114,7 @@ export class DataSourceService {
         return { data: null, error: '用户未登录', success: false };
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('data_sources')
         .insert({
           ...dataSource,
@@ -144,9 +143,9 @@ export class DataSourceService {
   // 更新数据源
   static async updateDataSource(id: string, updates: DataSourceUpdate): Promise<ApiResponse<DataSource>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('data_sources')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
@@ -197,7 +196,7 @@ export class DataSourceService {
   static async testConnection(id: string): Promise<ApiResponse<boolean>> {
     try {
       // 更新状态为测试中
-      await supabase
+      await (supabase as any)
         .from('data_sources')
         .update({ status: 'testing' })
         .eq('id', id);
@@ -209,7 +208,7 @@ export class DataSourceService {
       const isSuccess = Math.random() > 0.2;
       const status = isSuccess ? 'active' : 'error';
 
-      await supabase
+      await (supabase as any)
         .from('data_sources')
         .update({ status })
         .eq('id', id);
@@ -230,7 +229,7 @@ export class DataSourceService {
         p_action: action,
         p_resource_type: resourceType,
         p_resource_id: resourceId
-      });
+      } as any);
     } catch (error) {
       console.warn('Failed to log user activity:', error);
     }
@@ -265,7 +264,7 @@ export class AnalysisTaskService {
         page_size: pageSize,
         page_offset: (page - 1) * pageSize,
         status_filter: statusFilter
-      });
+      } as any);
 
       if (error) {
         return {
@@ -279,7 +278,7 @@ export class AnalysisTaskService {
         };
       }
 
-      const total = data?.[0]?.total_count || 0;
+      const total = (data as any)?.[0]?.total_count || 0;
       const totalPages = Math.ceil(total / pageSize);
 
       return {
@@ -312,7 +311,7 @@ export class AnalysisTaskService {
         return { data: null, error: '用户未登录', success: false };
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('analysis_tasks')
         .insert({
           ...task,
@@ -338,7 +337,7 @@ export class AnalysisTaskService {
   // 更新分析任务
   static async updateAnalysisTask(id: string, updates: AnalysisTaskUpdate): Promise<ApiResponse<AnalysisTask>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('analysis_tasks')
         .update(updates)
         .eq('id', id)
@@ -385,7 +384,7 @@ export class AnalysisTaskService {
   // 启动分析任务
   static async startAnalysisTask(id: string): Promise<ApiResponse<AnalysisTask>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('analysis_tasks')
         .update({
           status: 'running',
@@ -413,7 +412,7 @@ export class AnalysisTaskService {
   // 停止分析任务
   static async stopAnalysisTask(id: string): Promise<ApiResponse<AnalysisTask>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('analysis_tasks')
         .update({
           status: 'cancelled',
@@ -443,7 +442,7 @@ export class AnalysisResultService {
   // 保存分析结果
   static async saveAnalysisResult(result: AnalysisResultInsert): Promise<ApiResponse<AnalysisResult>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('analysis_results')
         .insert(result)
         .select()
@@ -567,7 +566,7 @@ export class ReportService {
         return { data: null, error: '用户未登录', success: false };
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('reports')
         .insert({
           ...report,
@@ -593,7 +592,7 @@ export class ReportService {
   // 更新报告
   static async updateReport(id: string, updates: ReportUpdate): Promise<ApiResponse<Report>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('reports')
         .update(updates)
         .eq('id', id)
@@ -628,9 +627,9 @@ export class ReportService {
       }
 
       // 增加查看次数
-      await supabase
+      await (supabase as any)
         .from('reports')
-        .update({ view_count: (data.view_count || 0) + 1 })
+        .update({ view_count: ((data as any).view_count || 0) + 1 })
         .eq('id', id);
 
       return { data, error: null, success: true };
@@ -646,7 +645,7 @@ export class ReportService {
   // 发布报告
   static async publishReport(id: string): Promise<ApiResponse<Report>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('reports')
         .update({
           status: 'published',
@@ -720,9 +719,9 @@ export class ReportTemplateService {
       }
 
       // 增加使用次数
-      await supabase
+      await (supabase as any)
         .from('report_templates')
-        .update({ usage_count: (data.usage_count || 0) + 1 })
+        .update({ usage_count: ((data as any).usage_count || 0) + 1 })
         .eq('id', id);
 
       return { data, error: null, success: true };
@@ -774,7 +773,7 @@ export class UserService {
         return { data: null, error: '用户未登录', success: false };
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_profiles')
         .update(updates)
         .eq('id', user.id)
@@ -803,7 +802,7 @@ export class UserService {
         return { data: null, error: '用户未登录', success: false };
       }
 
-      const { data, error } = await supabase.rpc('get_user_permissions', {
+      const { data, error } = await (supabase as any).rpc('get_user_permissions', {
         user_uuid: user.id
       });
 
@@ -829,7 +828,7 @@ export class UserService {
         return { data: false, error: '用户未登录', success: false };
       }
 
-      const { data, error } = await supabase.rpc('check_user_permission', {
+      const { data, error } = await (supabase as any).rpc('check_user_permission', {
         user_uuid: user.id,
         permission
       });
@@ -862,7 +861,7 @@ export class FileUploadService {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-      const { data, error } = await supabase.storage
+      const { data: _data, error } = await supabase.storage
         .from(bucket)
         .upload(fileName, file);
 

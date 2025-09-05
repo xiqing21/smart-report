@@ -10,6 +10,7 @@ import ReportEditor from '../pages/ReportEditor'
 import Templates from '../pages/Templates'
 import AIAnalysis from '../pages/AIAnalysis'
 import AgentMonitor from '../pages/AgentMonitor'
+import TestPage from '../pages/TestPage'
 import ProtectedRoute from '../components/ProtectedRoute'
 
 export const router = createBrowserRouter([
@@ -66,6 +67,10 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         element: <Profile />,
+      },
+      {
+        path: 'test',
+        element: <TestPage />,
       },
     ],
   },
