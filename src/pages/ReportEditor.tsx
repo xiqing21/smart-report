@@ -396,13 +396,13 @@ ${data.regions.map((region: any) =>
   const [lastSaved, setLastSaved] = useState<Date>(new Date());
   const [wordCount, setWordCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, _setIsLoading] = useState(false);
 
   // 加载现有报告数据
   React.useEffect(() => {
     const loadReport = async () => {
       if (id && id !== 'new') {
-        setIsLoading(true);
+        _setIsLoading(true);
         try {
           console.log('📖 加载报告数据，ID:', id);
           const response = await ReportService.getReports(1, 50);
@@ -448,7 +448,7 @@ ${data.regions.map((region: any) =>
           console.error('❌ 加载报告异常:', error);
           message.error('加载报告时发生错误');
         } finally {
-          setIsLoading(false);
+          _setIsLoading(false);
         }
       }
     };

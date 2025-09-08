@@ -2,7 +2,7 @@
 // Data Service Layer for Supabase Integration
 
 import { supabase } from '../../lib/supabase';
-import { LocalStorageService, type LocalReport } from './localStorageService';
+import { LocalStorageService } from './localStorageService';
 import type {
   DataSource,
   DataSourceInsert,

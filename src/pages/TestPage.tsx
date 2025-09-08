@@ -19,7 +19,7 @@ const TestPage: React.FC = () => {
     query: boolean;
     summary: string;
   } | null>(null);
-  const [supabaseTestResult, setSupabaseTestResult] = useState<string>('');
+  const [_supabaseTestResult, _setSupabaseTestResult] = useState<string>('');
 
   const testAIService = async () => {
     if (!prompt.trim()) {

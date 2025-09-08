@@ -10,7 +10,6 @@ import {
   Space,
   Avatar,
   Dropdown,
-  Modal,
   message,
   Tooltip,
   Progress,
@@ -81,9 +80,9 @@ const Reports: React.FC = () => {
     })
   }
 
-  const handleDownload = (record: Report) => {
-    message.info('下载功能开发中...')
-  }
+  const handleDownload = (_record: Report) => {
+    message.info('下载功能开发中...');
+  };
 
   const handleDelete = async (record: Report) => {
     console.log('🗑️ handleDelete 被调用，报告ID:', record.id, '标题:', record.title)

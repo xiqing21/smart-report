@@ -64,7 +64,7 @@ class MockAuthService {
   }
 
   // 注册
-  async register(email: string, password: string, name: string): Promise<{ user: MockUser | null; error: string | null }> {
+  async register(email: string, _password: string, name: string): Promise<{ user: MockUser | null; error: string | null }> {
     console.log('📝 Mock注册尝试:', email, name);
     
     // 检查用户是否已存在
