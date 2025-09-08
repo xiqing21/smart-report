@@ -13,6 +13,15 @@ import AgentMonitor from '../pages/AgentMonitor'
 import TestPage from '../pages/TestPage'
 import ProtectedRoute from '../components/ProtectedRoute'
 
+// 根据环境变量设置basename
+const getBasename = () => {
+  // 在GitHub Pages环境中使用/smart-report/作为basename
+  if (import.meta.env.VITE_GITHUB_PAGES === 'true') {
+    return '/smart-report'
+  }
+  return '/'
+}
+
 export const router = createBrowserRouter([
   // 公开路由 - 未认证用户可访问
   {
@@ -74,4 +83,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
-])
+], {
+  basename: getBasename()
+})
