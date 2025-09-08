@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Card,
   Table,
@@ -13,7 +13,8 @@ import {
   Modal,
   message,
   Tooltip,
-  Progress
+  Progress,
+  App
 } from 'antd'
 import {
   AppstoreOutlined,
@@ -37,137 +38,173 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import type { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
+import { ReportService } from '../services/api/dataService'
+import type { Report as DatabaseReport } from '../types/database'
 
 const { Search } = Input
 const { Option } = Select
 const { RangePicker } = DatePicker
 
-interface Report {
-  id: string
-  title: string
-  description: string
-  status: 'draft' | 'published' | 'reviewing' | 'archived'
-  author: string
+// 使用数据库Report类型，并添加显示需要的字段
+interface Report extends DatabaseReport {
+  author?: string
   authorAvatar?: string
-  createTime: string
-  updateTime: string
-  views: number
-  category: string
-  tags: string[]
+  category?: string
   progress?: number
-  size: string
+  size?: string
+  description?: string
 }
 
 const Reports: React.FC = () => {
   const navigate = useNavigate()
+  const { modal } = App.useApp()
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table')
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [dateRange, setDateRange] = useState<any>(null)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const [loading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  // 模拟数据
-  const mockReports: Report[] = [
-    {
-      id: '1',
-      title: '2024年第一季度销售分析报告',
-      description: '详细分析第一季度各产品线销售情况，包含市场趋势和竞争对手分析',
-      status: 'published',
-      author: '张三',
-      authorAvatar: '',
-      createTime: '2024-01-15 14:30:00',
-      updateTime: '2024-01-16 09:15:00',
-      views: 156,
-      category: '销售分析',
-      tags: ['季度报告', '销售', '数据分析'],
-      size: '2.3 MB'
-    },
-    {
-      id: '2',
-      title: '用户行为数据洞察报告',
-      description: '基于用户行为数据的深度分析，发现用户使用模式和优化建议',
-      status: 'draft',
-      author: '李四',
-      createTime: '2024-01-14 09:15:00',
-      updateTime: '2024-01-14 16:45:00',
-      views: 89,
-      category: '用户研究',
-      tags: ['用户行为', 'UX', '数据洞察'],
-      progress: 65,
-      size: '1.8 MB'
-    },
-    {
-      id: '3',
-      title: '市场竞争力分析报告',
-      description: '全面分析市场竞争环境，评估公司产品竞争力和市场定位',
-      status: 'reviewing',
-      author: '王五',
-      createTime: '2024-01-13 16:45:00',
-      updateTime: '2024-01-13 18:20:00',
-      views: 234,
-      category: '市场分析',
-      tags: ['竞争分析', '市场调研', '战略规划'],
-      size: '3.1 MB'
-    },
-    {
-      id: '4',
-      title: '产品功能使用情况统计',
-      description: '统计分析各产品功能的使用频率和用户满意度',
-      status: 'published',
-      author: '赵六',
-      createTime: '2024-01-12 11:20:00',
-      updateTime: '2024-01-12 15:30:00',
-      views: 98,
-      category: '产品分析',
-      tags: ['功能分析', '用户体验', '产品优化'],
-      size: '1.5 MB'
-    },
-    {
-      id: '5',
-      title: '年度财务总结报告',
-      description: '2023年度财务状况全面总结，包含收入、支出和投资回报分析',
-      status: 'archived',
-      author: '钱七',
-      createTime: '2023-12-28 10:00:00',
-      updateTime: '2023-12-30 14:20:00',
-      views: 445,
-      category: '财务分析',
-      tags: ['年度报告', '财务', '总结'],
-      size: '4.2 MB'
-    }
-  ]
-
-  const [reports, setReports] = useState<Report[]>(mockReports)
-
-
-
+  // 处理函数
   const handleEdit = (record: Report) => {
     navigate(`/editor/${record.id}`)
   }
 
-  const handleDelete = (record: Report) => {
-    Modal.confirm({
-      title: '确认删除',
-      content: `确定要删除报告 "${record.title}" 吗？此操作不可恢复。`,
-      okText: '删除',
-      okType: 'danger',
-      cancelText: '取消',
-      onOk() {
-        setReports(reports.filter(r => r.id !== record.id))
-        message.success('报告删除成功')
-      }
+  const handleShare = (record: Report) => {
+    // 复制分享链接到剪贴板
+    const shareUrl = `${window.location.origin}/reports/${record.id}`
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      message.success('分享链接已复制到剪贴板')
+    }).catch(() => {
+      message.error('复制失败，请手动复制链接')
     })
   }
 
-  const handleShare = (record: Report) => {
-    message.success(`报告 "${record.title}" 分享链接已复制到剪贴板`)
+  const handleDownload = (record: Report) => {
+    message.info('下载功能开发中...')
   }
 
-  const handleDownload = (record: Report) => {
-    message.success(`正在下载报告 "${record.title}"`)
+  const handleDelete = async (record: Report) => {
+    console.log('🗑️ handleDelete 被调用，报告ID:', record.id, '标题:', record.title)
+    
+    const modalInstance = modal.confirm({
+      title: '确认删除',
+      content: `确定要删除报告「${record.title}」吗？此操作不可恢复。`,
+      okText: '确认删除',
+      cancelText: '取消',
+      okType: 'danger' as const,
+      centered: true,
+      maskClosable: false,
+      zIndex: 9999,
+      width: 400,
+      className: 'delete-confirm-modal',
+      getContainer: () => document.body,
+      autoFocusButton: 'ok',
+      onOk: async () => {
+        console.log('🔄 用户确认删除，开始执行删除操作...')
+        try {
+          console.log('📡 调用 ReportService.deleteReport，ID:', record.id)
+          const response = await ReportService.deleteReport(record.id)
+          console.log('📥 删除API响应:', response)
+          
+          if (response.success) {
+            console.log('✅ 删除成功，更新UI状态')
+            message.success('报告删除成功')
+            // 从列表中移除已删除的报告
+            setReports(prevReports => {
+              const newReports = prevReports.filter(r => r.id !== record.id)
+              console.log('📋 更新报告列表，删除前:', prevReports.length, '删除后:', newReports.length)
+              return newReports
+            })
+            // 清除选中状态
+            setSelectedRowKeys(prevKeys => {
+              const newKeys = prevKeys.filter(key => key !== record.id)
+              console.log('🔑 更新选中状态，删除前:', prevKeys, '删除后:', newKeys)
+              return newKeys
+            })
+          } else {
+            console.error('❌ 删除失败:', response.error)
+            message.error(`删除失败: ${response.error || '未知错误'}`)
+          }
+        } catch (error) {
+          console.error('❌ 删除报告异常:', error)
+          message.error('删除失败，请检查网络连接')
+        }
+      },
+      onCancel: () => {
+        console.log('❌ 用户取消删除操作')
+      }
+    })
+    
+    console.log('📋 Modal.confirm 已调用，modal实例:', modalInstance)
+    
+    // 调试：检查DOM中是否有Modal元素
+    setTimeout(() => {
+      const modalElements = document.querySelectorAll('.ant-modal, .ant-modal-confirm')
+      console.log('🔍 DOM中的Modal元素数量:', modalElements.length)
+      modalElements.forEach((el, index) => {
+        console.log(`📋 Modal元素 ${index}:`, el, '可见性:', window.getComputedStyle(el).display)
+      })
+      
+      const maskElements = document.querySelectorAll('.ant-modal-mask')
+      console.log('🎭 DOM中的Mask元素数量:', maskElements.length)
+      maskElements.forEach((el, index) => {
+        console.log(`🎭 Mask元素 ${index}:`, el, '可见性:', window.getComputedStyle(el).display)
+      })
+    }, 100)
   }
+
+
+
+  const [reports, setReports] = useState<Report[]>([])
+
+  // 获取报告数据
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        setLoading(true)
+        const response = await ReportService.getReports(1, 50) // 获取前50条报告
+        
+        if (response.success && response.data) {
+          // 将数据库报告转换为UI需要的格式
+          const formattedReports: Report[] = response.data.map((report: any) => ({
+            ...report,
+            author: '系统用户', // 默认作者
+            authorAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=User',
+            category: '智能报告', // 默认分类
+            progress: 100, // 已保存的报告默认为完成状态
+            size: '未知大小'
+          }))
+          
+          setReports(formattedReports)
+          console.log('✅ 成功从Supabase获取报告:', formattedReports.length, '条')
+        } else {
+          // API调用失败，显示空列表
+          setReports([])
+          if (response.error) {
+            message.error(`获取报告数据失败: ${response.error}`)
+          } else {
+            message.info('暂无报告数据')
+          }
+        }
+      } catch (error) {
+        console.error('获取报告失败:', error)
+        setReports([])
+        message.error('获取报告数据失败，请检查网络连接')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchReports()
+  }, [])
+
+
+
+
+
+
 
   const getActionMenu = (record: Report) => ({
     items: [
@@ -223,7 +260,7 @@ const Reports: React.FC = () => {
               {text}
             </div>
             <div className="text-xs text-gray-500 truncate max-w-xs">
-              {record.description}
+              {record.description || '暂无描述'}
             </div>
           </div>
         </div>
@@ -283,8 +320,8 @@ const Reports: React.FC = () => {
     },
     {
       title: '更新时间',
-      dataIndex: 'updateTime',
-      key: 'updateTime',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
       width: 150,
       render: (time: string) => (
         <Tooltip title={time}>
@@ -326,13 +363,13 @@ const Reports: React.FC = () => {
 
   const filteredReports = reports.filter(report => {
     const matchesSearch = report.title.toLowerCase().includes(searchText.toLowerCase()) ||
-                         report.description.toLowerCase().includes(searchText.toLowerCase())
+                         (report.description?.toLowerCase().includes(searchText.toLowerCase()) ?? false)
     const matchesStatus = statusFilter === 'all' || report.status === statusFilter
     const matchesCategory = categoryFilter === 'all' || report.category === categoryFilter
     
     let matchesDate = true
     if (dateRange && dateRange.length === 2) {
-      const reportDate = dayjs(report.updateTime)
+      const reportDate = dayjs(report.updated_at)
       matchesDate = reportDate.isAfter(dateRange[0]) && reportDate.isBefore(dateRange[1])
     }
     
@@ -400,7 +437,7 @@ const Reports: React.FC = () => {
                         </div>
                         
                         <p style={{ color: '#8c8c8c', fontSize: '14px', marginBottom: '12px', lineHeight: '1.4' }}>
-                          {report.description}
+                          {report.description || '暂无描述'}
                         </p>
                         
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -428,16 +465,16 @@ const Reports: React.FC = () => {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#999', marginBottom: '8px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <ClockCircleOutlined style={{ fontSize: '11px' }} />
-                            <span>{dayjs(report.updateTime).format('MM-DD HH:mm')}</span>
+                            <span>{dayjs(report.updated_at).format('MM-DD HH:mm')}</span>
                           </div>
                           <span style={{ fontWeight: '500' }}>{report.size}</span>
                         </div>
                         
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '12px' }}>
-                          {report.tags.slice(0, 2).map((tag: string) => (
+                          {report.tags?.slice(0, 2).map((tag: string) => (
                             <Tag key={tag} style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>{tag}</Tag>
                           ))}
-                          {report.tags.length > 2 && (
+                          {report.tags && report.tags.length > 2 && (
                             <Tag style={{ fontSize: '10px', margin: 0, padding: '1px 4px', height: 'auto', lineHeight: '1.2' }}>+{report.tags.length - 2}</Tag>
                           )}
                         </div>

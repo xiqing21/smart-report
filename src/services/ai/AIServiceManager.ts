@@ -152,7 +152,33 @@ class CacheManager {
       parameters: request.parameters,
       provider
     };
-    return btoa(JSON.stringify(keyData)).replace(/[+/=]/g, '');
+    
+    // 使用更安全的编码方式，支持中文字符
+    try {
+      // 先将字符串转换为UTF-8字节，再进行base64编码
+      const jsonString = JSON.stringify(keyData);
+      const encoder = new TextEncoder();
+      const data = encoder.encode(jsonString);
+      
+      // 将字节数组转换为base64
+      let binary = '';
+      for (let i = 0; i < data.length; i++) {
+        binary += String.fromCharCode(data[i]);
+      }
+      
+      return btoa(binary).replace(/[+/=]/g, '');
+    } catch (error) {
+      // 如果编码失败，使用简单的哈希方法
+      console.warn('缓存键编码失败，使用备用方法:', error);
+      const jsonString = JSON.stringify(keyData);
+      let hash = 0;
+      for (let i = 0; i < jsonString.length; i++) {
+        const char = jsonString.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // 转换为32位整数
+      }
+      return Math.abs(hash).toString(36);
+    }
   }
 
   clear(): void {

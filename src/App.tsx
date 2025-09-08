@@ -1,9 +1,12 @@
 import { RouterProvider } from 'react-router-dom'
+import { App as AntdApp } from 'antd'
 import { router } from './router'
 
 function App() {
   return (
-    <RouterProvider router={router} />
+    <AntdApp>
+      <RouterProvider router={router} />
+    </AntdApp>
   )
 }
 

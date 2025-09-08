@@ -50,6 +50,7 @@ import {
   HistoryOutlined
 } from '@ant-design/icons';
 import { useParams, useLocation } from 'react-router-dom';
+import { ReportService } from '../services/api/dataService';
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -75,8 +76,246 @@ const ReportEditor: React.FC = () => {
   // 获取从AI分析传递过来的数据
   const analysisData = location.state?.analysisData;
   
+  // 获取模板ID参数
+  const searchParams = new URLSearchParams(location.search);
+  const templateId = searchParams.get('template');
+  
+  // 模板数据映射
+  const templateData: Record<string, any> = {
+    '1': {
+      title: '年度业务分析报告',
+      content: `# 年度业务分析报告
+
+## 执行摘要
+本报告分析了公司年度业务发展情况，涵盖财务表现、市场地位、运营效率等关键指标。
+
+## 业务概况
+### 财务表现
+- 营业收入：同比增长15.2%
+- 净利润：同比增长12.8%
+- 毛利率：保持在35.6%的健康水平
+
+### 市场表现
+- 市场份额：在主要细分市场中排名前三
+- 客户满意度：达到92.3%
+- 品牌知名度：提升8.5个百分点
+
+## 关键成就
+1. **产品创新**：推出3款新产品，获得市场积极反响
+2. **数字化转型**：完成核心业务系统升级
+3. **团队建设**：员工满意度提升至89.2%
+
+## 挑战与机遇
+### 面临挑战
+- 原材料成本上涨压力
+- 市场竞争加剧
+- 人才招聘难度增加
+
+### 发展机遇
+- 新兴市场需求增长
+- 技术创新带来的效率提升
+- 政策支持力度加大
+
+## 未来展望
+基于当前业务基础和市场环境分析，预计下一年度将继续保持稳健增长态势。
+
+---
+*报告生成时间：${new Date().toLocaleDateString()}*`
+    },
+    '2': {
+      title: '市场调研报告',
+      content: `# 市场调研报告
+
+## 调研概述
+本次调研旨在深入了解目标市场的消费者需求、竞争格局和发展趋势。
+
+## 市场规模分析
+### 整体市场
+- 市场总规模：约500亿元
+- 年增长率：8.3%
+- 预计未来3年复合增长率：10.2%
+
+### 细分市场
+1. **高端市场**：占比35%，增长迅速
+2. **中端市场**：占比50%，竞争激烈
+3. **入门市场**：占比15%，价格敏感
+
+## 消费者洞察
+### 消费行为特征
+- 品质导向：67%的消费者优先考虑产品质量
+- 价格敏感：45%的消费者对价格较为敏感
+- 品牌忠诚：32%的消费者有明确品牌偏好
+
+### 购买决策因素
+1. 产品质量（重要性：85%）
+2. 价格合理性（重要性：72%）
+3. 品牌声誉（重要性：58%）
+4. 售后服务（重要性：51%）
+
+## 竞争分析
+### 主要竞争对手
+- **竞争对手A**：市场份额25%，技术领先
+- **竞争对手B**：市场份额20%，价格优势
+- **竞争对手C**：市场份额15%，渠道广泛
+
+## 市场机会
+1. **技术创新空间**：新技术应用潜力巨大
+2. **渠道下沉**：三四线城市需求增长
+3. **个性化需求**：定制化产品市场兴起
+
+## 建议与策略
+基于调研结果，建议采取差异化竞争策略，重点关注产品创新和用户体验提升。
+
+---
+*调研时间：${new Date().toLocaleDateString()}*`
+    },
+    '3': {
+      title: '财务分析报告',
+      content: `# 财务分析报告
+
+## 财务概况
+本报告基于最新财务数据，全面分析公司财务状况和经营成果。
+
+## 盈利能力分析
+### 收入结构
+- 主营业务收入：占总收入的85.2%
+- 其他业务收入：占总收入的14.8%
+- 收入增长率：同比增长18.5%
+
+### 利润分析
+- 毛利率：36.8%（同比提升2.1个百分点）
+- 净利率：12.3%（同比提升1.5个百分点）
+- ROE：15.6%（行业平均水平：12.8%）
+
+## 财务状况分析
+### 资产结构
+- 流动资产：占总资产的45.3%
+- 非流动资产：占总资产的54.7%
+- 资产负债率：52.1%（处于合理区间）
+
+### 现金流分析
+- 经营活动现金流：净流入2.8亿元
+- 投资活动现金流：净流出1.2亿元
+- 筹资活动现金流：净流入0.5亿元
+
+## 财务指标对比
+### 偿债能力
+- 流动比率：1.85（行业平均：1.62）
+- 速动比率：1.23（行业平均：1.15）
+- 资产负债率：52.1%（行业平均：58.3%）
+
+### 运营效率
+- 总资产周转率：1.2次/年
+- 应收账款周转率：8.5次/年
+- 存货周转率：6.2次/年
+
+## 风险评估
+### 主要风险
+1. **市场风险**：行业周期性波动影响
+2. **信用风险**：应收账款集中度较高
+3. **流动性风险**：短期债务偿还压力
+
+### 风险控制措施
+- 加强应收账款管理
+- 优化资本结构
+- 建立风险预警机制
+
+## 财务预测
+基于当前财务状况和市场环境，预计下一财年将保持稳健增长。
+
+---
+*分析基准日：${new Date().toLocaleDateString()}*`
+    },
+    '4': {
+      title: '项目进度报告',
+      content: `# 项目进度报告
+
+## 项目概况
+项目名称：智能报告系统开发项目
+项目周期：2024年1月 - 2024年6月
+当前阶段：开发阶段
+
+## 进度总览
+### 整体进度
+- 计划进度：65%
+- 实际进度：68%
+- 进度状态：✅ 超前完成
+
+### 里程碑完成情况
+1. **需求分析**：✅ 已完成（2024年1月）
+2. **系统设计**：✅ 已完成（2024年2月）
+3. **开发实施**：🔄 进行中（预计2024年4月完成）
+4. **系统测试**：⏳ 待开始（2024年5月）
+5. **上线部署**：⏳ 待开始（2024年6月）
+
+## 各模块进度
+### 前端开发
+- 用户界面设计：100%
+- 组件开发：85%
+- 页面集成：70%
+- 响应式适配：60%
+
+### 后端开发
+- 数据库设计：100%
+- API接口开发：80%
+- 业务逻辑实现：75%
+- 性能优化：40%
+
+### AI功能模块
+- 智能分析引擎：90%
+- 自然语言处理：85%
+- 数据可视化：70%
+- 报告生成：65%
+
+## 资源使用情况
+### 人力资源
+- 前端开发：3人（计划3人）
+- 后端开发：4人（计划4人）
+- AI算法：2人（计划2人）
+- 测试人员：2人（计划2人）
+
+### 预算执行
+- 总预算：500万元
+- 已使用：320万元（64%）
+- 剩余预算：180万元
+- 预算状态：✅ 控制良好
+
+## 风险与问题
+### 当前风险
+1. **技术风险**：AI模型训练时间可能延长
+2. **资源风险**：关键开发人员可能离职
+3. **进度风险**：第三方接口对接可能延期
+
+### 已解决问题
+- ✅ 数据库性能优化完成
+- ✅ 前端兼容性问题解决
+- ✅ API接口规范统一
+
+## 下阶段计划
+### 本月目标
+1. 完成剩余API接口开发
+2. 完成前端页面集成测试
+3. 开始系统集成测试准备
+
+### 下月计划
+1. 启动系统测试阶段
+2. 完成用户验收测试
+3. 准备生产环境部署
+
+---
+*报告日期：${new Date().toLocaleDateString()}*
+*下次更新：${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}*`
+    }
+  };
+  
   // 生成AI分析报告内容
   const generateAIReportContent = () => {
+    // 优先处理模板数据
+    if (templateId && templateData[templateId]) {
+      return templateData[templateId].content;
+    }
+    
+    // 处理AI分析数据
     if (analysisData && analysisData.type === 'ai-analysis') {
       const { data } = analysisData;
       return `# 山西电网智能分析报告
@@ -116,13 +355,29 @@ ${data.regions.map((region: any) =>
 ---
 *本报告由AI智能分析系统自动生成，数据截止时间：${new Date().toLocaleDateString()}*`;
     }
+    
+    // 默认内容
     return id ? '这是一个示例报告内容。您可以在这里编辑您的报告内容，支持富文本编辑功能。\n\n本报告包含以下几个部分：\n1. 数据分析概述\n2. 关键指标解读\n3. 趋势预测\n4. 建议与总结\n\n请根据您的需要进行编辑和调整。' : '';
   };
 
   const editorRef = useRef<HTMLDivElement>(null);
   
+  // 获取初始标题
+  const getInitialTitle = () => {
+    if (templateId && templateData[templateId]) {
+      return templateData[templateId].title;
+    }
+    if (analysisData) {
+      return '山西电网智能分析报告';
+    }
+    if (id) {
+      return '智能报告分析 - 2024年度总结';
+    }
+    return '新建报告';
+  };
+
   const [editorState, setEditorState] = useState<EditorState>({
-    title: analysisData ? '山西电网智能分析报告' : (id ? '智能报告分析 - 2024年度总结' : '新建报告'),
+    title: getInitialTitle(),
     content: generateAIReportContent(),
     fontSize: 14,
     fontFamily: 'Microsoft YaHei',
@@ -140,6 +395,66 @@ ${data.regions.map((region: any) =>
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date>(new Date());
   const [wordCount, setWordCount] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 加载现有报告数据
+  React.useEffect(() => {
+    const loadReport = async () => {
+      if (id && id !== 'new') {
+        setIsLoading(true);
+        try {
+          console.log('📖 加载报告数据，ID:', id);
+          const response = await ReportService.getReports(1, 50);
+          
+          if (response.success && response.data) {
+            const report = response.data.find((r: any) => r.id === id);
+            if (report) {
+              console.log('✅ 找到报告数据:', report);
+              
+              // 解析报告内容
+               let content = '';
+               let formatting: any = {};
+               
+               if (typeof report.content === 'string') {
+                 content = report.content;
+               } else if (report.content && typeof report.content === 'object') {
+                 content = report.content.text || '';
+                 formatting = report.content.formatting || {};
+               }
+               
+               setEditorState(prev => ({
+                 ...prev,
+                 title: report.title || '未命名报告',
+                 content: content,
+                 fontSize: report.content?.fontSize || prev.fontSize,
+                 fontFamily: report.content?.fontFamily || prev.fontFamily,
+                 textColor: report.content?.textColor || prev.textColor,
+                 backgroundColor: report.content?.backgroundColor || prev.backgroundColor,
+                 isBold: formatting.isBold || false,
+                 isItalic: formatting.isItalic || false,
+                 isUnderline: formatting.isUnderline || false,
+                 alignment: formatting.alignment || 'left'
+               }));
+            } else {
+              console.warn('⚠️ 未找到指定ID的报告:', id);
+              message.warning('未找到指定的报告');
+            }
+          } else {
+            console.error('❌ 加载报告失败:', response.error);
+            message.error('加载报告失败');
+          }
+        } catch (error) {
+          console.error('❌ 加载报告异常:', error);
+          message.error('加载报告时发生错误');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    loadReport();
+  }, [id]);
 
   // 字体选项
   const fontFamilyOptions = [
@@ -165,21 +480,59 @@ ${data.regions.map((region: any) =>
   ];
 
   // 保存报告
-  const handleSave = () => {
-    setLastSaved(new Date());
-    message.success('报告已保存');
+  const handleSave = async () => {
+    if (isSaving) return;
+    
+    setIsSaving(true);
+    try {
+      console.log('💾 开始保存报告...');
+      console.log('报告数据:', { title: editorState.title, content: editorState.content });
+      
+      const result = await ReportService.createReport({
+        title: editorState.title,
+        content: {
+          text: editorState.content,
+          fontSize: editorState.fontSize,
+          fontFamily: editorState.fontFamily,
+          textColor: editorState.textColor,
+          backgroundColor: editorState.backgroundColor,
+          formatting: {
+            isBold: editorState.isBold,
+            isItalic: editorState.isItalic,
+            isUnderline: editorState.isUnderline,
+            alignment: editorState.alignment
+          }
+        },
+        status: 'draft'
+      });
+      
+      if (result.success && result.data) {
+        console.log('✅ 报告保存成功:', result.data);
+        setLastSaved(new Date());
+        message.success(`报告保存成功！报告ID: ${result.data.id}`);
+      } else {
+        console.error('❌ 报告保存失败:', result.error);
+        message.error(`保存失败: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('❌ 保存报告异常:', error);
+      message.error(`保存异常: ${error instanceof Error ? error.message : '未知错误'}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // 自动保存
   React.useEffect(() => {
     const autoSave = setInterval(() => {
-      if (editorState.content.trim()) {
-        setLastSaved(new Date());
+      if (editorState.title && editorState.content.trim() && !isSaving) {
+        console.log('🔄 自动保存中...');
+        handleSave();
       }
     }, 30000); // 30秒自动保存
 
     return () => clearInterval(autoSave);
-  }, [editorState.content]);
+  }, [editorState.title, editorState.content, isSaving]);
 
   // 统计字数
   React.useEffect(() => {
@@ -343,9 +696,10 @@ ${data.regions.map((region: any) =>
               type="primary"
               icon={<SaveOutlined />}
               onClick={handleSave}
+              loading={isSaving}
               variant="glow"
             >
-              保存
+              {isSaving ? '保存中...' : '保存'}
             </EnhancedButton>
             <EnhancedButton icon={<UndoOutlined />} disabled variant="pulse">撤销</EnhancedButton>
             <EnhancedButton icon={<RedoOutlined />} disabled variant="pulse">重做</EnhancedButton>

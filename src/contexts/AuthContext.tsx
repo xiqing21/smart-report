@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { mockAuthService, type MockUser } from '../lib/mockAuth'
 import type { AuthUser, AuthContextType, AuthState, Profile, ProfileUpdate, LoginCredentials, RegisterCredentials, ResetPasswordCredentials, UpdatePasswordCredentials } from '../types/auth'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -23,6 +24,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     session: null,
     loading: true,
     initialized: false
+  })
+
+  // 将MockUser转换为AuthUser
+  const convertMockUserToAuthUser = (mockUser: MockUser): AuthUser => ({
+    id: mockUser.id,
+    email: mockUser.email,
+    app_metadata: {},
+    aud: 'authenticated',
+    user_metadata: {
+      full_name: mockUser.name,
+      avatar_url: mockUser.avatar || null
+    },
+    created_at: new Date().toISOString(),
+    profile: {
+      id: mockUser.id,
+      user_id: mockUser.id,
+      full_name: mockUser.name,
+      avatar_url: mockUser.avatar || null,
+      phone: null,
+      bio: null,
+      website: null,
+      location: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
   })
 
   // Fetch user profile - 暂时跳过profiles表查询
@@ -64,57 +90,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession()
+        console.log('🔄 初始化认证状态...');
         
-        if (error) {
-          console.error('Error getting session:', error)
-          if (mounted) {
-            setState(prev => ({ ...prev, loading: false, initialized: true }))
-          }
-          return
-        }
-
+        // 使用mock认证服务
+        const currentUser = mockAuthService.getCurrentUser();
+        
         if (mounted) {
-          await setUserWithProfile(session?.user || null, session)
-          setState(prev => ({ ...prev, initialized: true }))
+          if (currentUser) {
+            console.log('✅ 发现已登录用户:', currentUser);
+            const authUser = convertMockUserToAuthUser(currentUser);
+            setState({
+              user: authUser,
+              session: null, // Mock模式下不需要session
+              loading: false,
+              initialized: true
+            });
+          } else {
+            console.log('ℹ️ 未发现登录用户');
+            setState({
+              user: null,
+              session: null,
+              loading: false,
+              initialized: true
+            });
+          }
         }
       } catch (error) {
-        console.error('Error initializing auth:', error)
+        console.error('❌ 认证初始化错误:', error);
         if (mounted) {
-          setState(prev => ({ ...prev, loading: false, initialized: true }))
+          setState({
+            user: null,
+            session: null,
+            loading: false,
+            initialized: true
+          });
         }
       }
-    }
+    };
 
-    initializeAuth()
+    initializeAuth();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: any, session: Session | null) => {
-        if (mounted) {
-          await setUserWithProfile(session?.user || null, session)
-          
-          // Log auth events
-          if (event === 'SIGNED_IN' && session?.user) {
-            await (supabase as any).from('audit_logs').insert({
-              user_id: session.user.id,
-              action: 'sign_in',
-              details: { event }
-            })
-          } else if (event === 'SIGNED_OUT') {
-            await (supabase as any).from('audit_logs').insert({
-              action: 'sign_out',
-              details: { event }
-            })
-          }
+    // 监听mock认证状态变化
+    const unsubscribe = mockAuthService.onAuthStateChange((mockUser) => {
+      if (mounted) {
+        if (mockUser) {
+          console.log('🔄 用户登录状态变化:', mockUser);
+          const authUser = convertMockUserToAuthUser(mockUser);
+          setState({
+            user: authUser,
+            session: null,
+            loading: false,
+            initialized: true
+          });
+        } else {
+          console.log('🔄 用户登出');
+          setState({
+            user: null,
+            session: null,
+            loading: false,
+            initialized: true
+          });
         }
       }
-    )
+    });
 
     return () => {
-      mounted = false
-      subscription.unsubscribe()
-    }
+      mounted = false;
+      unsubscribe();
+    };
   }, [])
 
   // Sign in with email and password
@@ -122,19 +165,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setState((prev: AuthState) => ({ ...prev, loading: true }))
       
-      const { error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password
-      })
+      console.log('🔐 尝试登录:', credentials.email);
+      const result = await mockAuthService.login(credentials.email, credentials.password);
 
-      if (error) {
+      if (result.error) {
         setState((prev: AuthState) => ({ ...prev, loading: false }))
-        return { error }
+        return { error: new Error(result.error) }
       }
 
+      // 用户状态将通过认证状态监听器自动更新
+      console.log('✅ 登录成功');
       return { error: null }
     } catch (error) {
       setState((prev: AuthState) => ({ ...prev, loading: false }))
+      console.error('❌ 登录失败:', error);
       return { error: error as Error }
     }
   }
@@ -144,24 +188,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setState((prev: AuthState) => ({ ...prev, loading: true }))
       
-      const { error } = await supabase.auth.signUp({
-        email: credentials.email,
-        password: credentials.password,
-        options: {
-          data: {
-            full_name: credentials.fullName || ''
-          }
-        }
-      })
+      console.log('📝 尝试注册:', credentials.email, credentials.fullName);
+      const result = await mockAuthService.register(credentials.email, credentials.password, credentials.fullName || '');
 
-      if (error) {
+      if (result.error) {
         setState((prev: AuthState) => ({ ...prev, loading: false }))
-        return { error }
+        return { error: new Error(result.error) }
       }
 
+      console.log('✅ 注册成功');
       return { error: null }
     } catch (error) {
       setState((prev: AuthState) => ({ ...prev, loading: false }))
+      console.error('❌ 注册失败:', error);
       return { error: error as Error }
     }
   }
@@ -169,18 +208,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Sign out
   const signOut = async () => {
     try {
-      setState((prev: AuthState) => ({ ...prev, loading: true }))
+      console.log('🚪 用户登出');
+      await mockAuthService.logout();
       
-      const { error } = await supabase.auth.signOut()
-      
-      if (error) {
-        setState((prev: AuthState) => ({ ...prev, loading: false }))
-        return { error }
-      }
-
+      // 用户状态将通过认证状态监听器自动更新
       return { error: null }
     } catch (error) {
-      setState((prev: AuthState) => ({ ...prev, loading: false }))
+      console.error('❌ 登出失败:', error);
       return { error: error as Error }
     }
   }

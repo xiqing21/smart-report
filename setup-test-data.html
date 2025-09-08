@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置测试数据 - Smart Report</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1890ff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #1890ff;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #40a9ff;
+        }
+        button:disabled {
+            background: #d9d9d9;
+            cursor: not-allowed;
+        }
+        .success {
+            color: #52c41a;
+            font-weight: bold;
+        }
+        .error {
+            color: #ff4d4f;
+            font-weight: bold;
+        }
+        .info {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Smart Report 测试数据设置</h1>
+        
+        <div class="info">
+            <strong>说明：</strong>如果您的报告管理页面没有显示任何报告，可能是因为本地存储中没有测试数据。点击下面的按钮来创建一些测试报告。
+        </div>
+
+        <div class="step">
+            <h3>步骤 1: 检查当前数据</h3>
+            <p>首先检查本地存储中是否已有报告数据：</p>
+            <button onclick="checkExistingData()">检查现有数据</button>
+            <div id="checkResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>步骤 2: 创建测试数据</h3>
+            <p>如果没有数据，点击按钮创建3个测试报告：</p>
+            <button onclick="createTestData()">创建测试数据</button>
+            <button onclick="clearAllData()" style="background: #ff4d4f;">清空所有数据</button>
+            <div id="createResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>步骤 3: 验证和访问</h3>
+            <p>数据创建完成后，访问报告管理页面查看结果：</p>
+            <button onclick="openReportsPage()">打开报告管理页面</button>
+            <button onclick="refreshPage()">刷新当前页面</button>
+        </div>
+
+        <div class="step">
+            <h3>调试信息</h3>
+            <button onclick="showDebugInfo()">显示调试信息</button>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        function checkExistingData() {
+            const result = document.getElementById('checkResult');
+            try {
+                const reportsData = localStorage.getItem('smart_report_reports');
+                const counter = localStorage.getItem('smart_report_counter');
+                
+                if (reportsData) {
+                    const reports = JSON.parse(reportsData);
+                    result.innerHTML = `<div class="success">✅ 找到 ${reports.length} 个报告</div>`;
+                    reports.forEach((report, index) => {
+                        result.innerHTML += `<div>报告 ${index + 1}: ${report.title} (状态: ${report.status})</div>`;
+                    });
+                } else {
+                    result.innerHTML = '<div class="error">❌ 没有找到报告数据</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 检查数据时出错: ${error.message}</div>`;
+            }
+        }
+
+        function createTestData() {
+            const result = document.getElementById('createResult');
+            try {
+                // 测试报告数据
+                const testReports = [
+                    {
+                        id: "local_report_1",
+                        title: "测试报告 1 - 数据分析报告",
+                        content: {
+                            text: "这是一个测试数据分析报告的内容。包含了各种数据图表和分析结果。",
+                            type: "analysis"
+                        },
+                        status: "published",
+                        owner_id: "00000000-0000-0000-0000-000000000001",
+                        organization_id: null,
+                        template_id: null,
+                        analysis_task_id: null,
+                        published_at: null,
+                        view_count: 0,
+                        download_count: 0,
+                        tags: ["数据分析", "测试"],
+                        metadata: {},
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    },
+                    {
+                        id: "local_report_2",
+                        title: "测试报告 2 - 市场调研报告",
+                        content: {
+                            text: "这是一个市场调研报告的测试内容。包含了市场趋势和竞争分析。",
+                            type: "market_research"
+                        },
+                        status: "draft",
+                        owner_id: "00000000-0000-0000-0000-000000000001",
+                        organization_id: null,
+                        template_id: null,
+                        analysis_task_id: null,
+                        published_at: null,
+                        view_count: 0,
+                        download_count: 0,
+                        tags: ["市场调研", "测试"],
+                        metadata: {},
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    },
+                    {
+                        id: "local_report_3",
+                        title: "测试报告 3 - 财务分析报告",
+                        content: {
+                            text: "这是一个财务分析报告的测试内容。包含了财务数据和趋势分析。",
+                            type: "financial"
+                        },
+                        status: "published",
+                        owner_id: "00000000-0000-0000-0000-000000000001",
+                        organization_id: null,
+                        template_id: null,
+                        analysis_task_id: null,
+                        published_at: null,
+                        view_count: 0,
+                        download_count: 0,
+                        tags: ["财务分析", "测试"],
+                        metadata: {},
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    }
+                ];
+
+                // 保存到localStorage
+                localStorage.setItem('smart_report_reports', JSON.stringify(testReports));
+                localStorage.setItem('smart_report_counter', '3');
+
+                result.innerHTML = '<div class="success">✅ 测试数据创建成功！已创建3个测试报告。</div>';
+                
+                // 显示创建的报告
+                testReports.forEach((report, index) => {
+                    result.innerHTML += `<div>✓ ${report.title} (${report.status})</div>`;
+                });
+                
+                result.innerHTML += '<div style="margin-top: 15px;"><strong>现在可以访问报告管理页面查看这些报告了！</strong></div>';
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 创建测试数据时出错: ${error.message}</div>`;
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('确定要清空所有报告数据吗？此操作不可恢复！')) {
+                localStorage.removeItem('smart_report_reports');
+                localStorage.removeItem('smart_report_counter');
+                document.getElementById('createResult').innerHTML = '<div class="success">✅ 所有数据已清空</div>';
+                document.getElementById('checkResult').innerHTML = '';
+            }
+        }
+
+        function openReportsPage() {
+            // 尝试打开报告管理页面
+            const baseUrl = window.location.origin;
+            window.open(`${baseUrl}/#/reports`, '_blank');
+        }
+
+        function refreshPage() {
+            window.location.reload();
+        }
+
+        function showDebugInfo() {
+            const debugDiv = document.getElementById('debugInfo');
+            const reportsData = localStorage.getItem('smart_report_reports');
+            const counter = localStorage.getItem('smart_report_counter');
+            
+            debugDiv.innerHTML = `
+                <div class="code">
+                    <strong>localStorage Keys:</strong><br>
+                    smart_report_reports: ${reportsData ? '存在' : '不存在'}<br>
+                    smart_report_counter: ${counter || '不存在'}<br><br>
+                    
+                    <strong>Reports Data:</strong><br>
+                    ${reportsData ? JSON.stringify(JSON.parse(reportsData), null, 2) : '无数据'}
+                </div>
+            `;
+        }
+
+        // 页面加载时自动检查数据
+        window.onload = function() {
+            checkExistingData();
+        };
+    </script>
+</body>
+</html>

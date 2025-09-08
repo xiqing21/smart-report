@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Card, Button, Input, message, Space, Divider, Typography } from 'antd';
+import { Card, Button, Input, message, Space, Divider, Typography, Alert } from 'antd';
 import { aiServiceManager } from '../services/ai/AIServiceManager';
 import { ReportService } from '../services/api/dataService';
+import { SupabaseTestUtil } from '../utils/supabaseTest';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -11,6 +12,14 @@ const TestPage: React.FC = () => {
   const [prompt, setPrompt] = useState('请分析一下电网负荷的发展趋势');
   const [aiResponse, setAiResponse] = useState('');
   const [reportTitle, setReportTitle] = useState('AI测试报告');
+  const [supabaseStatus, setSupabaseStatus] = useState<{
+    connection: boolean;
+    tables: string[];
+    insert: boolean;
+    query: boolean;
+    summary: string;
+  } | null>(null);
+  const [supabaseTestResult, setSupabaseTestResult] = useState<string>('');
 
   const testAIService = async () => {
     if (!prompt.trim()) {
@@ -79,14 +88,81 @@ const TestPage: React.FC = () => {
     }
   };
 
-  const testFullWorkflow = async () => {
-    await testAIService();
-    // 等待AI响应完成后再保存
-    setTimeout(() => {
-      if (aiResponse) {
-        saveReport();
+  // 测试Supabase连接
+  const testSupabaseConnection = async () => {
+    setLoading(true);
+    try {
+      message.info('🔍 正在测试Supabase连接...');
+      const result = await SupabaseTestUtil.runFullTest();
+      setSupabaseStatus(result);
+      
+      if (result.connection && result.insert && result.query) {
+        message.success('✅ Supabase连接测试成功！');
+      } else {
+        message.warning('⚠️ Supabase连接存在问题，将使用本地存储');
       }
-    }, 1000);
+    } catch (error) {
+      console.error('❌ Supabase测试异常:', error);
+      message.error('❌ Supabase测试失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testFullWorkflow = async () => {
+    if (!prompt.trim()) {
+      message.error('请输入测试提示词');
+      return;
+    }
+
+    if (!reportTitle.trim()) {
+      message.error('请输入报告标题');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 第一步：调用AI服务
+      message.info('🚀 步骤1: 正在调用AI服务...');
+      console.log('🧪 开始测试AI服务...');
+      const response = await aiServiceManager.callAI({
+        prompt: prompt,
+        systemPrompt: '你是一个专业的电网数据分析师，请提供专业、准确的分析。',
+        parameters: {
+          temperature: 0.7,
+          maxTokens: 1000
+        }
+      });
+      
+      console.log('✅ AI服务响应:', response);
+      setAiResponse(response.content);
+      message.success(`✅ 步骤1完成: AI服务调用成功！提供商: ${response.provider} (${response.model})`);
+      
+      // 第二步：保存报告
+      message.info('💾 步骤2: 正在保存报告到数据库...');
+      console.log('💾 开始保存报告到数据库...');
+      const result = await ReportService.createReport({
+        title: reportTitle,
+        content: {
+          prompt: prompt,
+          aiResponse: response.content,
+          generatedAt: new Date().toISOString()
+        },
+        status: 'draft'
+      });
+      
+      if (result.success && result.data) {
+        console.log('✅ 报告保存成功:', result.data);
+        message.success(`🎉 完整流程测试成功！报告ID: ${result.data.id}`);
+      } else {
+        throw new Error(result.error || '保存失败');
+      }
+    } catch (error) {
+      console.error('❌ 完整流程测试失败:', error);
+      message.error(`❌ 测试失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -155,6 +231,34 @@ const TestPage: React.FC = () => {
             >
               💾 保存报告到数据库
             </Button>
+          </Space>
+        </Card>
+        
+        {/* Supabase连接测试 */}
+        <Card title="🔗 数据库连接测试" size="small">
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Text>测试Supabase数据库连接状态和表结构</Text>
+            <Button 
+              type="default" 
+              onClick={testSupabaseConnection}
+              loading={loading}
+              size="large"
+            >
+              🔍 测试数据库连接
+            </Button>
+            
+            {supabaseStatus && (
+              <Alert
+                message="数据库测试结果"
+                description={
+                  <div style={{ whiteSpace: 'pre-line', fontSize: '12px' }}>
+                    {supabaseStatus.summary}
+                  </div>
+                }
+                type={supabaseStatus.connection && supabaseStatus.insert && supabaseStatus.query ? 'success' : 'warning'}
+                showIcon
+              />
+            )}
           </Space>
         </Card>
         

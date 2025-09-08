@@ -2,6 +2,7 @@
 // Data Service Layer for Supabase Integration
 
 import { supabase } from '../../lib/supabase';
+import { LocalStorageService, type LocalReport } from './localStorageService';
 import type {
   DataSource,
   DataSourceInsert,
@@ -493,52 +494,70 @@ export class ReportService {
   // 获取报告列表
   static async getReports(page = 1, pageSize = 20): Promise<PaginatedResponse<Report>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        return {
-          data: [],
-          total: 0,
-          page,
-          pageSize,
-          totalPages: 0,
-          error: '用户未登录',
-          success: false
-        };
-      }
-
-      const offset = (page - 1) * pageSize;
+      console.log('🔍 开始获取报告列表，页码:', page, '页大小:', pageSize);
       
-      // 获取总数
-      const { count } = await supabase
-        .from('reports')
-        .select('*', { count: 'exact', head: true })
-        .eq('owner_id', user.id);
+      // 首先尝试从Supabase获取
+      try {
+        const offset = (page - 1) * pageSize;
 
-      // 获取数据
-      const { data, error } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('owner_id', user.id)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + pageSize - 1);
+        const { count, error: countError } = await (supabase as any)
+          .from('reports')
+          .select('*', { count: 'exact', head: true })
+          .neq('status', 'deleted');
 
-      if (error) {
-        return {
-          data: [],
-          total: 0,
-          page,
-          pageSize,
-          totalPages: 0,
-          error: error.message,
-          success: false
-        };
+        if (!countError) {
+          const { data, error } = await (supabase as any)
+          .from('reports')
+          .select('*')
+          .neq('status', 'deleted')
+          .order('created_at', { ascending: false })
+          .range(offset, offset + pageSize - 1);
+
+          if (!error && data) {
+            const totalPages = Math.ceil((count || 0) / pageSize);
+            console.log('✅ Supabase获取报告列表成功，数量:', data.length);
+            return {
+              data: data || [],
+              total: count || 0,
+              page,
+              pageSize,
+              totalPages,
+              error: null,
+              success: true
+            };
+          }
+        }
+        
+        console.warn('⚠️ Supabase查询失败，切换到本地存储');
+      } catch (supabaseError) {
+        console.warn('⚠️ Supabase连接失败，切换到本地存储:', supabaseError);
       }
-
-      const totalPages = Math.ceil((count || 0) / pageSize);
-
+      
+      // 如果Supabase失败，使用本地存储
+      console.log('💾 从本地存储获取报告列表...');
+      const localReports = LocalStorageService.getReports()
+        .filter(report => report.status !== 'deleted')
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      
+      const total = localReports.length;
+      const totalPages = Math.ceil(total / pageSize);
+      const offset = (page - 1) * pageSize;
+      const paginatedData = localReports.slice(offset, offset + pageSize);
+      
+      // 转换为标准Report格式
+      const reports: Report[] = paginatedData.map(report => ({
+        ...report,
+        published_at: report.published_at,
+        view_count: report.view_count,
+        download_count: report.download_count,
+        tags: report.tags,
+        metadata: report.metadata
+      }));
+      
+      console.log('✅ 本地存储获取报告列表成功，数量:', reports.length);
       return {
-        data: data || [],
-        total: count || 0,
+        data: reports,
+        total,
         page,
         pageSize,
         totalPages,
@@ -546,13 +565,14 @@ export class ReportService {
         success: true
       };
     } catch (error) {
+      console.error('❌ 获取报告列表异常:', error);
       return {
         data: [],
         total: 0,
         page,
         pageSize,
         totalPages: 0,
-        error: error instanceof Error ? error.message : '获取报告失败',
+        error: error instanceof Error ? error.message : '获取报告列表失败',
         success: false
       };
     }
@@ -561,26 +581,55 @@ export class ReportService {
   // 创建报告
   static async createReport(report: ReportInsert): Promise<ApiResponse<Report>> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        return { data: null, error: '用户未登录', success: false };
-      }
-
-      const { data, error } = await (supabase as any)
-        .from('reports')
-        .insert({
+      console.log('🔍 开始创建报告，数据:', report);
+      
+      // 首先尝试使用Supabase
+      try {
+        const testUserId = '00000000-0000-0000-0000-000000000001';
+        
+        const reportData = {
           ...report,
-          owner_id: user.id
-        })
-        .select()
-        .single();
+          owner_id: testUserId,
+          organization_id: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        console.log('📝 尝试Supabase插入...');
+        const { data, error } = await (supabase as any)
+          .from('reports')
+          .insert(reportData)
+          .select()
+          .single();
 
-      if (error) {
-        return { data: null, error: error.message, success: false };
+        if (!error && data) {
+          console.log('✅ Supabase报告创建成功:', data);
+          return { data, error: null, success: true };
+        }
+        
+        console.warn('⚠️ Supabase插入失败，切换到本地存储:', error?.message);
+      } catch (supabaseError) {
+        console.warn('⚠️ Supabase连接失败，切换到本地存储:', supabaseError);
       }
-
-      return { data, error: null, success: true };
+      
+      // 如果Supabase失败，使用本地存储
+      console.log('💾 使用本地存储保存报告...');
+      const localReport = LocalStorageService.saveReport(report);
+      
+      // 转换为标准Report格式
+      const reportResult: Report = {
+        ...localReport,
+        published_at: localReport.published_at,
+        view_count: localReport.view_count,
+        download_count: localReport.download_count,
+        tags: localReport.tags,
+        metadata: localReport.metadata
+      };
+      
+      console.log('✅ 本地存储报告创建成功:', reportResult);
+      return { data: reportResult, error: null, success: true };
     } catch (error) {
+      console.error('❌ 创建报告异常:', error);
       return {
         data: null,
         error: error instanceof Error ? error.message : '创建报告失败',
@@ -664,6 +713,63 @@ export class ReportService {
       return {
         data: null,
         error: error instanceof Error ? error.message : '发布报告失败',
+        success: false
+      };
+    }
+  }
+
+  // 删除报告
+  static async deleteReport(id: string): Promise<ApiResponse<boolean>> {
+    try {
+      console.log('🗑️ 开始删除报告，ID:', id);
+      
+      // 检查用户认证状态
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      console.log('👤 当前用户认证状态:', user ? `已认证 (${user.id})` : '未认证', authError ? `错误: ${authError.message}` : '');
+      
+      // 首先尝试从Supabase删除
+      try {
+        console.log('📡 尝试Supabase删除操作...');
+        const { data, error, count } = await (supabase as any)
+          .from('reports')
+          .update({ status: 'deleted' }) // 软删除
+          .eq('id', id)
+          .select();
+
+        console.log('📥 Supabase删除响应:', { data, error, count });
+        
+        if (!error) {
+          if (data && data.length > 0) {
+            console.log('✅ Supabase报告删除成功:', id, '更新的记录:', data);
+            return { data: true, error: null, success: true };
+          } else {
+            console.warn('⚠️ 没有找到要删除的报告或无权限删除:', id);
+            // 继续尝试本地存储
+          }
+        } else {
+          console.error('❌ Supabase删除失败:', error.message, error.details, error.hint);
+          // 继续尝试本地存储
+        }
+      } catch (supabaseError) {
+        console.error('❌ Supabase连接异常:', supabaseError);
+      }
+      
+      // 如果Supabase失败，使用本地存储
+      console.log('💾 尝试从本地存储删除报告...');
+      const success = LocalStorageService.deleteReport(id);
+      
+      if (success) {
+        console.log('✅ 本地存储报告删除成功:', id);
+        return { data: true, error: null, success: true };
+      } else {
+        console.warn('⚠️ 本地存储中也未找到报告:', id);
+        return { data: false, error: '报告不存在或无权限删除', success: false };
+      }
+    } catch (error) {
+      console.error('❌ 删除报告异常:', error);
+      return {
+        data: false,
+        error: error instanceof Error ? error.message : '删除报告失败',
         success: false
       };
     }

@@ -99,6 +99,37 @@ body {
 
 /* 响应式断点 */
 
+/* Modal 样式修复 */
+.delete-confirm-modal {
+  z-index: 9999 !important;
+}
+
+.delete-confirm-modal .ant-modal {
+  z-index: 9999 !important;
+}
+
+.delete-confirm-modal .ant-modal-mask {
+  z-index: 9998 !important;
+  background-color: rgba(0, 0, 0, 0.45) !important;
+}
+
+.delete-confirm-modal .ant-modal-wrap {
+  z-index: 9999 !important;
+}
+
+/* 确保 Modal 在所有元素之上 */
+.ant-modal-root {
+  z-index: 9999 !important;
+}
+
+.ant-modal-mask {
+  z-index: 9998 !important;
+}
+
+.ant-modal-wrap {
+  z-index: 9999 !important;
+}
+
 /* 开始分析按钮优化样式 */
 .analysis-start-button {
   position: relative;
