@@ -20,7 +20,8 @@ import {
   message,
   Typography,
   Tooltip,
-  Badge
+  Badge,
+  App
 } from 'antd';
 import {
   UploadOutlined,
@@ -42,12 +43,15 @@ import {
   EditOutlined
 } from '@ant-design/icons';
 import { EnhancedButton, InteractiveCard, StatusTag, AnimatedProgress } from '../components/InteractiveEnhancements';
+import AgentProgressModal from '../components/AgentProgressModal';
+import { zhipuAIService } from '../services/ai/zhipuService';
+import { supabase } from '../lib/supabase';
 
 import { motion } from 'framer-motion';
 import type { UploadProps } from 'antd';
 
 const { Title, Text, Paragraph } = Typography;
-const { TabPane } = Tabs;
+// const { TabPane } = Tabs; // Deprecated, using items prop instead
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -78,13 +82,15 @@ interface AnalysisTask {
 const AIAnalysis: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('analysis');
+  const { message } = App.useApp();
+  const [activeTab, setActiveTab] = useState('datasource');
   const [analysisRunning, setAnalysisRunning] = useState(false);
   const [configModalVisible, setConfigModalVisible] = useState(false);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
   const [templateModalVisible, setTemplateModalVisible] = useState(false);
   const [selectedDataSource, setSelectedDataSource] = useState<DataSource | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [agentModalVisible, setAgentModalVisible] = useState(false);
   const [form] = Form.useForm();
   
   // 从路由状态获取分析完成状态
@@ -172,28 +178,99 @@ const AIAnalysis: React.FC = () => {
     }
   ]);
 
-  const handleStartAnalysis = () => {
-    setAnalysisRunning(true);
-    message.success('分析任务已启动');
-    
-    // 模拟分析过程
-    setTimeout(() => {
-      setAnalysisRunning(false);
-      message.success('分析完成！正在跳转到结果页面...');
+  const handleStartAnalysis = async () => {
+    try {
+      const formValues = await form.validateFields();
+      if (!formValues.dataSource || !formValues.analysisType) {
+        message.error('请选择数据源和分析类型');
+        return;
+      }
       
-      // 自动跳转到分析结果页面
-      setTimeout(() => {
-        setActiveTab('results');
-        // 更新路由状态以显示分析完成
-        navigate('/analysis', {
-          state: {
-            analysisCompleted: true,
-            showResults: true
+      setAnalysisRunning(true);
+      setAgentModalVisible(true);
+      
+      // 调用智谱AI进行分析
+      const analysisResult = await zhipuAIService.executeMultiAgentAnalysis({
+        dataSourceId: formValues.dataSource,
+        analysisType: formValues.analysisType,
+        reportType: formValues.reportType,
+        description: formValues.description,
+        template: formValues.template
+      });
+      
+      // 保存分析结果到数据库
+      const { data: reportData, error } = await supabase
+        .from('reports')
+        .insert({
+          title: analysisResult.title,
+          content: {
+            text: analysisResult.content || analysisResult.summary || '报告内容生成中...',
+            analysisData: analysisResult,
+            type: 'ai-analysis'
           },
-          replace: true
+          type: 'ai-analysis',
+          status: 'draft',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+        
+      if (error) {
+        console.error('保存报告失败:', error);
+        message.error('保存分析结果失败');
+        return;
+      }
+      
+      message.success('AI分析完成，报告已保存');
+      
+      // 跳转到报告编辑页面
+      setTimeout(() => {
+        navigate('/editor', {
+          state: {
+            reportId: reportData.id,
+            analysisData: analysisResult
+          }
         });
-      }, 1000);
-    }, 3000);
+      }, 2000);
+      
+    } catch (error) {
+      console.error('分析失败:', error);
+      message.error('分析失败，请重试');
+    } finally {
+      setAnalysisRunning(false);
+      setAgentModalVisible(false);
+    }
+  };
+
+  const handleAgentComplete = () => {
+    navigate('/editor', {
+      state: {
+        analysisData: {
+          type: 'ai-analysis-result',
+          template: selectedTemplate || 'comprehensive',
+          data: {
+            title: '山西电网智能分析报告',
+            analysisType: '综合分析',
+            dataSource: '山西电网负荷数据.db',
+            loadGrowth: 15.2,
+            cleanEnergyRatio: 12.8,
+            efficiency: 98.5,
+            confidence: 95.2,
+            regions: [
+              { name: '太原', load: '2,450 MW', growth: '+8.5%', status: '正常' },
+              { name: '大同', load: '1,890 MW', growth: '+12.3%', status: '正常' },
+              { name: '临汾', load: '1,650 MW', growth: '+6.7%', status: '优化建议' }
+            ],
+            insights: [
+              '太原地区负荷优化：建议在峰值时段启动备用电源',
+              '临汾设备维护：检测到异常波动，建议安排检修',
+              '整体能效提升：可通过智能调度提升3.2%效率'
+            ]
+          }
+        }
+      }
+    });
   };
 
   const handleEditReport = () => {
@@ -450,221 +527,48 @@ const AIAnalysis: React.FC = () => {
         </Paragraph>
       </div>
 
-      {/* 智能体协作动画展示 */}
-      <Row gutter={[16, 16]} className="mb-6">
-        <Col span={24}>
-          <Card title="五大智能体协作状态" className="shadow-sm">
-            <div className="relative" style={{ minHeight: '300px', padding: '20px' }}>
-              {/* 协作连接线动画 */}
-              <svg 
-                className="absolute inset-0 w-full h-full pointer-events-none" 
-                style={{ zIndex: 1 }}
-              >
-                {/* 数据流动路径 */}
-                <defs>
-                  <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#1890ff" stopOpacity="0" />
-                    <stop offset="50%" stopColor="#1890ff" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#1890ff" stopOpacity="0" />
-                  </linearGradient>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                    <feMerge> 
-                      <feMergeNode in="coloredBlur"/>
-                      <feMergeNode in="SourceGraphic"/> 
-                    </feMerge>
-                  </filter>
-                </defs>
-                
-                {/* 连接线 */}
-                <motion.path
-                  d="M 100 150 Q 250 100 400 150 Q 550 200 700 150 Q 850 100 1000 150"
-                  stroke="#1890ff"
-                  strokeWidth="2"
-                  fill="none"
-                  strokeDasharray="5,5"
-                  filter="url(#glow)"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ 
-                    pathLength: analysisRunning ? 1 : 0.3,
-                    opacity: analysisRunning ? 1 : 0.5,
-                    strokeDashoffset: analysisRunning ? [0, -20] : 0
-                  }}
-                  transition={{ 
-                    pathLength: { duration: 2, ease: "easeInOut" },
-                    strokeDashoffset: { duration: 1, repeat: Infinity, ease: "linear" }
-                  }}
-                />
-                
-                {/* 数据流动粒子 */}
-                {analysisRunning && [
-                  { x: 100, delay: 0 },
-                  { x: 300, delay: 0.5 },
-                  { x: 500, delay: 1 },
-                  { x: 700, delay: 1.5 },
-                  { x: 900, delay: 2 }
-                ].map((particle, i) => (
-                  <motion.circle
-                    key={i}
-                    r="4"
-                    fill="url(#flowGradient)"
-                    initial={{ cx: particle.x, cy: 150, opacity: 0 }}
-                    animate={{
-                      cx: [particle.x, particle.x + 200, particle.x + 400],
-                      opacity: [0, 1, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      delay: particle.delay,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                ))}
-              </svg>
-              
-              {/* 智能体卡片 */}
-              <Row gutter={[16, 16]} className="relative" style={{ zIndex: 2 }}>
-                {[
-                  { 
-                    name: '数据采集智能体', 
-                    status: '运行中', 
-                    color: '#52c41a', 
-                    position: 0,
-                    currentTask: analysisRunning ? '采集电网负荷数据' : '监控数据源状态',
-                    processedCount: analysisRunning ? '1,247条记录' : '待机'
-                  },
-                  { 
-                    name: '模式识别智能体', 
-                    status: analysisRunning ? '分析中' : '待机', 
-                    color: '#1890ff', 
-                    position: 1,
-                    currentTask: analysisRunning ? '识别负荷变化模式' : '等待数据输入',
-                    processedCount: analysisRunning ? '发现3种模式' : '待机'
-                  },
-                  { 
-                    name: '预测建模智能体', 
-                    status: analysisRunning ? '建模中' : '待机', 
-                    color: '#faad14', 
-                    position: 2,
-                    currentTask: analysisRunning ? '构建负荷预测模型' : '等待模式数据',
-                    processedCount: analysisRunning ? '训练进度85%' : '待机'
-                  },
-                  { 
-                    name: '异常检测智能体', 
-                    status: analysisRunning ? '检测中' : '运行中', 
-                    color: '#722ed1', 
-                    position: 3,
-                    currentTask: analysisRunning ? '检测负荷异常点' : '实时监控异常',
-                    processedCount: analysisRunning ? '发现2个异常' : '正常运行'
-                  },
-                  { 
-                    name: '报告生成智能体', 
-                    status: analysisRunning ? '生成中' : '待机', 
-                    color: '#eb2f96', 
-                    position: 4,
-                    currentTask: analysisRunning ? '生成分析报告' : '等待分析结果',
-                    processedCount: analysisRunning ? '报告完成60%' : '待机'
-                  }
-                ].map((agent, index) => (
-                  <Col span={4.8} key={index}>
-                    <motion.div
-                      initial={{ scale: 1, y: 0 }}
-                      animate={{
-                        scale: analysisRunning && agent.status.includes('中') ? [1, 1.05, 1] : 1,
-                        y: analysisRunning && agent.status.includes('中') ? [0, -5, 0] : 0
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: analysisRunning && agent.status.includes('中') ? Infinity : 0,
-                        delay: index * 0.3
-                      }}
-                    >
-                      <InteractiveCard hoverable className="text-center relative overflow-hidden">
-                        {/* 工作状态光效 */}
-                        {analysisRunning && agent.status.includes('中') && (
-                          <motion.div
-                            className="absolute inset-0 bg-gradient-to-r opacity-20"
-                            style={{
-                              background: `linear-gradient(45deg, transparent, ${agent.color}, transparent)`
-                            }}
-                            animate={{
-                              x: [-100, 300]
-                            }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          />
-                        )}
-                        
-                        <div className="mb-2 relative">
-                          <motion.div
-                            animate={{
-                              rotate: analysisRunning && agent.status.includes('中') ? 360 : 0
-                            }}
-                            transition={{
-                              duration: 3,
-                              repeat: analysisRunning && agent.status.includes('中') ? Infinity : 0,
-                              ease: "linear"
-                            }}
-                          >
-                            <RobotOutlined style={{ fontSize: '24px', color: agent.color }} />
-                          </motion.div>
-                        </div>
-                        
-                        <Text strong className="block mb-1">{agent.name}</Text>
-                        <div>
-                          <StatusTag 
-                            status={agent.status.includes('中') ? 'processing' : 
-                                   agent.status === '运行中' ? 'processing' : 'pending'} 
-                          />
-                          <span className="ml-2">{agent.status}</span>
-                        </div>
-                        <div className="mt-2">
-                          <div className="text-xs text-gray-600 mb-1">当前任务:</div>
-                          <Text className="text-xs" style={{ color: agent.color }}>
-                            {agent.currentTask}
-                          </Text>
-                        </div>
-                        <div className="mt-1">
-                          <div className="text-xs text-gray-600 mb-1">处理状态:</div>
-                          <Text className="text-xs font-medium" style={{ color: agent.color }}>
-                            {agent.processedCount}
-                          </Text>
-                        </div>
-                      </InteractiveCard>
-                    </motion.div>
-                  </Col>
-                ))}
-              </Row>
-              
-              {/* 协作状态提示 */}
-              {analysisRunning && (
-                <motion.div
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 }}
-                >
-                  <Alert
-                    message="智能体协作进行中"
-                    description="五大智能体正在协同工作，实时处理和分析数据"
-                    type="info"
-                    showIcon
-                    className="shadow-lg"
-                  />
-                </motion.div>
-              )}
-            </div>
-          </Card>
-        </Col>
-      </Row>
+
 
       <Card className="shadow-sm">
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab={<span><BarChartOutlined />智能分析</span>} key="analysis">
+        <Tabs 
+          activeKey={activeTab} 
+          onChange={setActiveTab}
+          items={[
+            {
+              key: 'datasource',
+              label: <span><DatabaseOutlined />数据源管理</span>,
+              children: (
+                <>
+                  <Row gutter={[16, 16]} className="mb-4">
+                    <Col span={24}>
+                      <Space>
+                        <EnhancedButton type="primary" icon={<DatabaseOutlined />}>
+                          添加数据库
+                        </EnhancedButton>
+                        <Upload {...uploadProps}>
+                          <EnhancedButton icon={<UploadOutlined />}>
+                            上传文件
+                          </EnhancedButton>
+                        </Upload>
+                        <EnhancedButton icon={<ApiOutlined />}>
+                          配置API
+                        </EnhancedButton>
+                      </Space>
+                    </Col>
+                  </Row>
+                  <Table
+                    dataSource={dataSources}
+                    columns={dataSourceColumns}
+                    rowKey="id"
+                    pagination={{ pageSize: 10 }}
+                  />
+                </>
+              )
+            },
+            {
+              key: 'analysis',
+              label: <span><BarChartOutlined />智能分析</span>,
+              children: (
             <Row gutter={[24, 24]}>
               <Col span={16}>
                 <Card title="分析配置" className="h-full">
@@ -763,10 +667,14 @@ const AIAnalysis: React.FC = () => {
                 </Card>
               </Col>
             </Row>
-          </TabPane>
-
-          <TabPane tab={<span><BulbOutlined />分析结果</span>} key="results">
-            {showResults && analysisCompleted ? (
+              )
+            },
+            {
+              key: 'results',
+              label: <span><BulbOutlined />分析结果</span>,
+              children: (
+                <>
+                  {showResults && analysisCompleted ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1073,35 +981,12 @@ const AIAnalysis: React.FC = () => {
                   开始分析
                 </EnhancedButton>
               </div>
-            )}
-          </TabPane>
-
-          <TabPane tab={<span><DatabaseOutlined />数据源管理</span>} key="datasource">
-            <Row gutter={[16, 16]} className="mb-4">
-              <Col span={24}>
-                <Space>
-                  <EnhancedButton type="primary" icon={<DatabaseOutlined />}>
-                    添加数据库
-                  </EnhancedButton>
-                  <Upload {...uploadProps}>
-                    <EnhancedButton icon={<UploadOutlined />}>
-                      上传文件
-                    </EnhancedButton>
-                  </Upload>
-                  <EnhancedButton icon={<ApiOutlined />}>
-                    配置API
-                  </EnhancedButton>
-                </Space>
-              </Col>
-            </Row>
-            <Table
-              dataSource={dataSources}
-              columns={dataSourceColumns}
-              rowKey="id"
-              pagination={{ pageSize: 10 }}
-            />
-          </TabPane>
-        </Tabs>
+                  )}
+                </>
+              )
+            }
+          ]}
+        />
       </Card>
 
       {/* Data Source Config Modal */}
@@ -1238,6 +1123,13 @@ const AIAnalysis: React.FC = () => {
           ))}
         </Row>
       </Modal>
+
+      {/* Agent Progress Modal */}
+      <AgentProgressModal
+        visible={agentModalVisible}
+        onClose={() => setAgentModalVisible(false)}
+        onComplete={handleAgentComplete}
+      />
     </div>
   );
 };

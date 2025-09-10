@@ -294,23 +294,22 @@ export const AnimatedTimeline: React.FC<AnimatedTimelineProps> = ({
   return (
     <div ref={ref}>
       <Timeline mode={mode}>
-        {items.map((item, index) => (
-          <Timeline.Item
-            key={index}
-            dot={
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.2,
-                  type: 'spring'
-                }}
-              >
-                {getStatusIcon(item.status)}
-              </motion.div>
-            }
-          >
+        {items.map((item, index) => ({
+          key: index,
+          dot: (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.2,
+                type: 'spring'
+              }}
+            >
+              {getStatusIcon(item.status)}
+            </motion.div>
+          ),
+          children: (
             <motion.div
               initial={{ opacity: 0, x: mode === 'right' ? 30 : -30 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: mode === 'right' ? 30 : -30 }}
@@ -332,8 +331,8 @@ export const AnimatedTimeline: React.FC<AnimatedTimelineProps> = ({
                 </div>
               )}
             </motion.div>
-          </Timeline.Item>
-        ))}
+          )
+        }))}
       </Timeline>
     </div>
   );

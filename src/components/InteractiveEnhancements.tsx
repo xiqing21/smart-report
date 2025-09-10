@@ -345,7 +345,7 @@ export const Rating: React.FC<RatingProps> = ({
 
 // 状态标签组件
 interface StatusTagProps {
-  status: 'new' | 'hot' | 'premium' | 'completed' | 'pending' | 'processing';
+  status: 'new' | 'hot' | 'premium' | 'completed' | 'pending' | 'processing' | 'draft';
   animated?: boolean;
 }
 
@@ -389,14 +389,25 @@ export const StatusTag: React.FC<StatusTagProps> = ({
       icon: <LoadingOutlined spin />,
       text: '处理中',
       animation: { scale: [1, 1.02, 1] }
+    },
+    draft: {
+      color: '#d9d9d9',
+      icon: <BookOutlined />,
+      text: '草稿',
+      animation: { opacity: [1, 0.8, 1] }
     }
   };
 
-  const config = statusConfig[status];
+  const config = statusConfig[status] || {
+    color: '#d9d9d9',
+    icon: <ThunderboltOutlined />,
+    text: status,
+    animation: { scale: [1, 1.02, 1] }
+  };
 
   return (
     <motion.div
-      animate={animated ? config.animation : {}}
+      animate={animated && config.animation ? config.animation : {}}
       transition={{ 
         duration: 2, 
         repeat: Infinity, 

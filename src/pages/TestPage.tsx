@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, Input, message, Space, Divider, Typography, Alert } from 'antd';
+import { Card, Button, Input, Space, Divider, Typography, Alert, App } from 'antd';
 import { aiServiceManager } from '../services/ai/AIServiceManager';
 import { ReportService } from '../services/api/dataService';
 import { SupabaseTestUtil } from '../utils/supabaseTest';
@@ -8,6 +8,7 @@ const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const TestPage: React.FC = () => {
+  const { message } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('请分析一下电网负荷的发展趋势');
   const [aiResponse, setAiResponse] = useState('');

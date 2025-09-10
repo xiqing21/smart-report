@@ -10,13 +10,13 @@ import {
   Select,
   ColorPicker,
   Slider,
-  message,
   Modal,
   Upload,
   Card,
   Row,
   Col,
-  Typography
+  Typography,
+  App
 } from 'antd';
 import { EnhancedButton } from '../components/InteractiveEnhancements';
 
@@ -72,6 +72,7 @@ interface EditorState {
 const ReportEditor: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
+  const { message } = App.useApp();
   
   // 获取从AI分析传递过来的数据
   const analysisData = location.state?.analysisData;
@@ -419,7 +420,16 @@ ${data.regions.map((region: any) =>
                if (typeof report.content === 'string') {
                  content = report.content;
                } else if (report.content && typeof report.content === 'object') {
-                 content = report.content.text || '';
+                 // 优先使用text字段
+                 if (report.content.text) {
+                   content = report.content.text;
+                 } else if (report.content.analysisData) {
+                   // 如果是AI分析数据，生成格式化的报告内容
+                   const analysisData = report.content.analysisData;
+                   content = generateAIReportContent({ data: analysisData, type: 'ai-analysis' });
+                 } else {
+                   content = report.content.summary || '';
+                 }
                  formatting = report.content.formatting || {};
                }
                

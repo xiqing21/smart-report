@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Row, Col, Button, List, Badge, Dropdown } from 'antd'
+import { Card, Row, Col, Button, List, Badge, App } from 'antd'
 import {
   PlusOutlined,
   FileTextOutlined,
@@ -10,9 +10,7 @@ import {
   ShareAltOutlined,
   MonitorOutlined,
   RocketOutlined,
-  SettingOutlined,
   ThunderboltOutlined,
-  DownOutlined,
   FileAddOutlined,
   DatabaseOutlined
 } from '@ant-design/icons'
@@ -21,10 +19,15 @@ import { InteractiveCard, StatusTag } from '../components/InteractiveEnhancement
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import AgentProgressModal from '../components/AgentProgressModal'
+import { ReportService } from '../services/api/dataService'
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
+  const { message } = App.useApp()
   const [agentModalVisible, setAgentModalVisible] = useState(false)
+  const [recentReports, setRecentReports] = useState<any[]>([])
+  const [totalReports, setTotalReports] = useState(0)
+  const [loading, setLoading] = useState(true)
   const [agentStats, setAgentStats] = useState({
     dataCollector: { cpu: 45, memory: 62, tasks: 23, status: 'active' },
     metricAnalyzer: { cpu: 38, memory: 71, tasks: 18, status: 'active' },
@@ -73,62 +76,61 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(interval)
   }, [])
 
-  // 山西国网数据
-  const recentReports = [
-    {
-      id: 1,
-      title: '2024年第一季度电网负荷分析报告',
-      status: 'published',
-      updateTime: '2024-01-15 14:30',
-      views: 256,
-      author: '李明华'
-    },
-    {
-      id: 2,
-      title: '山西电网用电行为模式分析报告',
-      status: 'draft',
-      updateTime: '2024-01-14 09:15',
-      views: 189,
-      author: '王建国'
-    },
-    {
-      id: 3,
-      title: '清洁能源并网影响评估报告',
-      status: 'reviewing',
-      updateTime: '2024-01-13 16:45',
-      views: 334,
-      author: '张志强'
+  // 获取最近报告数据
+  useEffect(() => {
+    const fetchRecentReports = async () => {
+      try {
+        setLoading(true)
+        const response = await ReportService.getReports(1, 5) // 获取最近5条报告
+        
+        if (response.success && response.data) {
+          setRecentReports(response.data)
+          setTotalReports(response.total || response.data.length)
+        } else {
+          setRecentReports([])
+          setTotalReports(0)
+        }
+      } catch (error) {
+        console.error('获取最近报告失败:', error)
+        setRecentReports([])
+        setTotalReports(0)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
 
+    fetchRecentReports()
+  }, [])
+
+  // 快捷操作 - 删除模板管理和智能体监控，保留其他并铺满一行
   const quickActions = [
     {
-      title: '创建报告',
-      description: '启动五大智能体协作生成报告',
+      title: '创建新报告',
+      description: '快速创建新的分析报告',
       icon: <PlusOutlined />,
-      color: '#1890ff',
-      action: () => setAgentModalVisible(true)
-    },
-    {
-      title: '模板管理',
-      description: '管理和编辑报告模板',
-      icon: <FileTextOutlined />,
       color: '#52c41a',
-      action: () => navigate('/templates')
+      action: () => navigate('/editor')
     },
     {
-      title: 'AI分析中心',
-      description: '智能数据分析和洞察',
+      title: 'AI智能分析',
+      description: '使用AI分析生成专业报告',
       icon: <BarChartOutlined />,
-      color: '#fa8c16',
+      color: '#1890ff',
       action: () => navigate('/analysis')
     },
     {
-      title: '智能体监控',
-      description: '查看五大智能体运行状态',
-      icon: <MonitorOutlined />,
-      color: '#13c2c2',
-      action: () => navigate('/agent-monitor')
+      title: '数据源管理',
+      description: '管理和配置数据源',
+      icon: <DatabaseOutlined />,
+      color: '#fa8c16',
+      action: () => navigate('/analysis?tab=datasource')
+    },
+    {
+      title: '报告管理',
+      description: '查看和管理所有报告',
+      icon: <FileTextOutlined />,
+      color: '#722ed1',
+      action: () => navigate('/reports')
     }
   ]
 
@@ -137,36 +139,6 @@ const Dashboard: React.FC = () => {
     console.log('报告生成完成，跳转到AI分析中心查看结果')
     // 跳转到AI分析中心页面，并传递完成状态
     navigate('/analysis', { state: { analysisCompleted: true, showResults: true } })
-  }
-
-  // 快速创建报告菜单
-  const quickCreateMenu = {
-    items: [
-      {
-        key: 'ai-analysis',
-        label: 'AI智能分析报告',
-        icon: <BarChartOutlined />,
-        onClick: () => navigate('/analysis')
-      },
-      {
-        key: 'template-report',
-        label: '基于模板创建',
-        icon: <FileTextOutlined />,
-        onClick: () => navigate('/templates')
-      },
-      {
-        key: 'blank-report',
-        label: '空白报告编辑',
-        icon: <FileAddOutlined />,
-        onClick: () => navigate('/editor')
-      },
-      {
-        key: 'data-import',
-        label: '数据导入分析',
-        icon: <DatabaseOutlined />,
-        onClick: () => navigate('/analysis?tab=data-import')
-      }
-    ]
   }
 
   return (
@@ -208,136 +180,146 @@ const Dashboard: React.FC = () => {
             transform: 'translate(-96px, 96px)'
           }}></div>
           
-          <div style={{ position: 'relative', zIndex: 10 }}>
-            <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px' }}>欢迎回来！</h1>
-            <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>五大智能体已就绪，让我们一起创造专业的山西电网分析报告吧</p>
+          <Row gutter={[24, 24]} align="middle">
+            <Col xs={24} lg={14}>
+              <div style={{ position: 'relative', zIndex: 10 }}>
+                <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px' }}>欢迎回来！</h1>
+                <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>五大智能体已就绪，让我们一起创造专业的山西电网分析报告吧</p>
+                
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                  {/* 删除快速创建报告按钮 */}
+                </div>
+              </div>
+            </Col>
             
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-              <Dropdown menu={quickCreateMenu} trigger={['click']} placement="bottomLeft">
-                <Button 
-                  size="large" 
-                  type="primary" 
-                  icon={<RocketOutlined />}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
-                    backdropFilter: 'blur(4px)'
+            <Col xs={24} lg={10}>
+              <div style={{ position: 'relative', zIndex: 10 }}>
+                <Row gutter={[16, 16]}>
+                  <Col span={12}>
+                    <div 
+                      style={{ 
+                        textAlign: 'center', 
+                        cursor: 'pointer',
+                        padding: '16px',
+                        borderRadius: '12px',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(4px)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        transition: 'all 0.3s'
+                      }}
+                      onClick={() => navigate('/reports')}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'
+                        e.currentTarget.style.transform = 'translateY(-2px)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                        e.currentTarget.style.transform = 'translateY(0)'
+                      }}
+                    >
+                      <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>{totalReports}</div>
+                      <div style={{ fontSize: '14px', opacity: 0.9 }}>总报告数</div>
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div 
+                      style={{ 
+                        textAlign: 'center', 
+                        cursor: 'pointer',
+                        padding: '16px',
+                        borderRadius: '12px',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(4px)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        transition: 'all 0.3s'
+                      }}
+                      onClick={() => navigate('/analysis?tab=data-sources')}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'
+                        e.currentTarget.style.transform = 'translateY(-2px)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                        e.currentTarget.style.transform = 'translateY(0)'
+                      }}
+                    >
+                      <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>4</div>
+                      <div style={{ fontSize: '14px', opacity: 0.9 }}>总数据源</div>
+                    </div>
+                  </Col>
+                </Row>
+                
+                {/* 五大智能体运行状态 - 紧凑版 */}
+                <div 
+                  style={{ 
+                    marginTop: '16px',
+                    padding: '16px',
+                    borderRadius: '12px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(4px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                  onClick={() => navigate('/agent-monitor')}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'
+                    e.currentTarget.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                    e.currentTarget.style.transform = 'translateY(0)'
                   }}
                 >
-                  快速创建报告 <DownOutlined />
-                </Button>
-              </Dropdown>
-              <Button 
-                size="large" 
-                icon={<FileTextOutlined />}
-                style={{
-                  backgroundColor: 'transparent',
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                  color: 'white'
-                }}
-                onClick={() => navigate('/templates')}
-              >
-                浏览模板
-              </Button>
-              <Button 
-                size="large" 
-                icon={<SettingOutlined />}
-                style={{
-                  backgroundColor: 'transparent',
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                  color: 'white'
-                }}
-                onClick={() => navigate('/analysis')}
-              >
-                AI分析中心
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* 紧凑型数据概览 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        style={{ marginBottom: '24px' }}
-      >
-        <Card 
-          style={{ 
-            background: 'linear-gradient(135deg, #f6f9fc 0%, #ffffff 100%)',
-            border: '1px solid #e8f4fd',
-            borderRadius: '12px'
-          }}
-        >
-          <Row gutter={[16, 8]} align="middle">
-            <Col xs={24} sm={8}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #1890ff, #096dd9)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white'
-                }}>
-                  <FileTextOutlined />
-                </div>
-                <div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#262626' }}>186</div>
-                  <div style={{ fontSize: '12px', color: '#8c8c8c' }}>总报告数 <span style={{ color: '#52c41a' }}>↑15%</span></div>
-                </div>
-              </div>
-            </Col>
-            <Col xs={24} sm={8}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #52c41a, #389e0d)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white'
-                }}>
-                  <PlusOutlined />
-                </div>
-                <div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#262626' }}>32</div>
-                  <div style={{ fontSize: '12px', color: '#8c8c8c' }}>本月创建 <span style={{ color: '#52c41a' }}>↑12%</span></div>
-                </div>
-              </div>
-            </Col>
-            <Col xs={24} sm={8}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #722ed1, #531dab)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white'
-                }}>
-                  <EyeOutlined />
-                </div>
-                <div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#262626' }}>2,863</div>
-                  <div style={{ fontSize: '12px', color: '#8c8c8c' }}>总浏览量 <span style={{ color: '#52c41a' }}>↑22%</span></div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <ThunderboltOutlined style={{ fontSize: '16px' }} />
+                      <span style={{ fontSize: '14px', fontWeight: 'bold' }}>智能体状态</span>
+                    </div>
+                    <Badge count={5} style={{ backgroundColor: '#52c41a' }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {[
+                      { name: '数据采集', status: agentStats.dataCollector.status },
+                      { name: '指标分析', status: agentStats.metricAnalyzer.status },
+                      { name: '政策解读', status: agentStats.policyReader.status },
+                      { name: '数据检测', status: agentStats.dataDetector.status },
+                      { name: '报告生成', status: agentStats.reportGenerator.status }
+                    ].map((agent, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          fontSize: '12px'
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            backgroundColor: agent.status === 'active' ? '#52c41a' : '#fa8c16'
+                          }}
+                        />
+                        <span>{agent.name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </Col>
           </Row>
-        </Card>
+        </div>
       </motion.div>
 
-      <Row gutter={[24, 24]}>
-        {/* 快捷操作 */}
-        <Col xs={24} lg={12}>
+      {/* 快捷操作 - 占满一行 */}
+      <Row gutter={[24, 24]} style={{ marginBottom: '24px' }}>
+        <Col xs={24}>
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -347,7 +329,7 @@ const Dashboard: React.FC = () => {
               <Card title="快捷操作" variant="borderless">
                 <Row gutter={[16, 16]}>
                   {quickActions.map((action, index) => (
-                    <Col xs={12} key={index}>
+                    <Col xs={12} sm={6} md={6} lg={6} xl={6} key={index}>
                       <motion.div
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
@@ -359,7 +341,8 @@ const Dashboard: React.FC = () => {
                           style={{
                             textAlign: 'center',
                             border: '2px solid #f0f0f0',
-                            transition: 'all 0.3s'
+                            transition: 'all 0.3s',
+                            height: '120px'
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.borderColor = '#91d5ff'
@@ -372,22 +355,22 @@ const Dashboard: React.FC = () => {
                         >
                           <div 
                             style={{
-                              width: '48px',
-                              height: '48px',
+                              width: '36px',
+                              height: '36px',
                               borderRadius: '50%',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              margin: '0 auto 12px',
+                              margin: '0 auto 8px',
                               color: 'white',
-                              fontSize: '20px',
+                              fontSize: '16px',
                               backgroundColor: action.color
                             }}
                           >
                             {action.icon}
                           </div>
-                          <h4 style={{ fontWeight: '600', color: '#262626', marginBottom: '4px' }}>{action.title}</h4>
-                          <p style={{ fontSize: '12px', color: '#8c8c8c' }}>{action.description}</p>
+                          <h4 style={{ fontWeight: '600', color: '#262626', marginBottom: '4px', fontSize: '13px' }}>{action.title}</h4>
+                          <p style={{ fontSize: '11px', color: '#8c8c8c', margin: 0 }}>{action.description}</p>
                         </Card>
                       </motion.div>
                     </Col>
@@ -397,9 +380,11 @@ const Dashboard: React.FC = () => {
             </InteractiveCard>
           </motion.div>
         </Col>
+      </Row>
 
-        {/* 最近报告 */}
-        <Col xs={24} lg={12}>
+      {/* 最近报告 - 占满一行 */}
+      <Row gutter={[24, 24]}>
+        <Col xs={24}>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -414,60 +399,62 @@ const Dashboard: React.FC = () => {
                   </Button>
                 }
                 variant="borderless"
+                style={{ height: '100%' }}
               >
-                <AnimatedList
+                <List
+                  loading={loading}
                   dataSource={recentReports}
-                  staggerDelay={0.1}
-                  animationType="slideRight"
-                  renderItem={(item) => (
+                  renderItem={(report) => (
                     <List.Item
-                      style={{
-                        borderRadius: '8px',
-                        padding: '8px 12px',
-                        transition: 'background-color 0.2s',
-                        cursor: 'pointer'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#fafafa'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent'
-                      }}
-                      onClick={() => navigate(`/editor/${item.id}`)}
                       actions={[
-                        <Button type="text" size="small" icon={<EyeOutlined />}>
-                          {item.views}
-                        </Button>,
-                        <Button type="text" size="small" icon={<EditOutlined />} />,
-                        <Button type="text" size="small" icon={<ShareAltOutlined />} />
+                        <Button
+                          type="text"
+                          icon={<EyeOutlined />}
+                          onClick={() => navigate(`/reports/${report.id}`)}
+                        />,
+                        <Button
+                          type="text"
+                          icon={<EditOutlined />}
+                          onClick={() => navigate(`/editor/${report.id}`)}
+                        />,
+                        <Button
+                          type="text"
+                          icon={<ShareAltOutlined />}
+                          onClick={() => {
+                            message.success('分享链接已复制到剪贴板')
+                          }}
+                        />
                       ]}
                     >
                       <List.Item.Meta
                         avatar={
-                          <AnimatedAvatar 
+                          <AnimatedAvatar
                             icon={<FileTextOutlined />}
-                            online={Math.random() > 0.5}
-                            delay={0.2}
+                            style={{
+                              backgroundColor: report.status === 'published' ? '#52c41a' : 
+                                             report.status === 'draft' ? '#faad14' : '#1890ff'
+                            }}
                           />
                         }
                         title={
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontWeight: '500', color: '#262626', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {item.title}
-                            </span>
-                            <StatusTag 
-                              status={item.status === 'published' ? 'completed' : item.status === 'draft' ? 'new' : 'processing'}
-                              animated
-                            />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>{report.title}</span>
+                            <StatusTag status={report.status === 'draft' ? 'draft' : report.status as any} />
                           </div>
                         }
                         description={
-                          <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                            <span style={{ marginRight: '16px' }}>
+                          <div style={{ color: '#666' }}>
+                            <div>作者：{report.author || '系统'} | 更新时间：{new Date(report.updated_at || report.created_at).toLocaleString('zh-CN', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}</div>
+                            <div style={{ marginTop: '4px' }}>
                               <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                              {item.updateTime}
-                            </span>
-                            <span>作者: {item.author}</span>
+                              浏览量：{report.views || 0}
+                            </div>
                           </div>
                         }
                       />
@@ -480,258 +467,7 @@ const Dashboard: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 五大智能体状态监控 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
-        style={{ marginTop: '24px' }}
-      >
-        <Card 
-          title={
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ThunderboltOutlined style={{ color: '#1890ff' }} />
-              <span>五大智能体运行状态</span>
-              <Badge count={5} style={{ backgroundColor: '#52c41a' }} />
-            </div>
-          }
-          extra={<MonitorOutlined />}
-        >
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={8} lg={4} xl={4}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                style={{
-                  textAlign: 'center',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  background: agentStats.dataCollector.status === 'active' ? 'linear-gradient(135deg, #e6f7ff, #bae7ff)' : 'linear-gradient(135deg, #fff7e6, #ffd591)',
-                  border: `2px solid ${agentStats.dataCollector.status === 'active' ? '#91d5ff' : '#ffec3d'}`,
-                  transition: 'all 0.3s'
-                }}
-              >
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #1890ff, #096dd9)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
-                  position: 'relative'
-                }}>
-                  🔍
-                  <div style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: agentStats.dataCollector.status === 'active' ? '#52c41a' : '#fa8c16',
-                    border: '2px solid white'
-                  }}></div>
-                </div>
-                <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>数据采集智能体</div>
-                <div style={{ fontSize: '11px', color: agentStats.dataCollector.status === 'active' ? '#52c41a' : '#fa8c16', marginBottom: '8px' }}>
-                  {agentStats.dataCollector.status === 'active' ? '运行中' : '繁忙'}
-                </div>
-                <div style={{ fontSize: '10px', color: '#8c8c8c' }}>
-                  <div>CPU: {agentStats.dataCollector.cpu}%</div>
-                  <div>内存: {agentStats.dataCollector.memory}%</div>
-                  <div>任务: {agentStats.dataCollector.tasks}个</div>
-                </div>
-              </motion.div>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={4} xl={4}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                style={{
-                  textAlign: 'center',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  background: agentStats.metricAnalyzer.status === 'active' ? 'linear-gradient(135deg, #f6ffed, #d9f7be)' : 'linear-gradient(135deg, #fff7e6, #ffd591)',
-                  border: `2px solid ${agentStats.metricAnalyzer.status === 'active' ? '#b7eb8f' : '#ffec3d'}`,
-                  transition: 'all 0.3s'
-                }}
-              >
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #52c41a, #389e0d)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
-                  position: 'relative'
-                }}>
-                  📊
-                  <div style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: agentStats.metricAnalyzer.status === 'active' ? '#52c41a' : '#fa8c16',
-                    border: '2px solid white'
-                  }}></div>
-                </div>
-                <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>指标分析智能体</div>
-                <div style={{ fontSize: '11px', color: agentStats.metricAnalyzer.status === 'active' ? '#52c41a' : '#fa8c16', marginBottom: '8px' }}>
-                  {agentStats.metricAnalyzer.status === 'active' ? '运行中' : '繁忙'}
-                </div>
-                <div style={{ fontSize: '10px', color: '#8c8c8c' }}>
-                  <div>CPU: {agentStats.metricAnalyzer.cpu}%</div>
-                  <div>内存: {agentStats.metricAnalyzer.memory}%</div>
-                  <div>任务: {agentStats.metricAnalyzer.tasks}个</div>
-                </div>
-              </motion.div>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={4} xl={4}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                style={{
-                  textAlign: 'center',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  background: agentStats.policyReader.status === 'active' ? 'linear-gradient(135deg, #f9f0ff, #efdbff)' : 'linear-gradient(135deg, #fff7e6, #ffd591)',
-                  border: `2px solid ${agentStats.policyReader.status === 'active' ? '#d3adf7' : '#ffec3d'}`,
-                  transition: 'all 0.3s'
-                }}
-              >
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #722ed1, #531dab)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
-                  position: 'relative'
-                }}>
-                  📋
-                  <div style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: agentStats.policyReader.status === 'active' ? '#52c41a' : '#fa8c16',
-                    border: '2px solid white'
-                  }}></div>
-                </div>
-                <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>政策解读智能体</div>
-                <div style={{ fontSize: '11px', color: agentStats.policyReader.status === 'active' ? '#52c41a' : '#fa8c16', marginBottom: '8px' }}>
-                  {agentStats.policyReader.status === 'active' ? '运行中' : '繁忙'}
-                </div>
-                <div style={{ fontSize: '10px', color: '#8c8c8c' }}>
-                  <div>CPU: {agentStats.policyReader.cpu}%</div>
-                  <div>内存: {agentStats.policyReader.memory}%</div>
-                  <div>任务: {agentStats.policyReader.tasks}个</div>
-                </div>
-              </motion.div>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={4} xl={4}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                style={{
-                  textAlign: 'center',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  background: agentStats.dataDetector.status === 'active' ? 'linear-gradient(135deg, #fff7e6, #ffd591)' : 'linear-gradient(135deg, #fff7e6, #ffd591)',
-                  border: `2px solid ${agentStats.dataDetector.status === 'active' ? '#ffec3d' : '#ffec3d'}`,
-                  transition: 'all 0.3s'
-                }}
-              >
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #fa8c16, #d46b08)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
-                  position: 'relative'
-                }}>
-                  🔍
-                  <div style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: agentStats.dataDetector.status === 'active' ? '#52c41a' : '#fa8c16',
-                    border: '2px solid white'
-                  }}></div>
-                </div>
-                <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>数据检测智能体</div>
-                <div style={{ fontSize: '11px', color: agentStats.dataDetector.status === 'active' ? '#52c41a' : '#fa8c16', marginBottom: '8px' }}>
-                  {agentStats.dataDetector.status === 'active' ? '运行中' : '繁忙'}
-                </div>
-                <div style={{ fontSize: '10px', color: '#8c8c8c' }}>
-                  <div>CPU: {agentStats.dataDetector.cpu}%</div>
-                  <div>内存: {agentStats.dataDetector.memory}%</div>
-                  <div>任务: {agentStats.dataDetector.tasks}个</div>
-                </div>
-              </motion.div>
-            </Col>
-            <Col xs={24} sm={12} md={8} lg={4} xl={4}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                style={{
-                  textAlign: 'center',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  background: agentStats.reportGenerator.status === 'active' ? 'linear-gradient(135deg, #e6fffb, #b5f5ec)' : 'linear-gradient(135deg, #fff7e6, #ffd591)',
-                  border: `2px solid ${agentStats.reportGenerator.status === 'active' ? '#87e8de' : '#ffec3d'}`,
-                  transition: 'all 0.3s'
-                }}
-              >
-                <div style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #13c2c2, #08979c)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
-                  position: 'relative'
-                }}>
-                  📝
-                  <div style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: agentStats.reportGenerator.status === 'active' ? '#52c41a' : '#fa8c16',
-                    border: '2px solid white'
-                  }}></div>
-                </div>
-                <div style={{ fontWeight: 'bold', fontSize: '13px', marginBottom: '8px' }}>报告生成智能体</div>
-                <div style={{ fontSize: '11px', color: agentStats.reportGenerator.status === 'active' ? '#52c41a' : '#fa8c16', marginBottom: '8px' }}>
-                  {agentStats.reportGenerator.status === 'active' ? '运行中' : '繁忙'}
-                </div>
-                <div style={{ fontSize: '10px', color: '#8c8c8c' }}>
-                  <div>CPU: {agentStats.reportGenerator.cpu}%</div>
-                  <div>内存: {agentStats.reportGenerator.memory}%</div>
-                  <div>任务: {agentStats.reportGenerator.tasks}个</div>
-                </div>
-              </motion.div>
-            </Col>
-          </Row>
-        </Card>
-      </motion.div>
-      
+      {/* Agent Progress Modal */}
       <AgentProgressModal
         visible={agentModalVisible}
         onClose={() => setAgentModalVisible(false)}

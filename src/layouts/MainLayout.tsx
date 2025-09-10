@@ -132,10 +132,12 @@ const MainLayout: React.FC = () => {
             justifyContent: 'center',
             height: '64px',
             background: 'linear-gradient(to right, #1890ff, #096dd9)',
-            color: 'white'
+            color: 'white',
+            cursor: 'pointer'
           }}
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
+          onClick={() => navigate('/dashboard')}
         >
           {collapsed ? (
             <div style={{ fontSize: '20px', fontWeight: 'bold' }}>智</div>

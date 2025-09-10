@@ -10,7 +10,6 @@ import {
   Space,
   Avatar,
   Dropdown,
-  message,
   Tooltip,
   Progress,
   App
@@ -56,7 +55,7 @@ interface Report extends DatabaseReport {
 
 const Reports: React.FC = () => {
   const navigate = useNavigate()
-  const { modal } = App.useApp()
+  const { modal, message } = App.useApp()
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table')
   const [searchText, setSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -167,14 +166,30 @@ const Reports: React.FC = () => {
         
         if (response.success && response.data) {
           // 将数据库报告转换为UI需要的格式
-          const formattedReports: Report[] = response.data.map((report: any) => ({
-            ...report,
-            author: '系统用户', // 默认作者
-            authorAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=User',
-            category: '智能报告', // 默认分类
-            progress: 100, // 已保存的报告默认为完成状态
-            size: '未知大小'
-          }))
+          const formattedReports: Report[] = response.data.map((report: any) => {
+            // 从content字段提取描述信息
+            let description = '暂无描述';
+            if (report.content) {
+              if (typeof report.content === 'string') {
+                // 如果content是字符串，取前100个字符作为描述
+                description = report.content.substring(0, 100) + (report.content.length > 100 ? '...' : '');
+              } else if (typeof report.content === 'object') {
+                // 如果content是对象，优先使用text字段
+                const text = report.content.text || report.content.summary || '';
+                description = text.substring(0, 100) + (text.length > 100 ? '...' : '');
+              }
+            }
+            
+            return {
+              ...report,
+              author: '系统用户', // 默认作者
+              authorAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=User',
+              category: report.type === 'ai-analysis' ? 'AI分析报告' : '智能报告', // 根据类型设置分类
+              progress: 100, // 已保存的报告默认为完成状态
+              size: '未知大小',
+              description: description
+            };
+          })
           
           setReports(formattedReports)
           console.log('✅ 成功从Supabase获取报告:', formattedReports.length, '条')

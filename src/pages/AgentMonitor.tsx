@@ -426,20 +426,34 @@ const AgentMonitor: React.FC = () => {
         </Col>
         <Col xs={24} lg={12}>
           <Card title="📈 性能趋势" size="small">
-            <Timeline>
-              <Timeline.Item color="green">
-                <Text style={{ fontSize: '12px' }}>14:30 - 报告生成智能体启动新任务</Text>
-              </Timeline.Item>
-              <Timeline.Item color="blue">
-                <Text style={{ fontSize: '12px' }}>14:25 - 指标分析完成客户流失分析</Text>
-              </Timeline.Item>
-              <Timeline.Item color="orange">
-                <Text style={{ fontSize: '12px' }}>14:20 - 政策解读完成合规性检查</Text>
-              </Timeline.Item>
-              <Timeline.Item color="red">
-                <Text style={{ fontSize: '12px' }}>14:15 - 数据检测任务执行失败</Text>
-              </Timeline.Item>
-            </Timeline>
+            <Timeline
+              items={[
+                {
+                  color: 'green',
+                  children: (
+                    <span><Text strong>数据采集智能体</Text> - 完成负荷数据采集</span>
+                  )
+                },
+                {
+                  color: 'blue',
+                  children: (
+                    <span><Text strong>模式识别智能体</Text> - 识别异常负荷模式</span>
+                  )
+                },
+                {
+                  color: 'orange',
+                  children: (
+                    <span><Text strong>预测建模智能体</Text> - 生成负荷预测模型</span>
+                  )
+                },
+                {
+                  color: 'red',
+                  children: (
+                    <span><Text strong>报告生成智能体</Text> - 正在生成分析报告</span>
+                  )
+                }
+              ]}
+            />
           </Card>
         </Col>
       </Row>
