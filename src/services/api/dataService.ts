@@ -641,19 +641,59 @@ export class ReportService {
   // 更新报告
   static async updateReport(id: string, updates: ReportUpdate): Promise<ApiResponse<Report>> {
     try {
-      const { data, error } = await (supabase as any)
-        .from('reports')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      console.log('🔄 开始更新报告，ID:', id, '更新数据:', updates);
+      
+      // 首先尝试使用Supabase
+      try {
+        const updateData = {
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
+        
+        console.log('📝 尝试Supabase更新...');
+        const { data, error } = await (supabase as any)
+          .from('reports')
+          .update(updateData)
+          .eq('id', id)
+          .select()
+          .single();
 
-      if (error) {
-        return { data: null, error: error.message, success: false };
+        if (!error && data) {
+          console.log('✅ Supabase报告更新成功:', data);
+          return { data, error: null, success: true };
+        }
+        
+        console.warn('⚠️ Supabase更新失败，切换到本地存储:', error?.message);
+      } catch (supabaseError) {
+        console.warn('⚠️ Supabase连接失败，切换到本地存储:', supabaseError);
       }
-
-      return { data, error: null, success: true };
+      
+      // 如果Supabase失败，使用本地存储
+      console.log('💾 使用本地存储更新报告...');
+      const localReport = LocalStorageService.updateReport(id, updates);
+      
+      if (!localReport) {
+        return {
+          data: null,
+          error: '报告不存在或更新失败',
+          success: false
+        };
+      }
+      
+      // 转换为标准Report格式
+      const reportResult: Report = {
+        ...localReport,
+        published_at: localReport.published_at,
+        view_count: localReport.view_count,
+        download_count: localReport.download_count,
+        tags: localReport.tags,
+        metadata: localReport.metadata
+      };
+      
+      console.log('✅ 本地存储报告更新成功:', reportResult);
+      return { data: reportResult, error: null, success: true };
     } catch (error) {
+      console.error('❌ 更新报告异常:', error);
       return {
         data: null,
         error: error instanceof Error ? error.message : '更新报告失败',

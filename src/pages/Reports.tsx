@@ -79,8 +79,161 @@ const Reports: React.FC = () => {
     })
   }
 
-  const handleDownload = (_record: Report) => {
-    message.info('下载功能开发中...');
+  const handleDownload = (record: Report) => {
+    try {
+      // 创建报告内容
+      const reportContent = `# ${record.title}
+
+**创建时间**: ${new Date(record.created_at).toLocaleString()}
+**状态**: ${record.status === 'draft' ? '草稿' : record.status === 'published' ? '已发布' : '已归档'}
+**作者**: ${record.author || '系统用户'}
+
+## 报告内容
+
+${typeof record.content === 'string' ? record.content : JSON.stringify(record.content, null, 2)}
+
+---
+生成时间: ${new Date().toLocaleString()}`;
+      
+      // 创建下载链接
+      const blob = new Blob([reportContent], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${record.title.replace(/[^\w\s-]/g, '')}.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      message.success(`报告「${record.title}」下载成功`);
+    } catch (error) {
+      console.error('下载报告失败:', error);
+      message.error('下载失败，请重试');
+    }
+  };
+
+  // 批量删除处理函数
+  const handleBatchDelete = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请先选择要删除的报告');
+      return;
+    }
+
+    const modalInstance = modal.confirm({
+      title: '批量删除确认',
+      content: `确定要删除选中的 ${selectedRowKeys.length} 个报告吗？此操作不可恢复。`,
+      okText: '确认删除',
+      cancelText: '取消',
+      okType: 'danger' as const,
+      centered: true,
+      maskClosable: false,
+      zIndex: 9999,
+      width: 400,
+      onOk: async () => {
+        try {
+          console.log('🔄 开始批量删除，报告IDs:', selectedRowKeys);
+          let successCount = 0;
+          let failCount = 0;
+
+          // 逐个删除报告
+          for (const reportId of selectedRowKeys) {
+            try {
+              const response = await ReportService.deleteReport(reportId as string);
+              if (response.success) {
+                successCount++;
+              } else {
+                failCount++;
+                console.error('删除报告失败:', reportId, response.error);
+              }
+            } catch (error) {
+              failCount++;
+              console.error('删除报告异常:', reportId, error);
+            }
+          }
+
+          // 更新UI状态
+          if (successCount > 0) {
+            setReports(prevReports => 
+              prevReports.filter(r => !selectedRowKeys.includes(r.id))
+            );
+            setSelectedRowKeys([]);
+          }
+
+          // 显示结果消息
+          if (failCount === 0) {
+            message.success(`成功删除 ${successCount} 个报告`);
+          } else if (successCount === 0) {
+            message.error(`删除失败，共 ${failCount} 个报告删除失败`);
+          } else {
+            message.warning(`删除完成：成功 ${successCount} 个，失败 ${failCount} 个`);
+          }
+        } catch (error) {
+          console.error('批量删除异常:', error);
+          message.error('批量删除失败，请检查网络连接');
+        }
+      }
+    });
+  };
+
+  // 批量下载处理函数
+  const handleBatchDownload = async () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请先选择要下载的报告');
+      return;
+    }
+
+    try {
+      const selectedReports = reports.filter(report => selectedRowKeys.includes(report.id));
+      
+      if (selectedReports.length === 1) {
+        // 单个报告直接下载
+        handleDownload(selectedReports[0]);
+        return;
+      }
+
+      // 多个报告打包下载
+      let zipContent = '';
+      selectedReports.forEach((report, index) => {
+        const reportContent = `# ${report.title}\n\n**创建时间**: ${new Date(report.created_at).toLocaleString()}\n**状态**: ${report.status === 'draft' ? '草稿' : report.status === 'published' ? '已发布' : '已归档'}\n**作者**: ${report.author || '系统用户'}\n\n## 报告内容\n\n${typeof report.content === 'string' ? report.content : JSON.stringify(report.content, null, 2)}\n\n---\n生成时间: ${new Date().toLocaleString()}`;
+        
+        zipContent += `=== 报告 ${index + 1}: ${report.title} ===\n\n${reportContent}\n\n${'='.repeat(80)}\n\n`;
+      });
+
+      // 创建合并文件下载
+      const blob = new Blob([zipContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `批量报告_${selectedReports.length}个_${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      message.success(`成功下载 ${selectedReports.length} 个报告`);
+      setSelectedRowKeys([]); // 清除选中状态
+    } catch (error) {
+      console.error('批量下载失败:', error);
+      message.error('批量下载失败，请重试');
+    }
+  };
+
+  // 批量分享处理函数
+  const handleBatchShare = () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning('请先选择要分享的报告');
+      return;
+    }
+    
+    const shareUrls = selectedRowKeys.map(id => `${window.location.origin}/reports/${id}`);
+    const shareText = shareUrls.join('\n');
+    
+    navigator.clipboard.writeText(shareText).then(() => {
+      message.success(`已复制 ${selectedRowKeys.length} 个报告的分享链接到剪贴板`);
+    }).catch(() => {
+      message.error('复制失败，请手动复制链接');
+    });
   };
 
   const handleDelete = async (record: Report) => {
@@ -646,9 +799,9 @@ const Reports: React.FC = () => {
                 已选择 {selectedRowKeys.length} 个报告
               </span>
               <Space>
-                <Button size="small">批量分享</Button>
-                <Button size="small">批量下载</Button>
-                <Button size="small" danger>批量删除</Button>
+                <Button size="small" onClick={handleBatchShare}>批量分享</Button>
+                <Button size="small" onClick={handleBatchDownload}>批量下载</Button>
+                <Button size="small" danger onClick={handleBatchDelete}>批量删除</Button>
               </Space>
             </div>
           </Card>

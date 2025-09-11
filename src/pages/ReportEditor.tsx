@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Button,
@@ -16,7 +16,8 @@ import {
   Row,
   Col,
   Typography,
-  App
+  App,
+  Switch
 } from 'antd';
 import { EnhancedButton } from '../components/InteractiveEnhancements';
 
@@ -67,6 +68,13 @@ interface EditorState {
   isUnderline: boolean;
   alignment: 'left' | 'center' | 'right';
   isFullscreen: boolean;
+}
+
+interface OutlineItem {
+  id: string;
+  text: string;
+  level: number;
+  line: number;
 }
 
 const ReportEditor: React.FC = () => {
@@ -398,6 +406,9 @@ ${data.regions.map((region: any) =>
   const [wordCount, setWordCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [_isLoading, _setIsLoading] = useState(false);
+  const [lastSavedContent, setLastSavedContent] = useState<string>('');
+  const [isMarkdownMode, setIsMarkdownMode] = useState(false);
+  const [outline, setOutline] = useState<OutlineItem[]>([]);
 
   // 加载现有报告数据
   React.useEffect(() => {
@@ -420,15 +431,17 @@ ${data.regions.map((region: any) =>
                if (typeof report.content === 'string') {
                  content = report.content;
                } else if (report.content && typeof report.content === 'object') {
-                 // 优先使用text字段
-                 if (report.content.text) {
+                 // 处理AI分析生成的报告格式
+                 if (report.content.aiResponse) {
+                   content = report.content.aiResponse;
+                 } else if (report.content.text) {
                    content = report.content.text;
                  } else if (report.content.analysisData) {
                    // 如果是AI分析数据，生成格式化的报告内容
                    const analysisData = report.content.analysisData;
                    content = generateAIReportContent({ data: analysisData, type: 'ai-analysis' });
                  } else {
-                   content = report.content.summary || '';
+                   content = report.content.summary || JSON.stringify(report.content, null, 2);
                  }
                  formatting = report.content.formatting || {};
                }
@@ -498,7 +511,7 @@ ${data.regions.map((region: any) =>
       console.log('💾 开始保存报告...');
       console.log('报告数据:', { title: editorState.title, content: editorState.content });
       
-      const result = await ReportService.createReport({
+      const reportData = {
         title: editorState.title,
         content: {
           text: editorState.content,
@@ -514,12 +527,26 @@ ${data.regions.map((region: any) =>
           }
         },
         status: 'draft'
-      });
+      };
+      
+      let result;
+      if (id && id !== 'new') {
+        // 更新现有报告
+        result = await ReportService.updateReport(id, reportData);
+      } else {
+        // 创建新报告
+        result = await ReportService.createReport(reportData);
+      }
       
       if (result.success && result.data) {
         console.log('✅ 报告保存成功:', result.data);
         setLastSaved(new Date());
         message.success(`报告保存成功！报告ID: ${result.data.id}`);
+        
+        // 如果是新创建的报告，更新URL
+        if (id === 'new' && result.data.id) {
+          window.history.replaceState(null, '', `/editor/${result.data.id}`);
+        }
       } else {
         console.error('❌ 报告保存失败:', result.error);
         message.error(`保存失败: ${result.error}`);
@@ -536,19 +563,157 @@ ${data.regions.map((region: any) =>
   React.useEffect(() => {
     const autoSave = setInterval(() => {
       if (editorState.title && editorState.content.trim() && !isSaving) {
-        console.log('🔄 自动保存中...');
-        handleSave();
+        // 检查内容是否有变化
+        const currentContent = JSON.stringify({
+          title: editorState.title,
+          content: editorState.content,
+          formatting: {
+            fontSize: editorState.fontSize,
+            fontFamily: editorState.fontFamily,
+            textColor: editorState.textColor,
+            backgroundColor: editorState.backgroundColor,
+            isBold: editorState.isBold,
+            isItalic: editorState.isItalic,
+            isUnderline: editorState.isUnderline,
+            alignment: editorState.alignment
+          }
+        });
+        
+        if (currentContent !== lastSavedContent) {
+          console.log('🔄 内容有变化，自动保存中...');
+          handleSave();
+          setLastSavedContent(currentContent);
+        }
       }
     }, 30000); // 30秒自动保存
 
     return () => clearInterval(autoSave);
-  }, [editorState.title, editorState.content, isSaving]);
+  }, [editorState, isSaving, lastSavedContent]);
 
   // 统计字数
   React.useEffect(() => {
     const count = editorState.content.replace(/\s/g, '').length;
     setWordCount(count);
   }, [editorState.content]);
+
+  // 大纲识别功能
+  const generateOutline = useMemo(() => {
+    const content = editorState.content || '';
+    const lines = content.split('\n');
+    const outlineItems: OutlineItem[] = [];
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // 识别Markdown标题
+      const markdownMatch = trimmedLine.match(/^(#{1,6})\s+(.+)$/);
+      if (markdownMatch) {
+        const level = markdownMatch[1].length;
+        const text = markdownMatch[2];
+        outlineItems.push({
+          id: `outline-${index}`,
+          text,
+          level,
+          line: index + 1
+        });
+        return;
+      }
+      
+      // 识别数字编号标题 (1. 2. 3.)
+      const numberMatch = trimmedLine.match(/^(\d+\.\s*)(.+)$/);
+      if (numberMatch && trimmedLine.length > 5) {
+        outlineItems.push({
+          id: `outline-${index}`,
+          text: numberMatch[2],
+          level: 1,
+          line: index + 1
+        });
+        return;
+      }
+      
+      // 识别中文编号标题 (一、二、三、)
+      const chineseMatch = trimmedLine.match(/^[一二三四五六七八九十]+[、．]\s*(.+)$/);
+      if (chineseMatch && trimmedLine.length > 3) {
+        outlineItems.push({
+          id: `outline-${index}`,
+          text: chineseMatch[1],
+          level: 1,
+          line: index + 1
+        });
+        return;
+      }
+      
+      // 识别带括号的标题 ((1) (2) (3))
+      const bracketMatch = trimmedLine.match(/^\([\d一二三四五六七八九十]+\)\s*(.+)$/);
+      if (bracketMatch && trimmedLine.length > 4) {
+        outlineItems.push({
+          id: `outline-${index}`,
+          text: bracketMatch[1],
+          level: 2,
+          line: index + 1
+        });
+        return;
+      }
+      
+      // 识别关键词开头的标题
+      const keywordMatch = trimmedLine.match(/^(概述|摘要|总结|结论|建议|分析|背景|目标|方法|结果|讨论|附录)[：:：]?\s*(.*)$/);
+      if (keywordMatch) {
+        outlineItems.push({
+          id: `outline-${index}`,
+          text: keywordMatch[0],
+          level: 1,
+          line: index + 1
+        });
+      }
+    });
+    
+    return outlineItems;
+  }, [editorState.content]);
+
+  // 更新大纲
+  useEffect(() => {
+    setOutline(generateOutline);
+  }, [generateOutline]);
+
+  // Markdown渲染函数
+  const renderMarkdown = (text: string) => {
+    if (!isMarkdownMode) {
+      return text;
+    }
+    
+    let html = text
+      // 标题
+      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+      // 粗体
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // 斜体
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // 代码
+      .replace(/`(.*?)`/g, '<code>$1</code>')
+      // 链接
+      .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+      // 换行
+      .replace(/\n/g, '<br/>');
+    
+    return html;
+  };
+
+  // 跳转到大纲项目
+  const scrollToOutlineItem = (lineNumber: number) => {
+    const textArea = document.querySelector('.document-page textarea') as HTMLTextAreaElement;
+    if (textArea) {
+      const lines = editorState.content.split('\n');
+      let charCount = 0;
+      for (let i = 0; i < lineNumber - 1; i++) {
+        charCount += lines[i].length + 1; // +1 for newline
+      }
+      textArea.focus();
+      textArea.setSelectionRange(charCount, charCount);
+      textArea.scrollTop = (lineNumber - 1) * 20; // 估算行高
+    }
+  };
 
   // 格式化工具栏
   const formatToolbar = (
@@ -829,23 +994,66 @@ ${data.regions.map((region: any) =>
             overflow: 'auto'
           }}
         >
-          <Title level={5} style={{ marginBottom: '16px' }}>文档大纲</Title>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <Title level={5} style={{ margin: 0 }}>文档大纲</Title>
+            <Tooltip title={isMarkdownMode ? '关闭Markdown模式' : '开启Markdown模式'}>
+              <Switch
+                size="small"
+                checked={isMarkdownMode}
+                onChange={setIsMarkdownMode}
+                checkedChildren="MD"
+                unCheckedChildren="TXT"
+              />
+            </Tooltip>
+          </div>
           <div className="outline-tree">
-            <div className="outline-item" style={{ padding: '8px 0', cursor: 'pointer' }}>
-              <Text>1. 概述</Text>
-            </div>
-            <div className="outline-item" style={{ padding: '8px 0', paddingLeft: '16px', cursor: 'pointer' }}>
-              <Text type="secondary">1.1 背景介绍</Text>
-            </div>
-            <div className="outline-item" style={{ padding: '8px 0', paddingLeft: '16px', cursor: 'pointer' }}>
-              <Text type="secondary">1.2 目标设定</Text>
-            </div>
-            <div className="outline-item" style={{ padding: '8px 0', cursor: 'pointer' }}>
-              <Text>2. 数据分析</Text>
-            </div>
-            <div className="outline-item" style={{ padding: '8px 0', cursor: 'pointer' }}>
-              <Text>3. 结论建议</Text>
-            </div>
+            {outline.length > 0 ? (
+              outline.map((item) => (
+                <div 
+                  key={item.id}
+                  className="outline-item" 
+                  style={{ 
+                    padding: '6px 8px', 
+                    paddingLeft: `${8 + (item.level - 1) * 16}px`,
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    marginBottom: '2px',
+                    fontSize: item.level === 1 ? '13px' : '12px'
+                  }}
+                  onClick={() => scrollToOutlineItem(item.line)}
+                >
+                  <Text 
+                    type={item.level > 1 ? 'secondary' : 'default'}
+                    style={{ 
+                      fontWeight: item.level === 1 ? 500 : 400,
+                      display: 'block',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title={item.text}
+                  >
+                    {item.text}
+                  </Text>
+                  <Text type="secondary" style={{ fontSize: '10px', opacity: 0.6 }}>
+                    第{item.line}行
+                  </Text>
+                </div>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', padding: '20px 0', color: '#999' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  暂无大纲内容
+                  <br />
+                  <span style={{ fontSize: '11px' }}>
+                    支持识别标题格式：<br />
+                    # 标题 (Markdown)<br />
+                    1. 标题 (数字)<br />
+                    一、标题 (中文)
+                  </span>
+                </Text>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -905,9 +1113,10 @@ ${data.regions.map((region: any) =>
                   textDecoration: editorState.isUnderline ? 'underline' : 'none',
                   whiteSpace: 'pre-wrap'
                 }}
-              >
-                {editorState.content || '暂无内容'}
-              </div>
+                dangerouslySetInnerHTML={{
+                  __html: isMarkdownMode ? renderMarkdown(editorState.content || '暂无内容') : (editorState.content || '暂无内容')
+                }}
+              />
             ) : (
               <TextArea
                 value={editorState.content}
@@ -926,7 +1135,7 @@ ${data.regions.map((region: any) =>
                   lineHeight: 'inherit'
                 }}
                 autoSize={{ minRows: 20 }}
-                placeholder="开始编写您的报告内容..."
+                placeholder={isMarkdownMode ? "开始编写您的报告内容...\n\n支持Markdown语法：\n# 一级标题\n## 二级标题\n**粗体** *斜体*\n`代码` [链接](url)" : "开始编写您的报告内容..."}
               />
             )}
           </div>

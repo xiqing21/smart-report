@@ -204,14 +204,12 @@ const AIAnalysis: React.FC = () => {
         .insert({
           title: analysisResult.title,
           content: {
-            text: analysisResult.content || analysisResult.summary || '报告内容生成中...',
-            analysisData: analysisResult,
-            type: 'ai-analysis'
+            prompt: formValues.description || '请分析一下电网负荷的发展趋势',
+            aiResponse: analysisResult.content || analysisResult.summary || '报告内容生成中...',
+            generatedAt: new Date().toISOString()
           },
-          type: 'ai-analysis',
           status: 'draft',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          owner_id: '00000000-0000-0000-0000-000000000001'
         })
         .select()
         .single();
