@@ -21,7 +21,10 @@ import {
   Typography,
   Tooltip,
   Badge,
-  App
+  App,
+  List,
+  Divider,
+  Checkbox
 } from 'antd';
 import {
   UploadOutlined,
@@ -65,6 +68,12 @@ interface DataSource {
   records?: number;
   fileExtension?: string;
   fileName?: string;
+  // 数据质量相关字段
+  qualityScore?: number;
+  healthStatus?: 'excellent' | 'good' | 'fair' | 'poor';
+  issueCount?: number;
+  lastQualityCheck?: string;
+  hasEDAReport?: boolean;
 }
 
 interface AnalysisTask {
@@ -77,6 +86,40 @@ interface AnalysisTask {
   startTime: string;
   duration?: string;
   insights?: number;
+}
+
+// 数据质量相关接口
+interface DataQualityIssue {
+  type: 'missing_values' | 'duplicates' | 'outliers' | 'inconsistent_format';
+  column: string;
+  count: number;
+  percentage: number;
+  severity: 'low' | 'medium' | 'high';
+  description: string;
+}
+
+interface DataHealthReport {
+  overallScore: number;
+  totalRows: number;
+  totalColumns: number;
+  issues: DataQualityIssue[];
+  suggestions: {
+    issue: string;
+    method: string;
+    confidence: number;
+    description: string;
+  }[];
+}
+
+interface EDAInsight {
+  type: 'correlation' | 'distribution' | 'trend' | 'anomaly';
+  title: string;
+  description: string;
+  confidence: number;
+  visualization?: {
+    type: 'histogram' | 'scatter' | 'heatmap' | 'line';
+    data: any;
+  };
 }
 
 const AIAnalysis: React.FC = () => {
@@ -96,6 +139,13 @@ const AIAnalysis: React.FC = () => {
   // 从路由状态获取分析完成状态
   const analysisCompleted = location.state?.analysisCompleted || false;
   const showResults = location.state?.showResults || false;
+  
+  // 数据质量相关状态
+  const [healthReportModalVisible, setHealthReportModalVisible] = useState(false);
+  const [edaModalVisible, setEdaModalVisible] = useState(false);
+  const [repairModalVisible, setRepairModalVisible] = useState(false);
+  const [selectedDataSourceForHealth, setSelectedDataSourceForHealth] = useState<DataSource | null>(null);
+  const [isQualityChecking, setIsQualityChecking] = useState(false);
 
   useEffect(() => {
     if (showResults && analysisCompleted) {
@@ -113,7 +163,12 @@ const AIAnalysis: React.FC = () => {
       lastUpdated: '2024-01-15 14:30',
       records: 125420,
       fileExtension: 'db',
-      fileName: '山西电网负荷数据'
+      fileName: '山西电网负荷数据',
+      qualityScore: 92,
+      healthStatus: 'excellent',
+      issueCount: 2,
+      lastQualityCheck: '2024-01-15 14:25',
+      hasEDAReport: true
     },
     {
       id: '2', 
@@ -124,7 +179,12 @@ const AIAnalysis: React.FC = () => {
       lastUpdated: '2024-01-15 12:15',
       records: 89650,
       fileExtension: 'xlsx',
-      fileName: '设备运行状态数据'
+      fileName: '设备运行状态数据',
+      qualityScore: 78,
+      healthStatus: 'good',
+      issueCount: 5,
+      lastQualityCheck: '2024-01-15 12:10',
+      hasEDAReport: true
     },
     {
       id: '3',
@@ -135,14 +195,24 @@ const AIAnalysis: React.FC = () => {
       lastUpdated: '2024-01-15 10:20',
       records: 67890,
       fileExtension: 'csv',
-      fileName: '能耗监测数据'
+      fileName: '能耗监测数据',
+      qualityScore: 65,
+      healthStatus: 'fair',
+      issueCount: 8,
+      lastQualityCheck: '2024-01-15 10:15',
+      hasEDAReport: false
     },
     {
       id: '4',
       name: '实时监控API',
       type: 'api',
       status: 'disconnected',
-      lastUpdated: '2024-01-14 18:45'
+      lastUpdated: '2024-01-14 18:45',
+      qualityScore: 45,
+      healthStatus: 'poor',
+      issueCount: 12,
+      lastQualityCheck: '2024-01-14 18:40',
+      hasEDAReport: false
     }
   ]);
 
@@ -177,6 +247,163 @@ const AIAnalysis: React.FC = () => {
       startTime: '2024-01-15 15:30'
     }
   ]);
+
+  // 模拟数据健康报告
+  const [healthReports] = useState<{[key: string]: DataHealthReport}>({
+    '1': {
+      overallScore: 92,
+      totalRows: 125420,
+      totalColumns: 15,
+      issues: [
+        {
+          type: 'missing_values',
+          column: 'voltage',
+          count: 45,
+          percentage: 0.04,
+          severity: 'low',
+          description: '电压字段存在少量缺失值'
+        },
+        {
+          type: 'outliers',
+          column: 'load',
+          count: 23,
+          percentage: 0.02,
+          severity: 'low',
+          description: '负荷数据存在轻微异常值'
+        }
+      ],
+      suggestions: [
+        {
+          issue: 'missing_values',
+          method: 'interpolation',
+          confidence: 0.95,
+          description: '使用线性插值填充电压缺失值'
+        }
+      ]
+    },
+    '2': {
+      overallScore: 78,
+      totalRows: 89650,
+      totalColumns: 12,
+      issues: [
+        {
+          type: 'missing_values',
+          column: 'temperature',
+          count: 1250,
+          percentage: 1.4,
+          severity: 'medium',
+          description: '温度字段存在缺失值，可能影响设备状态分析'
+        },
+        {
+          type: 'duplicates',
+          column: 'device_id',
+          count: 89,
+          percentage: 0.1,
+          severity: 'high',
+          description: '设备ID存在重复记录'
+        }
+      ],
+      suggestions: [
+        {
+          issue: 'duplicates',
+          method: 'remove_duplicates',
+          confidence: 0.98,
+          description: '删除重复的设备ID记录'
+        },
+        {
+          issue: 'missing_values',
+          method: 'mean_imputation',
+          confidence: 0.85,
+          description: '使用均值填充温度缺失值'
+        }
+      ]
+    },
+    '3': {
+      overallScore: 65,
+      totalRows: 67890,
+      totalColumns: 10,
+      issues: [
+        {
+          type: 'missing_values',
+          column: 'energy_consumption',
+          count: 3456,
+          percentage: 5.1,
+          severity: 'high',
+          description: '能耗数据存在大量缺失值'
+        },
+        {
+          type: 'outliers',
+          column: 'power_factor',
+          count: 234,
+          percentage: 0.34,
+          severity: 'medium',
+          description: '功率因数存在异常值'
+        },
+        {
+          type: 'inconsistent_format',
+          column: 'timestamp',
+          count: 567,
+          percentage: 0.84,
+          severity: 'medium',
+          description: '时间戳格式不一致'
+        }
+      ],
+      suggestions: [
+        {
+          issue: 'missing_values',
+          method: 'forward_fill',
+          confidence: 0.75,
+          description: '使用前向填充处理能耗缺失值'
+        },
+        {
+          issue: 'inconsistent_format',
+          method: 'standardize_format',
+          confidence: 0.92,
+          description: '标准化时间戳格式'
+        }
+      ]
+    }
+  });
+
+  // 模拟EDA洞察数据
+  const [edaInsights] = useState<{[key: string]: EDAInsight[]}>({
+    '1': [
+      {
+        type: 'correlation',
+        title: '负荷与温度强相关',
+        description: '电网负荷与环境温度存在强正相关关系（r=0.78），温度升高时负荷显著增加',
+        confidence: 0.89
+      },
+      {
+        type: 'trend',
+        title: '负荷呈周期性变化',
+        description: '负荷数据呈现明显的日周期和季节性变化模式',
+        confidence: 0.95
+      }
+    ],
+    '2': [
+      {
+        type: 'anomaly',
+        title: '设备异常检测',
+        description: '检测到3台设备存在异常运行模式，建议进行维护检查',
+        confidence: 0.82
+      },
+      {
+        type: 'distribution',
+        title: '设备状态分布',
+        description: '85%设备运行正常，12%需要关注，3%存在故障风险',
+        confidence: 0.91
+      }
+    ],
+    '3': [
+      {
+        type: 'trend',
+        title: '能耗上升趋势',
+        description: '近3个月能耗呈上升趋势，平均增长率为2.3%',
+        confidence: 0.87
+      }
+    ]
+  });
 
   const handleStartAnalysis = async () => {
     try {
@@ -308,6 +535,64 @@ const AIAnalysis: React.FC = () => {
     message.success('模板已选择');
   };
 
+  // 数据质量相关处理函数
+  const handleQualityCheck = async (dataSource: DataSource) => {
+    setIsQualityChecking(true);
+    try {
+      // 模拟质量检测过程
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      message.success(`${dataSource.name} 数据质量检测完成`);
+    } catch (error) {
+      message.error('数据质量检测失败');
+    } finally {
+      setIsQualityChecking(false);
+    }
+  };
+
+  const handleViewHealthReport = (dataSource: DataSource) => {
+    setSelectedDataSourceForHealth(dataSource);
+    setHealthReportModalVisible(true);
+  };
+
+  const handleViewEDAReport = (dataSource: DataSource) => {
+    setSelectedDataSourceForHealth(dataSource);
+    setEdaModalVisible(true);
+  };
+
+  const handleRepairData = (dataSource: DataSource) => {
+    setSelectedDataSourceForHealth(dataSource);
+    setRepairModalVisible(true);
+  };
+
+  const getHealthStatusColor = (status: string) => {
+    switch (status) {
+      case 'excellent': return 'green';
+      case 'good': return 'blue';
+      case 'fair': return 'orange';
+      case 'poor': return 'red';
+      default: return 'gray';
+    }
+  };
+
+  const getHealthStatusText = (status: string) => {
+    switch (status) {
+      case 'excellent': return '优秀';
+      case 'good': return '良好';
+      case 'fair': return '一般';
+      case 'poor': return '较差';
+      default: return '未知';
+    }
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'low': return 'green';
+      case 'medium': return 'orange';
+      case 'high': return 'red';
+      default: return 'gray';
+    }
+  };
+
   const uploadProps: UploadProps = {
     name: 'file',
     multiple: true,
@@ -406,6 +691,43 @@ const AIAnalysis: React.FC = () => {
       )
     },
     {
+      title: '质量评分',
+      key: 'qualityScore',
+      render: (record: DataSource) => (
+        <Space direction="vertical" size={0}>
+          <Progress 
+            percent={record.qualityScore || 0} 
+            size="small" 
+            strokeColor={{
+              '0%': record.qualityScore && record.qualityScore >= 80 ? '#52c41a' : 
+                    record.qualityScore && record.qualityScore >= 60 ? '#faad14' : '#ff4d4f',
+              '100%': record.qualityScore && record.qualityScore >= 80 ? '#52c41a' : 
+                      record.qualityScore && record.qualityScore >= 60 ? '#faad14' : '#ff4d4f'
+            }}
+          />
+          <Text type="secondary" style={{ fontSize: '12px' }}>
+            {record.qualityScore || 0}分
+          </Text>
+        </Space>
+      )
+    },
+    {
+      title: '健康状态',
+      key: 'healthStatus',
+      render: (record: DataSource) => (
+        <Space direction="vertical" size={0}>
+          <Tag color={getHealthStatusColor(record.healthStatus || 'unknown')}>
+            {getHealthStatusText(record.healthStatus || 'unknown')}
+          </Tag>
+          {record.issueCount !== undefined && (
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              {record.issueCount}个问题
+            </Text>
+          )}
+        </Space>
+      )
+    },
+    {
       title: '最后更新',
       dataIndex: 'lastUpdated',
       key: 'lastUpdated'
@@ -423,6 +745,37 @@ const AIAnalysis: React.FC = () => {
                 setSelectedDataSource(record);
                 setPreviewModalVisible(true);
               }}
+            />
+          </Tooltip>
+          <Tooltip title="数据质量检测">
+            <Button 
+              type="text" 
+              icon={<BulbOutlined />}
+              loading={isQualityChecking}
+              onClick={() => handleQualityCheck(record)}
+            />
+          </Tooltip>
+          <Tooltip title="健康报告">
+            <Button 
+              type="text" 
+              icon={<BarChartOutlined />}
+              onClick={() => handleViewHealthReport(record)}
+            />
+          </Tooltip>
+          {record.hasEDAReport && (
+            <Tooltip title="EDA分析">
+              <Button 
+                type="text" 
+                icon={<LineChartOutlined />}
+                onClick={() => handleViewEDAReport(record)}
+              />
+            </Tooltip>
+          )}
+          <Tooltip title="智能修复">
+            <Button 
+              type="text" 
+              icon={<RobotOutlined />}
+              onClick={() => handleRepairData(record)}
             />
           </Tooltip>
           <Tooltip title="配置">
@@ -1134,6 +1487,206 @@ const AIAnalysis: React.FC = () => {
         onClose={() => setAgentModalVisible(false)}
         onComplete={handleAgentComplete}
       />
+
+      {/* Data Health Report Modal */}
+      <Modal
+        title={`数据健康报告 - ${selectedDataSourceForHealth?.name}`}
+        open={healthReportModalVisible}
+        onCancel={() => setHealthReportModalVisible(false)}
+        width={900}
+        footer={[
+          <Button key="close" onClick={() => setHealthReportModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
+      >
+        {selectedDataSourceForHealth && healthReports[selectedDataSourceForHealth.id] && (
+          <div>
+            {/* 总体健康评分 */}
+            <Card className="mb-4">
+              <div className="text-center">
+                <div className="text-4xl font-bold mb-2" style={{ color: getHealthStatusColor(selectedDataSourceForHealth.healthStatus) }}>
+                  {healthReports[selectedDataSourceForHealth.id].overallScore}
+                </div>
+                <div className="text-lg mb-2">总体健康评分</div>
+                <Tag color={getHealthStatusColor(selectedDataSourceForHealth.healthStatus)}>
+                  {getHealthStatusText(selectedDataSourceForHealth.healthStatus)}
+                </Tag>
+              </div>
+            </Card>
+
+            {/* 问题详情 */}
+            <Card title="数据质量问题" className="mb-4">
+              <List
+                dataSource={healthReports[selectedDataSourceForHealth.id].issues}
+                renderItem={(issue) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={
+                        <div style={{ color: getSeverityColor(issue.severity) }}>
+                          {issue.severity === 'high' ? '🔴' : issue.severity === 'medium' ? '🟡' : '🟢'}
+                        </div>
+                      }
+                      title={issue.field}
+                      description={
+                        <div>
+                          <div>{issue.description}</div>
+                          <div className="mt-1">
+                            <Tag color={getSeverityColor(issue.severity)}>
+                              {issue.severity === 'high' ? '高' : issue.severity === 'medium' ? '中' : '低'}
+                            </Tag>
+                            <Text type="secondary">影响行数: {issue.affectedRows}</Text>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+
+            {/* 修复建议 */}
+            <Card title="修复建议">
+              <List
+                dataSource={healthReports[selectedDataSourceForHealth.id].suggestions}
+                renderItem={(suggestion) => (
+                  <List.Item
+                    actions={[
+                      <Button type="link" size="small">
+                        应用修复
+                      </Button>
+                    ]}
+                  >
+                    <List.Item.Meta
+                      avatar={<div>💡</div>}
+                      title={suggestion.title}
+                      description={suggestion.description}
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </div>
+        )}
+      </Modal>
+
+      {/* EDA Analysis Modal */}
+      <Modal
+        title={`EDA分析报告 - ${selectedDataSourceForHealth?.name}`}
+        open={edaModalVisible}
+        onCancel={() => setEdaModalVisible(false)}
+        width={1000}
+        footer={[
+          <Button key="close" onClick={() => setEdaModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
+      >
+        {selectedDataSourceForHealth && edaInsights[selectedDataSourceForHealth.id] && (
+          <div>
+            {/* 数据概览 */}
+            <Card title="数据概览" className="mb-4">
+              <Row gutter={[16, 16]}>
+                <Col span={6}>
+                  <Statistic title="总行数" value={edaInsights[selectedDataSourceForHealth.id].summary.totalRows} />
+                </Col>
+                <Col span={6}>
+                  <Statistic title="总列数" value={edaInsights[selectedDataSourceForHealth.id].summary.totalColumns} />
+                </Col>
+                <Col span={6}>
+                  <Statistic title="缺失值" value={edaInsights[selectedDataSourceForHealth.id].summary.missingValues} />
+                </Col>
+                <Col span={6}>
+                  <Statistic title="重复行" value={edaInsights[selectedDataSourceForHealth.id].summary.duplicateRows} />
+                </Col>
+              </Row>
+            </Card>
+
+            {/* 数据分布 */}
+            <Card title="数据分布分析" className="mb-4">
+              <div className="bg-gray-50 p-4 rounded text-center">
+                <div className="text-6xl mb-2">📊</div>
+                <Text type="secondary">数据分布图表占位符</Text>
+                <div className="mt-2">
+                  <Text>检测到正态分布特征，建议使用参数统计方法</Text>
+                </div>
+              </div>
+            </Card>
+
+            {/* 关键洞察 */}
+            <Card title="关键洞察">
+              <List
+                dataSource={edaInsights[selectedDataSourceForHealth.id].insights}
+                renderItem={(insight) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<div>🔍</div>}
+                      title={insight.title}
+                      description={insight.description}
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </div>
+        )}
+      </Modal>
+
+      {/* Smart Repair Modal */}
+      <Modal
+        title={`智能修复 - ${selectedDataSourceForHealth?.name}`}
+        open={repairModalVisible}
+        onCancel={() => setRepairModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="cancel" onClick={() => setRepairModalVisible(false)}>
+            取消
+          </Button>,
+          <Button key="repair" type="primary" loading={isQualityChecking}>
+            执行修复
+          </Button>
+        ]}
+      >
+        {selectedDataSourceForHealth && healthReports[selectedDataSourceForHealth.id] && (
+          <div>
+            <Alert
+              message="智能修复说明"
+              description="系统将自动修复检测到的数据质量问题，请确认后执行修复操作。"
+              type="info"
+              className="mb-4"
+            />
+            
+            <Card title="待修复问题">
+              <List
+                dataSource={healthReports[selectedDataSourceForHealth.id].issues.filter(issue => issue.severity !== 'low')}
+                renderItem={(issue) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={
+                        <Checkbox defaultChecked>
+                          {issue.severity === 'high' ? '🔴' : '🟡'}
+                        </Checkbox>
+                      }
+                      title={issue.field}
+                      description={
+                        <div>
+                          <div>{issue.description}</div>
+                          <div className="mt-1">
+                            <Tag color={getSeverityColor(issue.severity)}>
+                              {issue.severity === 'high' ? '高优先级' : '中优先级'}
+                            </Tag>
+                            <Text type="secondary">预计修复时间: 2-5分钟</Text>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

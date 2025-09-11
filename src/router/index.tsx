@@ -9,6 +9,8 @@ import Reports from '../pages/Reports'
 import ReportEditor from '../pages/ReportEditor'
 import Templates from '../pages/Templates'
 import AIAnalysis from '../pages/AIAnalysis'
+import DataPipeline from '../pages/DataPipeline'
+import DataButler from '../pages/DataButler'
 import AgentMonitor from '../pages/AgentMonitor'
 import TestPage from '../pages/TestPage'
 import ProtectedRoute from '../components/ProtectedRoute'
@@ -68,6 +70,14 @@ export const router = createBrowserRouter([
       {
         path: 'analysis',
         element: <AIAnalysis />,
+      },
+      {
+        path: 'data-pipeline',
+        element: <DataPipeline />,
+      },
+      {
+        path: 'data-butler',
+        element: <DataButler />,
       },
       {
         path: 'agent-monitor',

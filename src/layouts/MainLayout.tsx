@@ -6,13 +6,15 @@ import {
   EditOutlined,
   AppstoreOutlined,
   BarChartOutlined,
+  ExperimentOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
   BellOutlined,
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  ExperimentOutlined,
+  NodeIndexOutlined,
+  RobotOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -55,6 +57,16 @@ const MainLayout: React.FC = () => {
       key: '/analysis',
       icon: <BarChartOutlined />,
       label: 'AI分析中心',
+    },
+    {
+      key: '/data-pipeline',
+      icon: <NodeIndexOutlined />,
+      label: '数据处理监控',
+    },
+    {
+      key: '/data-butler',
+      icon: <RobotOutlined />,
+      label: 'AI数据管家',
     },
     {
       key: '/test',
