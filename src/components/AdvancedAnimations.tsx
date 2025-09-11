@@ -293,8 +293,9 @@ export const AnimatedTimeline: React.FC<AnimatedTimelineProps> = ({
 
   return (
     <div ref={ref}>
-      <Timeline mode={mode}>
-        {items.map((item, index) => ({
+      <Timeline 
+        mode={mode}
+        items={items.map((item, index) => ({
           key: index,
           dot: (
             <motion.div
@@ -333,7 +334,7 @@ export const AnimatedTimeline: React.FC<AnimatedTimelineProps> = ({
             </motion.div>
           )
         }))}
-      </Timeline>
+      />
     </div>
   );
 };

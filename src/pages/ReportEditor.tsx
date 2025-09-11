@@ -405,7 +405,7 @@ ${data.regions.map((region: any) =>
   const [lastSaved, setLastSaved] = useState<Date>(new Date());
   const [wordCount, setWordCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
-  const [_isLoading, _setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [lastSavedContent, setLastSavedContent] = useState<string>('');
   const [isMarkdownMode, setIsMarkdownMode] = useState(false);
   const [outline, setOutline] = useState<OutlineItem[]>([]);
@@ -414,7 +414,7 @@ ${data.regions.map((region: any) =>
   React.useEffect(() => {
     const loadReport = async () => {
       if (id && id !== 'new') {
-        _setIsLoading(true);
+          setIsLoading(true);
         try {
           console.log('📖 加载报告数据，ID:', id);
           const response = await ReportService.getReports(1, 50);
@@ -438,8 +438,7 @@ ${data.regions.map((region: any) =>
                    content = report.content.text;
                  } else if (report.content.analysisData) {
                    // 如果是AI分析数据，生成格式化的报告内容
-                   const analysisData = report.content.analysisData;
-                   content = generateAIReportContent({ data: analysisData, type: 'ai-analysis' });
+                   content = generateAIReportContent();
                  } else {
                    content = report.content.summary || JSON.stringify(report.content, null, 2);
                  }
@@ -471,7 +470,7 @@ ${data.regions.map((region: any) =>
           console.error('❌ 加载报告异常:', error);
           message.error('加载报告时发生错误');
         } finally {
-          _setIsLoading(false);
+          setIsLoading(false);
         }
       }
     };
@@ -511,7 +510,7 @@ ${data.regions.map((region: any) =>
       console.log('💾 开始保存报告...');
       console.log('报告数据:', { title: editorState.title, content: editorState.content });
       
-      const reportData = {
+      const reportData: any = {
         title: editorState.title,
         content: {
           text: editorState.content,
@@ -526,7 +525,10 @@ ${data.regions.map((region: any) =>
             alignment: editorState.alignment
           }
         },
-        status: 'draft'
+        status: 'draft' as const,
+        tags: [],
+        metadata: {},
+        ...(id && { id: id })
       };
       
       let result;
@@ -1023,7 +1025,7 @@ ${data.regions.map((region: any) =>
                   onClick={() => scrollToOutlineItem(item.line)}
                 >
                   <Text 
-                    type={item.level > 1 ? 'secondary' : 'default'}
+                    type={item.level > 1 ? 'secondary' : undefined}
                     style={{ 
                       fontWeight: item.level === 1 ? 500 : 400,
                       display: 'block',

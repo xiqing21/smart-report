@@ -17,7 +17,7 @@ import {
   Alert,
   Modal,
   Form,
-  message,
+  // message,
   Typography,
   Tooltip,
   Badge,
@@ -42,7 +42,7 @@ import {
   DeleteOutlined,
   EditOutlined
 } from '@ant-design/icons';
-import { EnhancedButton, InteractiveCard, StatusTag, AnimatedProgress } from '../components/InteractiveEnhancements';
+import { EnhancedButton, StatusTag, AnimatedProgress } from '../components/InteractiveEnhancements';
 import AgentProgressModal from '../components/AgentProgressModal';
 import { zhipuAIService } from '../services/ai/zhipuService';
 import { supabase } from '../lib/supabase';
@@ -191,26 +191,32 @@ const AIAnalysis: React.FC = () => {
       
       // 调用智谱AI进行分析
       const analysisResult = await zhipuAIService.executeMultiAgentAnalysis({
-        dataSourceId: formValues.dataSource,
+        dataSource: formValues.dataSource,
+        dataContent: formValues.description || '电网负荷数据分析',
         analysisType: formValues.analysisType,
-        reportType: formValues.reportType,
-        description: formValues.description,
-        template: formValues.template
+        // reportType: formValues.reportType,
+        // description: formValues.description,
+        // template: formValues.template
       });
       
       // 保存分析结果到数据库
+      const reportTitle = `AI分析报告 - ${new Date().toLocaleDateString()}`;
+      const reportContent = analysisResult.success && analysisResult.data 
+        ? analysisResult.data.analysis 
+        : '报告内容生成中...';
+      
       const { data: reportData, error } = await supabase
         .from('reports')
         .insert({
-          title: analysisResult.title,
+          title: reportTitle,
           content: {
             prompt: formValues.description || '请分析一下电网负荷的发展趋势',
-            aiResponse: analysisResult.content || analysisResult.summary || '报告内容生成中...',
+            aiResponse: reportContent,
             generatedAt: new Date().toISOString()
           },
           status: 'draft',
           owner_id: '00000000-0000-0000-0000-000000000001'
-        })
+        } as any)
         .select()
         .single();
         
@@ -226,7 +232,7 @@ const AIAnalysis: React.FC = () => {
       setTimeout(() => {
         navigate('/editor', {
           state: {
-            reportId: reportData.id,
+            reportId: (reportData as any)?.id,
             analysisData: analysisResult
           }
         });

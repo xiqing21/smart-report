@@ -120,7 +120,7 @@ ${typeof record.content === 'string' ? record.content : JSON.stringify(record.co
       return;
     }
 
-    const modalInstance = modal.confirm({
+    modal.confirm({
       title: '批量删除确认',
       content: `确定要删除选中的 ${selectedRowKeys.length} 个报告吗？此操作不可恢复。`,
       okText: '确认删除',

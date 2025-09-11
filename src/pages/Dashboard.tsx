@@ -8,13 +8,13 @@ import {
   EyeOutlined,
   EditOutlined,
   ShareAltOutlined,
-  MonitorOutlined,
-  RocketOutlined,
+
+
   ThunderboltOutlined,
-  FileAddOutlined,
+
   DatabaseOutlined
 } from '@ant-design/icons'
-import { AnimatedList, AnimatedAvatar } from '../components/AdvancedAnimations'
+import { AnimatedAvatar } from '../components/AdvancedAnimations'
 import { InteractiveCard, StatusTag } from '../components/InteractiveEnhancements'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
@@ -430,10 +430,6 @@ const Dashboard: React.FC = () => {
                         avatar={
                           <AnimatedAvatar
                             icon={<FileTextOutlined />}
-                            style={{
-                              backgroundColor: report.status === 'published' ? '#52c41a' : 
-                                             report.status === 'draft' ? '#faad14' : '#1890ff'
-                            }}
                           />
                         }
                         title={
