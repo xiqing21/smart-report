@@ -454,11 +454,11 @@ class ExportService {
       
       this.updateProgress(80, 'generating', '生成PowerPoint文件...');
       
-      const pptxBlob = await pptx.writeFile({ outputType: 'blob' });
+      const pptxBuffer = await pptx.write();
       
       this.updateProgress(100, 'completed', 'PowerPoint导出完成');
       
-      return pptxBlob as Blob;
+      return new Blob([pptxBuffer], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
     } catch (error) {
       this.updateProgress(0, 'error', `PowerPoint导出失败: ${error}`);
       throw error;
@@ -657,7 +657,7 @@ class ExportService {
   }
 
   async export(data: any, options: ExportOptions): Promise<void> {
-    const { format, filename, template } = options;
+    const { format, fileName, template } = options;
     
     // 如果有模板，先编译模板
     let processedData = data;
@@ -673,53 +673,38 @@ class ExportService {
       }
     }
     
+    // 创建新的options对象，包含处理后的数据
+    const exportOptions = {
+      ...options,
+      data: processedData
+    };
+    
+    let blob: Blob;
     switch (format) {
       case 'pdf':
-        await this.exportToPDF(processedData, options);
+        blob = await this.exportToPDF(exportOptions);
         break;
       case 'docx':
-        await this.exportToWord(processedData, options);
+        blob = await this.exportToWord(exportOptions);
         break;
       case 'xlsx':
-        await this.exportToExcel(processedData, options);
+        blob = await this.exportToExcel(exportOptions);
         break;
       case 'pptx':
-        await this.exportToPowerPoint(processedData, options);
+        blob = await this.exportToPowerPoint(exportOptions);
         break;
       case 'html':
-        await this.exportToHTML(processedData, options);
+        blob = await this.exportToHTML(exportOptions);
         break;
       default:
         throw new Error(`Unsupported format: ${format}`);
     }
+    
+    // 下载文件
+    this.downloadFile(blob, fileName);
   }
 
-  // HTML导出功能
-  private async exportToHTML(data: any, options: ExportOptions): Promise<void> {
-    const { filename = 'report.html', onProgress } = options;
-    
-    try {
-      onProgress?.({ status: 'processing', progress: 10, message: '准备HTML模板...' });
-      
-      // 生成HTML内容
-      const htmlContent = this.generateHTMLContent(data, options);
-      
-      onProgress?.({ status: 'processing', progress: 70, message: '生成HTML文件...' });
-      
-      // 创建Blob
-      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-      
-      onProgress?.({ status: 'processing', progress: 90, message: '准备下载...' });
-      
-      // 下载文件
-      this.downloadFile(blob, filename.endsWith('.html') ? filename : `${filename}.html`);
-      
-      onProgress?.({ status: 'completed', progress: 100, message: 'HTML导出完成' });
-    } catch (error) {
-      onProgress?.({ status: 'error', progress: 0, message: 'HTML导出失败' });
-      throw error;
-    }
-  }
+
   
   // 生成HTML内容
   private generateHTMLContent(data: any, options: ExportOptions): string {
@@ -1118,16 +1103,7 @@ class ExportService {
     URL.revokeObjectURL(url);
   }
 
-  async downloadFile(blob: Blob, fileName: string, format: string) {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${fileName}.${format}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
+
 }
 
 export const exportService = new ExportService();

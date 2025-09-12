@@ -1,34 +1,29 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, Button, Badge, Tabs, Progress, Select, Input, Typography, Space, Row, Col } from 'antd';
 import { toast } from 'sonner';
 import {
-  FileText,
-  Download,
-  FileSpreadsheet,
-  Presentation,
-  Globe,
-  Settings,
-  Eye,
-  Share2,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  AppstoreOutlined
-} from 'lucide-react';
-import { exportService, ExportOptions, ExportProgress } from '../services/exportService';
-import { TemplateLibrary } from '../components/TemplateLibrary';
-import { TemplatePreview } from '../components/TemplatePreview';
+  FileTextOutlined,
+  DownloadOutlined,
+  FileExcelOutlined,
+  FilePptOutlined,
+  GlobalOutlined,
+  SettingOutlined,
+  EyeOutlined,
+  ShareAltOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  LoadingOutlined
+} from '@ant-design/icons';
+import { exportService } from '../services/exportService';
+import type { ExportOptions, ExportProgress } from '../services/exportService';
+import TemplateLibrary, { type Template as LibraryTemplate } from '../components/TemplateLibrary';
+import TemplatePreview from '../components/TemplatePreview';
 import TemplateCreator from '../components/TemplateCreator';
-import type { Template } from '../components/TemplateLibrary';
+
+const { TextArea } = Input;
+const { Title, Text, Paragraph } = Typography;
+const { Option } = Select;
 
 interface ExportFormat {
   id: string;
@@ -64,7 +59,7 @@ const exportFormats: ExportFormat[] = [
     id: 'pdf',
     name: 'PDF报告',
     description: '专业格式，适合正式文档和打印',
-    icon: <FileText className="h-6 w-6" />,
+    icon: <FileTextOutlined style={{ fontSize: '24px' }} />,
     extension: '.pdf',
     size: '高质量'
   },
@@ -72,7 +67,7 @@ const exportFormats: ExportFormat[] = [
     id: 'docx',
     name: 'Word文档',
     description: '可编辑格式，便于后续修改',
-    icon: <FileText className="h-6 w-6 text-blue-600" />,
+    icon: <FileTextOutlined style={{ fontSize: '24px', color: '#1890ff' }} />,
     extension: '.docx',
     size: '可编辑'
   },
@@ -80,7 +75,7 @@ const exportFormats: ExportFormat[] = [
     id: 'xlsx',
     name: 'Excel表格',
     description: '数据分析格式，包含图表和数据',
-    icon: <FileSpreadsheet className="h-6 w-6 text-green-600" />,
+    icon: <FileExcelOutlined style={{ fontSize: '24px', color: '#52c41a' }} />,
     extension: '.xlsx',
     size: '数据丰富'
   },
@@ -88,7 +83,7 @@ const exportFormats: ExportFormat[] = [
     id: 'pptx',
     name: 'PowerPoint',
     description: '演示文稿格式，适合汇报展示',
-    icon: <Presentation className="h-6 w-6 text-orange-600" />,
+    icon: <FilePptOutlined style={{ fontSize: '24px', color: '#fa8c16' }} />,
     extension: '.pptx',
     size: '演示友好'
   },
@@ -96,185 +91,62 @@ const exportFormats: ExportFormat[] = [
     id: 'html',
     name: 'HTML网页',
     description: '网页格式，便于在线分享',
-    icon: <Globe className="h-6 w-6 text-purple-600" />,
+    icon: <GlobalOutlined style={{ fontSize: '24px', color: '#722ed1' }} />,
     extension: '.html',
     size: '在线友好'
   }
 ];
 
-const templates: Template[] = [
-  {
-    id: 'financial-report',
-    name: '财务分析报告',
-    category: '金融',
-    description: '专业的财务数据分析模板，包含收入、支出、利润等关键指标',
-    preview: '/templates/financial-preview.png',
-    downloads: 1250,
-    rating: 4.8
-  },
-  {
-    id: 'market-research',
-    name: '市场调研报告',
-    category: '市场',
-    description: '全面的市场分析模板，涵盖竞争分析、用户画像、趋势预测',
-    preview: '/templates/market-preview.png',
-    downloads: 980,
-    rating: 4.6
-  },
-  {
-    id: 'sales-performance',
-    name: '销售业绩报告',
-    category: '销售',
-    description: '销售团队专用模板，展示业绩指标、目标达成、客户分析',
-    preview: '/templates/sales-preview.png',
-    downloads: 1100,
-    rating: 4.7
-  },
-  {
-    id: 'project-summary',
-    name: '项目总结报告',
-    category: '项目管理',
-    description: '项目管理模板，包含进度跟踪、风险评估、成果展示',
-    preview: '/templates/project-preview.png',
-    downloads: 850,
-    rating: 4.5
-  },
-  {
-    id: 'hr-analytics',
-    name: '人力资源分析',
-    category: '人力资源',
-    description: 'HR专用模板，员工绩效、招聘分析、培训效果评估',
-    preview: '/templates/hr-preview.png',
-    downloads: 720,
-    rating: 4.4
-  },
-  {
-    id: 'operations-dashboard',
-    name: '运营数据看板',
-    category: '运营',
-    description: '运营团队模板，用户增长、活跃度、转化率等核心指标',
-    preview: '/templates/operations-preview.png',
-    downloads: 950,
-    rating: 4.6
-  }
-];
-
 const Export: React.FC = () => {
   const [selectedFormat, setSelectedFormat] = useState<string>('pdf');
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('financial-report');
-  const [exportJobs, setExportJobs] = useState<ExportJob[]>([]);
-  const [isExporting, setIsExporting] = useState(false);
-  const [selectedTemplateObj, setSelectedTemplateObj] = useState<Template | null>(null);
-  const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [creatorVisible, setCreatorVisible] = useState(false);
-  const [exportProgress, setExportProgress] = useState<ExportProgress>({
-    progress: 0,
-    status: 'preparing',
-    message: '准备导出...'
-  });
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [customSettings, setCustomSettings] = useState({
     fileName: '智能报告',
     includeCharts: true,
     includeData: true,
     watermark: false,
-    pageOrientation: 'portrait'
+    pageOrientation: 'portrait' as 'portrait' | 'landscape'
   });
-
-  const handleSelectTemplate = (template: Template) => {
-    setSelectedTemplateObj(template);
-    setSelectedTemplate(template.id);
-    toast.success(`已选择模板: ${template.name}`);
-  };
-
-  const handlePreviewTemplate = (template: Template) => {
-    setPreviewTemplate(template);
-    setIsPreviewVisible(true);
-  };
-
-  const handleToggleFavorite = (templateId: string) => {
-    // 这里应该调用API更新收藏状态
-    toast.success('收藏状态已更新');
-  };
-
-  // 处理模板创建
-  const handleCreateTemplate = () => {
-    setCreatorVisible(true);
-  };
-
-  // 处理模板保存
-  const handleSaveTemplate = (template: any) => {
-    // 这里可以调用模板服务保存模板
-    console.log('保存模板:', template);
-    toast.success('模板创建成功！');
-    setCreatorVisible(false);
-  };
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState<ExportProgress>({
+    progress: 0,
+    status: 'preparing',
+    message: '准备导出...'
+  });
+  const [exportJobs, setExportJobs] = useState<ExportJob[]>([]);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [selectedTemplateForPreview, setSelectedTemplateForPreview] = useState<LibraryTemplate | null>(null);
+  const [creatorVisible, setCreatorVisible] = useState(false);
 
   const handleExport = async () => {
-    if (!customSettings.fileName.trim()) {
-      toast.error('请输入文件名');
+    if (!selectedFormat) {
+      toast.error('请选择导出格式');
       return;
     }
 
     setIsExporting(true);
-    const newJob: ExportJob = {
-      id: Date.now().toString(),
-      format: selectedFormat,
-      template: selectedTemplate,
-      status: 'processing',
-      progress: 0,
-      createdAt: new Date()
-    };
-
-    setExportJobs(prev => [newJob, ...prev]);
-    toast.success('导出任务已开始');
-    
-    // 设置进度回调
-    exportService.setProgressCallback((progress: ExportProgress) => {
-      setExportProgress(progress);
-    });
+    setExportProgress({ progress: 0, status: 'preparing', message: '开始导出...' });
 
     try {
-      // 准备导出数据
-      const exportData = {
-        title: customSettings.fileName,
-        summary: '这是一个智能生成的报告摘要，包含了关键的业务洞察和数据分析结果。',
-        metrics: [
-          { name: '总收入', value: '¥1,234,567' },
-          { name: '用户增长', value: '+23.5%' },
-          { name: '转化率', value: '12.8%' },
-          { name: '客户满意度', value: '4.8/5.0' }
-        ],
-        charts: [
-          {
-            title: '月度收入趋势',
-            data: [
-              { month: '1月', revenue: 100000 },
-              { month: '2月', revenue: 120000 },
-              { month: '3月', revenue: 150000 }
-            ]
-          }
-        ],
-        dataSource: '智能报告系统',
-        reportPeriod: '2024年第一季度',
-        executiveSummary: '本季度业务表现优异，各项关键指标均超预期完成。',
-        financialMetrics: [
-          { name: '营业收入', value: '¥1,234,567', change: 15.2 },
-          { name: '净利润', value: '¥234,567', change: 8.7 },
-          { name: '毛利率', value: '45.6%', change: -2.1 }
-        ]
-      };
-
       const options: ExportOptions = {
-        format: selectedFormat as any,
-        template: selectedTemplateObj?.template || selectedTemplate,
-        data: exportData,
+        format: selectedFormat as 'pdf' | 'docx' | 'xlsx' | 'pptx' | 'html',
+        template: selectedTemplate,
+        data: {
+          title: customSettings.fileName,
+          summary: '智能生成的报告摘要',
+          metrics: [],
+          charts: []
+        },
         fileName: customSettings.fileName,
-        settings: customSettings
+        settings: {
+          includeCharts: customSettings.includeCharts,
+          includeData: customSettings.includeData,
+          watermark: customSettings.watermark,
+          pageOrientation: customSettings.pageOrientation
+        }
       };
 
       let blob: Blob;
-      
       switch (selectedFormat) {
         case 'pdf':
           blob = await exportService.exportToPDF(options);
@@ -295,309 +167,300 @@ const Export: React.FC = () => {
           throw new Error('不支持的导出格式');
       }
 
-      // 下载文件
-      await exportService.downloadFile(blob, customSettings.fileName, selectedFormat);
+      // 创建下载链接
+       const url = URL.createObjectURL(blob);
+       const link = document.createElement('a');
+       link.href = url;
+       link.download = `${customSettings.fileName}${exportFormats.find(f => f.id === selectedFormat)?.extension || ''}`;
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+       URL.revokeObjectURL(url);
+
       toast.success('导出成功！');
       
-      // 更新任务状态
-      setExportJobs(prev => prev.map(job => {
-        if (job.id === newJob.id) {
-          return {
-            ...job,
-            progress: 100,
-            status: 'completed',
-            downloadUrl: `/downloads/${job.id}.${exportFormats.find(f => f.id === job.format)?.extension}`
-          };
-        }
-        return job;
-      }));
-      
+      // 添加到导出历史
+      const newJob: ExportJob = {
+        id: Date.now().toString(),
+        format: selectedFormat,
+        template: selectedTemplate || '默认模板',
+        status: 'completed',
+        progress: 100,
+        createdAt: new Date()
+      };
+      setExportJobs(prev => [newJob, ...prev]);
     } catch (error) {
-      console.error('导出失败:', error);
-      toast.error(`导出失败: ${error}`);
-      
-      // 更新任务状态为失败
-      setExportJobs(prev => prev.map(job => {
-        if (job.id === newJob.id) {
-          return {
-            ...job,
-            status: 'failed'
-          };
-        }
-        return job;
-      }));
+      console.error('Export error:', error);
+      toast.error('导出失败，请重试');
     } finally {
       setIsExporting(false);
+      setExportProgress({ progress: 0, status: 'preparing', message: '准备导出...' });
     }
   };
 
-  const getStatusIcon = (status: ExportJob['status']) => {
-    switch (status) {
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'processing':
-        return <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />;
-      case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'failed':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-    }
-  };
+  const tabItems = [
+    {
+      key: 'export',
+      label: '导出设置',
+      children: (
+        <div style={{ padding: '20px 0' }}>
+          <Row gutter={[24, 24]}>
+            {/* 导出格式选择 */}
+            <Col xs={24} lg={12}>
+              <Card title="选择导出格式" className="mb-6">
+                <Paragraph type="secondary" className="mb-4">
+                  选择最适合您需求的文档格式
+                </Paragraph>
+                <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                  {exportFormats.map((format) => (
+                    <Card
+                      key={format.id}
+                      size="small"
+                      className={`cursor-pointer transition-all ${
+                        selectedFormat === format.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'hover:border-gray-400'
+                      }`}
+                      onClick={() => setSelectedFormat(format.id)}
+                    >
+                      <div className="flex items-start space-x-3">
+                        {format.icon}
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <Title level={5} className="mb-0">{format.name}</Title>
+                            <Badge color="blue" text={format.size} />
+                          </div>
+                          <Text type="secondary" className="text-sm">
+                            {format.description}
+                          </Text>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </Space>
+              </Card>
+            </Col>
 
-  const getStatusText = (status: ExportJob['status']) => {
-    switch (status) {
-      case 'pending': return '等待中';
-      case 'processing': return '处理中';
-      case 'completed': return '已完成';
-      case 'failed': return '失败';
+            {/* 导出设置 */}
+            <Col xs={24} lg={12}>
+              <Card title="导出设置" className="mb-6">
+                <Paragraph type="secondary" className="mb-4">
+                  自定义您的导出选项
+                </Paragraph>
+                <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                  <div>
+                    <Text strong>文件名</Text>
+                    <Input
+                      value={customSettings.fileName}
+                      onChange={(e) => setCustomSettings(prev => ({ ...prev, fileName: e.target.value }))}
+                      placeholder="输入文件名"
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Text strong>页面方向</Text>
+                    <Select
+                      value={customSettings.pageOrientation}
+                      onChange={(value) => setCustomSettings(prev => ({ ...prev, pageOrientation: value }))}
+                      style={{ width: '100%', marginTop: 8 }}
+                    >
+                      <Option value="portrait">纵向</Option>
+                      <Option value="landscape">横向</Option>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Text strong>导出选项</Text>
+                    <div className="mt-2 space-y-2">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={customSettings.includeCharts}
+                          onChange={(e) => setCustomSettings(prev => ({ ...prev, includeCharts: e.target.checked }))}
+                        />
+                        <Text>包含图表</Text>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={customSettings.includeData}
+                          onChange={(e) => setCustomSettings(prev => ({ ...prev, includeData: e.target.checked }))}
+                        />
+                        <Text>包含原始数据</Text>
+                      </label>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={customSettings.watermark}
+                          onChange={(e) => setCustomSettings(prev => ({ ...prev, watermark: e.target.checked }))}
+                        />
+                        <Text>添加水印</Text>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* 导出进度 */}
+                  {isExporting && (
+                    <div>
+                      <Text strong>导出进度</Text>
+                      <div className="mt-2">
+                        <Progress percent={exportProgress.progress} />
+                        <Text type="secondary" className="text-sm mt-1">
+                          {exportProgress.message}
+                        </Text>
+                      </div>
+                    </div>
+                  )}
+                </Space>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* 导出按钮 */}
+          <div className="flex justify-center mt-6">
+            <Space size="middle">
+              <Button
+                type="primary"
+                size="large"
+                icon={isExporting ? <LoadingOutlined /> : <DownloadOutlined />}
+                onClick={handleExport}
+                loading={isExporting}
+                disabled={!selectedFormat}
+              >
+                {isExporting ? '导出中...' : '开始导出'}
+              </Button>
+              <Button
+                size="large"
+                icon={<EyeOutlined />}
+                onClick={() => setPreviewVisible(true)}
+              >
+                预览
+              </Button>
+            </Space>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'templates',
+      label: '模板库',
+      children: (
+        <div style={{ padding: '20px 0' }}>
+          <TemplateLibrary
+             onSelectTemplate={(template: LibraryTemplate) => {
+               setSelectedTemplate(template.id);
+               toast.success(`已选择模板：${template.name}`);
+             }}
+             onPreviewTemplate={(template: LibraryTemplate) => {
+               setSelectedTemplateForPreview(template);
+               setPreviewVisible(true);
+             }}
+           />
+        </div>
+      )
+    },
+    {
+      key: 'history',
+      label: '导出历史',
+      children: (
+        <div style={{ padding: '20px 0' }}>
+          <Card title="导出历史">
+            {exportJobs.length === 0 ? (
+              <div className="text-center py-8">
+                <Text type="secondary">暂无导出记录</Text>
+              </div>
+            ) : (
+              <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                {exportJobs.map((job) => (
+                  <Card key={job.id} size="small">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Title level={5} className="mb-1">
+                          {job.format.toUpperCase()} - {job.template}
+                        </Title>
+                        <Text type="secondary">
+                          {job.createdAt.toLocaleString()}
+                        </Text>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge
+                          status={job.status === 'completed' ? 'success' : job.status === 'failed' ? 'error' : 'processing'}
+                          text={job.status === 'completed' ? '已完成' : job.status === 'failed' ? '失败' : '处理中'}
+                        />
+                        {job.status === 'completed' && job.downloadUrl && (
+                          <Button
+                            type="link"
+                            size="small"
+                            icon={<DownloadOutlined />}
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = job.downloadUrl!;
+                              link.download = `export-${job.id}`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }}
+                          >
+                            下载
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </Space>
+            )}
+          </Card>
+        </div>
+      )
     }
-  };
+  ];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">导出与模板</h1>
-          <p className="text-muted-foreground mt-2">
-            选择导出格式和模板，生成专业的报告文档
-          </p>
-        </div>
-        <Button 
-          onClick={handleExport} 
-          disabled={isExporting}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-        >
-          {isExporting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              导出中...
-            </>
-          ) : (
-            <>
-              <Download className="mr-2 h-4 w-4" />
-              开始导出
-            </>
-          )}
-        </Button>
+    <div className="p-6">
+      {/* 页面标题 */}
+      <div className="mb-6">
+        <Title level={2} className="mb-2">
+          导出与模板
+        </Title>
+        <Paragraph type="secondary">
+          将您的报告导出为多种格式，或使用专业模板创建精美文档
+        </Paragraph>
       </div>
 
-      <Tabs defaultValue="export" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="export">导出设置</TabsTrigger>
-          <TabsTrigger value="templates">模板库</TabsTrigger>
-          <TabsTrigger value="history">导出历史</TabsTrigger>
-        </TabsList>
+      <Tabs defaultActiveKey="export" items={tabItems} />
 
-        <TabsContent value="export" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 导出格式选择 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>选择导出格式</CardTitle>
-                <CardDescription>
-                  选择最适合您需求的文档格式
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {exportFormats.map((format) => (
-                  <div
-                    key={format.id}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                      selectedFormat === format.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setSelectedFormat(format.id)}
-                  >
-                    <div className="flex items-start space-x-3">
-                      {format.icon}
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-medium">{format.name}</h3>
-                          <Badge variant="secondary">{format.size}</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {format.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* 自定义设置 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>导出设置</CardTitle>
-                <CardDescription>
-                  自定义您的导出选项
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fileName">文件名</Label>
-                  <Input
-                    id="fileName"
-                    value={customSettings.fileName}
-                    onChange={(e) => setCustomSettings(prev => ({ ...prev, fileName: e.target.value }))}
-                    placeholder="输入文件名"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="orientation">页面方向</Label>
-                  <Select
-                    value={customSettings.pageOrientation}
-                    onValueChange={(value) => setCustomSettings(prev => ({ ...prev, pageOrientation: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="portrait">纵向</SelectItem>
-                      <SelectItem value="landscape">横向</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-3">
-                  <Label>包含内容</Label>
-                  <div className="space-y-2">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={customSettings.includeCharts}
-                        onChange={(e) => setCustomSettings(prev => ({ ...prev, includeCharts: e.target.checked }))}
-                        className="rounded"
-                      />
-                      <span className="text-sm">包含图表</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={customSettings.includeData}
-                        onChange={(e) => setCustomSettings(prev => ({ ...prev, includeData: e.target.checked }))}
-                        className="rounded"
-                      />
-                      <span className="text-sm">包含原始数据</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={customSettings.watermark}
-                        onChange={(e) => setCustomSettings(prev => ({ ...prev, watermark: e.target.checked }))}
-                        className="rounded"
-                      />
-                      <span className="text-sm">添加水印</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* 导出进度 */}
-                {isExporting && (
-                  <div className="space-y-2">
-                    <Label>导出进度</Label>
-                    <div className="space-y-2">
-                      <Progress value={exportProgress.progress} className="w-full" />
-                      <p className="text-sm text-muted-foreground">
-                        {exportProgress.message}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="templates" className="space-y-6">
-          <div className="p-6">
-            <TemplateLibrary
-              onSelectTemplate={handleSelectTemplate}
-              onPreviewTemplate={handlePreviewTemplate}
-              onCreateTemplate={handleCreateTemplate}
-            />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="history" className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">导出历史</h2>
-            <p className="text-muted-foreground">
-              查看您的导出记录和下载文件
-            </p>
-          </div>
-
-          <Card>
-            <CardContent className="p-0">
-              {exportJobs.length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground">
-                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>暂无导出记录</p>
-                </div>
-              ) : (
-                <div className="divide-y">
-                  {exportJobs.map((job) => {
-                    const format = exportFormats.find(f => f.id === job.format);
-                    const template = templates.find(t => t.id === job.template);
-                    
-                    return (
-                      <div key={job.id} className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            {format?.icon}
-                            <div>
-                              <h3 className="font-medium">
-                                {customSettings.fileName}{format?.extension}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {template?.name} • {job.createdAt.toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <div className="flex items-center space-x-2">
-                              {getStatusIcon(job.status)}
-                              <span className="text-sm">{getStatusText(job.status)}</span>
-                            </div>
-                            {job.status === 'processing' && (
-                              <div className="w-24">
-                                <Progress value={job.progress} className="h-2" />
-                              </div>
-                            )}
-                            {job.status === 'completed' && job.downloadUrl && (
-                              <Button size="sm" variant="outline">
-                                <Download className="h-4 w-4 mr-2" />
-                                下载
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-      
       {/* 模板预览弹窗 */}
-      <TemplatePreview
-        template={previewTemplate}
-        visible={isPreviewVisible}
-        onClose={() => setIsPreviewVisible(false)}
-        onSelectTemplate={handleSelectTemplate}
-        onToggleFavorite={handleToggleFavorite}
-      />
-      
+      {selectedTemplateForPreview && (
+        <TemplatePreview
+          template={selectedTemplateForPreview}
+          visible={previewVisible}
+          onClose={() => {
+            setPreviewVisible(false);
+            setSelectedTemplateForPreview(null);
+          }}
+          onSelectTemplate={(template: LibraryTemplate) => {
+            setSelectedTemplate(template.id);
+            setPreviewVisible(false);
+            setSelectedTemplateForPreview(null);
+            toast.success(`已选择模板：${template.name}`);
+          }}
+          onToggleFavorite={(templateId: string) => {
+            // 处理收藏/取消收藏逻辑
+            console.log('Toggle favorite for template:', templateId);
+          }}
+        />
+      )}
+
       {/* 模板创建器 */}
       <TemplateCreator
         visible={creatorVisible}
         onClose={() => setCreatorVisible(false)}
-        onSave={handleSaveTemplate}
+        onSave={(template: any) => {
+           setCreatorVisible(false);
+           toast.success('模板创建成功！');
+         }}
       />
     </div>
   );

@@ -183,7 +183,6 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
     }
   ];
 
-  const categories = ['all', '财务报告', '市场分析', '项目管理', '运营分析', '人力资源'];
   const industries = ['all', '金融', '市场营销', '项目管理', '制造业', '零售业', '科技'];
   const types = ['all', 'pdf', 'docx', 'xlsx', 'pptx', 'html'];
 
