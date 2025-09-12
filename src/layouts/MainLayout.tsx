@@ -18,6 +18,7 @@ import {
   LineChartOutlined,
   FundProjectionScreenOutlined,
   DatabaseOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -65,6 +66,11 @@ const MainLayout: React.FC = () => {
       key: '/knowledge-base',
       icon: <DatabaseOutlined />,
       label: '知识库',
+    },
+    {
+      key: '/export',
+      icon: <DownloadOutlined />,
+      label: '导出与模板',
     },
     {
       key: '/data-pipeline',

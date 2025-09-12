@@ -17,6 +17,7 @@ import AgentMonitor from '../pages/AgentMonitor'
 import TestPage from '../pages/TestPage'
 import TestRunner from '../pages/TestRunner'
 import KnowledgeBase from '../pages/KnowledgeBase'
+import Export from '../pages/Export'
 import ProtectedRoute from '../components/ProtectedRoute'
 
 // 根据环境变量设置basename
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
       {
         path: 'knowledge-base',
         element: <KnowledgeBase />,
+      },
+      {
+        path: 'export',
+        element: <Export />,
       },
       {
         path: 'profile',
