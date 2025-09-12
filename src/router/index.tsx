@@ -15,6 +15,8 @@ import ChartGeneration from '../pages/ChartGeneration'
 import TrendPrediction from '../pages/TrendPrediction'
 import AgentMonitor from '../pages/AgentMonitor'
 import TestPage from '../pages/TestPage'
+import TestRunner from '../pages/TestRunner'
+import KnowledgeBase from '../pages/KnowledgeBase'
 import ProtectedRoute from '../components/ProtectedRoute'
 
 // 根据环境变量设置basename
@@ -94,12 +96,20 @@ export const router = createBrowserRouter([
         element: <AgentMonitor />,
       },
       {
+        path: 'knowledge-base',
+        element: <KnowledgeBase />,
+      },
+      {
         path: 'profile',
         element: <Profile />,
       },
       {
         path: 'test',
         element: <TestPage />,
+      },
+      {
+        path: 'test-runner',
+        element: <TestRunner />,
       },
     ],
   },

@@ -17,6 +17,7 @@ import {
   RobotOutlined,
   LineChartOutlined,
   FundProjectionScreenOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -61,6 +62,11 @@ const MainLayout: React.FC = () => {
       label: 'AI分析中心',
     },
     {
+      key: '/knowledge-base',
+      icon: <DatabaseOutlined />,
+      label: '知识库',
+    },
+    {
       key: '/data-pipeline',
       icon: <NodeIndexOutlined />,
       label: '数据处理监控',
@@ -81,7 +87,7 @@ const MainLayout: React.FC = () => {
       label: '趋势预测分析',
     },
     {
-      key: '/test',
+      key: '/test-runner',
       icon: <ExperimentOutlined />,
       label: '🧪 功能测试',
     },
