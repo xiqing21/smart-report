@@ -11,6 +11,8 @@ import Templates from '../pages/Templates'
 import AIAnalysis from '../pages/AIAnalysis'
 import DataPipeline from '../pages/DataPipeline'
 import DataButler from '../pages/DataButler'
+import ChartGeneration from '../pages/ChartGeneration'
+import TrendPrediction from '../pages/TrendPrediction'
 import AgentMonitor from '../pages/AgentMonitor'
 import TestPage from '../pages/TestPage'
 import ProtectedRoute from '../components/ProtectedRoute'
@@ -78,6 +80,14 @@ export const router = createBrowserRouter([
       {
         path: 'data-butler',
         element: <DataButler />,
+      },
+      {
+        path: 'chart-generation',
+        element: <ChartGeneration />,
+      },
+      {
+        path: 'trend-prediction',
+        element: <TrendPrediction />,
       },
       {
         path: 'agent-monitor',

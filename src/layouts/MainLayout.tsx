@@ -15,6 +15,8 @@ import {
   LogoutOutlined,
   NodeIndexOutlined,
   RobotOutlined,
+  LineChartOutlined,
+  FundProjectionScreenOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -67,6 +69,16 @@ const MainLayout: React.FC = () => {
       key: '/data-butler',
       icon: <RobotOutlined />,
       label: 'AI数据管家',
+    },
+    {
+      key: '/chart-generation',
+      icon: <LineChartOutlined />,
+      label: '对话式图表生成',
+    },
+    {
+      key: '/trend-prediction',
+      icon: <FundProjectionScreenOutlined />,
+      label: '趋势预测分析',
     },
     {
       key: '/test',
