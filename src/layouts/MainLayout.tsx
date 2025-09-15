@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Layout, Menu, Avatar, Dropdown, Badge, Button } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Layout, Menu, Avatar, Dropdown, Badge, Typography, Space, Divider, Drawer } from 'antd'
 import {
   DashboardOutlined,
   FileTextOutlined,
@@ -21,82 +21,163 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
-// 从 @/hooks/useAuth 导入 useAuth hook
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
+import { Button, Card } from '@/components/ui'
+import { designSystem } from '@/styles/design-system'
+import '@/styles/responsive.css'
+
+const { Text } = Typography
 
 const { Header, Sider, Content } = Layout
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [notificationVisible, setNotificationVisible] = useState(false)
+  const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isTablet, setIsTablet] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { user, signOut } = useAuth()
 
+  // 响应式检测
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth
+      setIsMobile(width < 768)
+      setIsTablet(width >= 768 && width < 1200)
+      
+      // 移动端自动折叠侧边栏
+      if (width < 768) {
+        setCollapsed(true)
+      }
+    }
+
+    checkScreenSize()
+    window.addEventListener('resize', checkScreenSize)
+    return () => window.removeEventListener('resize', checkScreenSize)
+  }, [])
+
+  // 移动端菜单点击处理
+  const handleMobileMenuClick = ({ key }: { key: string }) => {
+    navigate(key)
+    setMobileDrawerVisible(false)
+  }
+
+  // 切换侧边栏
+  const toggleSidebar = () => {
+    if (isMobile) {
+      setMobileDrawerVisible(!mobileDrawerVisible)
+    } else {
+      setCollapsed(!collapsed)
+    }
+  }
+
   // 菜单项配置
   const menuItems = [
     {
-      key: '/dashboard',
+      key: '/workspace',
       icon: <DashboardOutlined />,
       label: '工作台',
+      description: '统一工作入口'
     },
     {
-      key: '/reports',
-      icon: <FileTextOutlined />,
-      label: '报告管理',
-    },
-    {
-      key: '/editor',
-      icon: <EditOutlined />,
-      label: '报告编辑器',
-    },
-    {
-      key: '/templates',
-      icon: <AppstoreOutlined />,
-      label: '模板中心',
-    },
-    {
-      key: '/analysis',
-      icon: <BarChartOutlined />,
-      label: 'AI分析中心',
-    },
-    {
-      key: '/knowledge-base',
+      key: '/data-center',
       icon: <DatabaseOutlined />,
-      label: '知识库',
+      label: '数据中心',
+      description: '数据源管理'
     },
     {
-      key: '/export',
-      icon: <DownloadOutlined />,
-      label: '导出与模板',
+      key: '/intelligent-analysis',
+      icon: <BarChartOutlined />,
+      label: '智能分析',
+      description: 'AI驱动分析'
     },
     {
-      key: '/data-pipeline',
-      icon: <NodeIndexOutlined />,
-      label: '数据处理监控',
+      key: '/report-factory',
+      icon: <FileTextOutlined />,
+      label: '报告工厂',
+      description: '报告创建与管理'
     },
     {
-      key: '/data-butler',
-      icon: <RobotOutlined />,
-      label: 'AI数据管家',
+      type: 'divider'
     },
     {
-      key: '/chart-generation',
-      icon: <LineChartOutlined />,
-      label: '对话式图表生成',
+      key: 'legacy',
+      icon: <AppstoreOutlined />,
+      label: '传统功能',
+      children: [
+        {
+          key: '/dashboard',
+          icon: <DashboardOutlined />,
+          label: '原工作台'
+        },
+        {
+          key: '/reports',
+          icon: <FileTextOutlined />,
+          label: '报告管理'
+        },
+        {
+          key: '/editor',
+          icon: <EditOutlined />,
+          label: '报告编辑器'
+        },
+        {
+          key: '/templates',
+          icon: <AppstoreOutlined />,
+          label: '模板中心'
+        },
+        {
+          key: '/analysis',
+          icon: <BarChartOutlined />,
+          label: 'AI分析中心'
+        },
+        {
+          key: '/knowledge-base',
+          icon: <DatabaseOutlined />,
+          label: '知识库'
+        },
+        {
+          key: '/export',
+          icon: <DownloadOutlined />,
+          label: '导出与模板'
+        }
+      ]
     },
     {
-      key: '/trend-prediction',
-      icon: <FundProjectionScreenOutlined />,
-      label: '趋势预测分析',
-    },
-    {
-      key: '/test-runner',
+      key: 'advanced',
       icon: <ExperimentOutlined />,
-      label: '🧪 功能测试',
-    },
+      label: '高级功能',
+      children: [
+        {
+          key: '/data-pipeline',
+          icon: <NodeIndexOutlined />,
+          label: '数据处理监控'
+        },
+        {
+          key: '/data-butler',
+          icon: <RobotOutlined />,
+          label: 'AI数据管家'
+        },
+        {
+          key: '/chart-generation',
+          icon: <LineChartOutlined />,
+          label: '对话式图表生成'
+        },
+        {
+          key: '/trend-prediction',
+          icon: <FundProjectionScreenOutlined />,
+          label: '趋势预测分析'
+        },
+        {
+          key: '/test-runner',
+          icon: <ExperimentOutlined />,
+          label: '🧪 功能测试'
+        }
+      ]
+    }
   ]
 
   // 处理用户菜单点击
@@ -142,9 +223,7 @@ const MainLayout: React.FC = () => {
     },
   ]
 
-  const handleMenuClick = ({ key }: { key: string }) => {
-    navigate(key)
-  }
+
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -153,11 +232,12 @@ const MainLayout: React.FC = () => {
         trigger={null}
         collapsible
         collapsed={collapsed}
-        width={240}
-        collapsedWidth={64}
+        width={280}
+        collapsedWidth={80}
         style={{
-          background: '#001529',
-          boxShadow: '2px 0 8px rgba(0, 0, 0, 0.15)',
+          background: designSystem.colors.background.primary,
+          boxShadow: designSystem.shadows.lg,
+          borderRight: `1px solid ${designSystem.colors.border.light}`,
         }}
       >
         {/* Logo区域 */}
@@ -165,65 +245,156 @@ const MainLayout: React.FC = () => {
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            height: '64px',
-            background: 'linear-gradient(to right, #1890ff, #096dd9)',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            height: '72px',
+            padding: collapsed ? '0' : `0 ${designSystem.spacing.lg}`,
+            background: `linear-gradient(135deg, ${designSystem.colors.primary} 0%, ${designSystem.colors.secondary} 100%)`,
             color: 'white',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            borderBottom: `1px solid ${designSystem.colors.border.light}`,
           }}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.01 }}
           transition={{ duration: 0.2 }}
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/workspace')}
         >
-          {collapsed ? (
-            <div style={{ fontSize: '20px', fontWeight: 'bold' }}>智</div>
-          ) : (
-            <div style={{ fontSize: '18px', fontWeight: 'bold' }}>智能报告系统</div>
-          )}
+          <AnimatePresence mode="wait">
+            {collapsed ? (
+              <motion.div
+                key="collapsed"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+                style={{ 
+                  fontSize: '24px', 
+                  fontWeight: designSystem.typography.fontWeight.bold,
+                  background: 'rgba(255,255,255,0.2)',
+                  borderRadius: designSystem.borderRadius.md,
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                智
+              </motion.div>
+            ) : (
+              <motion.div
+                key="expanded"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.sm }}
+              >
+                <div style={{
+                  fontSize: '28px',
+                  fontWeight: designSystem.typography.fontWeight.bold,
+                  background: 'rgba(255,255,255,0.2)',
+                  borderRadius: designSystem.borderRadius.md,
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  智
+                </div>
+                <div>
+                  <div style={{ 
+                    fontSize: designSystem.typography.fontSize.lg, 
+                    fontWeight: designSystem.typography.fontWeight.bold,
+                    lineHeight: 1.2
+                  }}>
+                    智能报告系统
+                  </div>
+                  <div style={{ 
+                    fontSize: designSystem.typography.fontSize.xs,
+                    opacity: 0.8,
+                    lineHeight: 1
+                  }}>
+                    Smart Report Platform
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* 导航菜单 */}
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[location.pathname]}
-          items={menuItems}
-          onClick={handleMenuClick}
-          style={{
-            border: 'none',
-            background: 'transparent',
-          }}
-        />
+        <div style={{ padding: `${designSystem.spacing.md} 0` }}>
+          <Menu
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            items={menuItems}
+            onClick={({ key }) => navigate(key)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              fontSize: designSystem.typography.fontSize.sm,
+            }}
+            theme="light"
+            inlineIndent={collapsed ? 0 : 24}
+          />
+        </div>
       </Sider>
 
       <Layout>
         {/* 顶部导航栏 */}
         <Header
           style={{
-            padding: '0 24px',
-            background: '#fff',
-            borderBottom: '1px solid #f0f0f0',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+            padding: `0 ${designSystem.spacing.xl}`,
+            background: designSystem.colors.background.primary,
+            borderBottom: `1px solid ${designSystem.colors.border.light}`,
+            boxShadow: designSystem.shadows.sm,
+            height: '72px',
             position: 'sticky',
             top: 0,
             zIndex: 100,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
-            {/* 左侧：折叠按钮 */}
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: '16px',
-                width: 40,
-                height: 40,
-              }}
-            />
+            {/* 左侧：折叠按钮和欢迎信息 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.lg }}>
+              <Button
+                variant="ghost"
+                size="md"
+                onClick={toggleSidebar}
+                style={{
+                  color: designSystem.colors.text.secondary,
+                  fontSize: '18px',
+                  padding: designSystem.spacing.sm,
+                  borderRadius: designSystem.borderRadius.md,
+                }}
+              >
+                {isMobile ? <MenuUnfoldOutlined /> : (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />)}
+              </Button>
+              
+              <Divider type="vertical" style={{ height: '24px', margin: 0 }} />
+              
+              <Space>
+                {!isMobile && (
+                  <>
+                    <Text style={{ 
+                      color: designSystem.colors.text.secondary,
+                      fontSize: designSystem.typography.fontSize.sm 
+                    }}>
+                      欢迎回来，
+                    </Text>
+                    <Text strong style={{ 
+                      color: designSystem.colors.text.primary,
+                      fontSize: designSystem.typography.fontSize.sm 
+                    }}>
+                      {user?.profile?.full_name || '用户'}
+                    </Text>
+                  </>
+                )}
+              </Space>
+            </div>
 
             {/* 右侧：通知和用户信息 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 101 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.md, position: 'relative', zIndex: 101 }}>
               {/* 通知铃铛 */}
               <Dropdown
                 open={notificationVisible}
@@ -267,21 +438,26 @@ const MainLayout: React.FC = () => {
                   </div>
                 )}
               >
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <Badge count={3} size="small">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Badge count={3} size="small" color={designSystem.colors.primary}>
                     <Button
-                      type="text"
-                      icon={<BellOutlined />}
+                      variant="ghost"
+                      size="md"
                       onClick={() => setNotificationVisible(!notificationVisible)}
                       style={{
+                        color: designSystem.colors.text.secondary,
                         fontSize: '16px',
-                        width: 40,
-                        height: 40,
+                        padding: designSystem.spacing.sm,
+                        borderRadius: designSystem.borderRadius.md,
                       }}
-                    />
+                    >
+                      <BellOutlined />
+                    </Button>
                   </Badge>
                 </motion.div>
               </Dropdown>
+
+              <Divider type="vertical" style={{ height: '24px', margin: 0 }} />
 
               {/* 用户头像和下拉菜单 */}
               <Dropdown
@@ -291,37 +467,52 @@ const MainLayout: React.FC = () => {
                 overlayStyle={{ zIndex: 1050 }}
               >
                 <motion.div
+                  whileHover={{ scale: 1.02 }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: designSystem.spacing.sm,
                     cursor: 'pointer',
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    transition: 'background-color 0.2s',
+                    padding: designSystem.spacing.sm,
+                    borderRadius: designSystem.borderRadius.md,
+                    transition: 'all 0.2s ease',
+                    border: `1px solid transparent`,
                     position: 'relative',
                     zIndex: 102
                   }}
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f5f5f5'
+                    e.currentTarget.style.backgroundColor = designSystem.colors.background.secondary
+                    e.currentTarget.style.borderColor = designSystem.colors.border.light
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.borderColor = 'transparent'
                   }}
                 >
                   <Avatar
-                    size={28}
-                    style={{ backgroundColor: '#1890ff' }}
+                    size={36}
+                    style={{ 
+                      backgroundColor: designSystem.colors.primary,
+                      border: `2px solid ${designSystem.colors.background.primary}`,
+                    }}
                   >
                     {user?.profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                   </Avatar>
-                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '500', color: '#262626', marginBottom: '1px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Text strong style={{ 
+                      fontSize: designSystem.typography.fontSize.sm,
+                      color: designSystem.colors.text.primary,
+                      lineHeight: 1.2
+                    }}>
                       {user?.profile?.full_name || '用户'}
-                    </span>
-                    <span style={{ fontSize: '11px', color: '#8c8c8c' }}>{user?.email}</span>
+                    </Text>
+                    <Text style={{ 
+                      fontSize: designSystem.typography.fontSize.xs,
+                      color: designSystem.colors.text.secondary,
+                      lineHeight: 1
+                    }}>
+                      系统管理员
+                    </Text>
                   </div>
                 </motion.div>
               </Dropdown>
@@ -332,27 +523,82 @@ const MainLayout: React.FC = () => {
         {/* 主内容区域 */}
         <Content
           style={{
-            margin: '16px 24px 24px 24px',
-            padding: '20px',
-            background: '#fff',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-            minHeight: 'calc(100vh - 128px)',
-            position: 'relative',
-            zIndex: 1,
-            overflow: 'auto'
+            margin: designSystem.spacing.xl,
+            padding: 0,
+            minHeight: 'calc(100vh - 144px)',
+            background: designSystem.colors.background.secondary,
+            borderRadius: designSystem.borderRadius.lg,
+            overflow: 'hidden',
           }}
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{ position: 'relative', zIndex: 2 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ 
+              height: '100%',
+              background: designSystem.colors.background.primary,
+              borderRadius: designSystem.borderRadius.lg,
+              boxShadow: designSystem.shadows.md,
+              overflow: 'auto'
+            }}
           >
-            <Outlet />
+            <div style={{ 
+              padding: designSystem.spacing.xl,
+              minHeight: '100%'
+            }}>
+              <Outlet />
+            </div>
           </motion.div>
         </Content>
-      </Layout>
+        </Layout>
+      
+      {/* 移动端抽屉菜单 */}
+      <Drawer
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.sm }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              background: `linear-gradient(135deg, ${designSystem.colors.primary}, ${designSystem.colors.secondary})`,
+              borderRadius: designSystem.borderRadius.md,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '14px'
+            }}>
+              智
+            </div>
+            <Text strong style={{ color: designSystem.colors.text.primary }}>
+              智能报告系统
+            </Text>
+          </div>
+        }
+        placement="left"
+        onClose={() => setMobileDrawerVisible(false)}
+        open={mobileDrawerVisible}
+        width={280}
+        styles={{
+          body: { padding: 0 },
+          header: { 
+            borderBottom: `1px solid ${designSystem.colors.border.light}`,
+            padding: designSystem.spacing.md
+          }
+        }}
+      >
+        <Menu
+          mode="inline"
+          selectedKeys={[location.pathname]}
+          onClick={handleMobileMenuClick}
+          items={menuItems}
+          style={{
+            border: 'none',
+            height: '100%'
+          }}
+        />
+      </Drawer>
     </Layout>
   )
 }

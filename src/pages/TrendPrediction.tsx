@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Select, DatePicker, Space, Spin, message, Row, Col, Typography, Statistic, Alert, Tag, Divider, Progress } from 'antd';
-import { PlayCircleOutlined, StopOutlined, DownloadOutlined, SettingOutlined, TrendingUpOutlined, WarningOutlined } from '@ant-design/icons';
+import { PlayCircleOutlined, StopOutlined, DownloadOutlined, SettingOutlined, RiseOutlined, WarningOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
@@ -379,7 +379,7 @@ const TrendPrediction: React.FC = () => {
               {/* 预测结果统计 */}
               {predictionResult && (
                 <Row gutter={16}>
-                  <Col span={6}>
+                  <Col xs={24} sm={12} md={6}>
                     <Card>
                       <Statistic
                         title="预测算法"
@@ -388,7 +388,7 @@ const TrendPrediction: React.FC = () => {
                       />
                     </Card>
                   </Col>
-                  <Col span={6}>
+                  <Col xs={24} sm={12} md={6}>
                     <Card>
                       <Statistic
                         title="预测准确率"
@@ -398,7 +398,7 @@ const TrendPrediction: React.FC = () => {
                       />
                     </Card>
                   </Col>
-                  <Col span={6}>
+                  <Col xs={24} sm={12} md={6}>
                     <Card>
                       <Statistic
                         title="趋势方向"
@@ -411,7 +411,7 @@ const TrendPrediction: React.FC = () => {
                       />
                     </Card>
                   </Col>
-                  <Col span={6}>
+                  <Col xs={24} sm={12} md={6}>
                     <Card>
                       <Statistic
                         title="异常检测"

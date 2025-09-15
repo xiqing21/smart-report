@@ -288,7 +288,10 @@ const AgentProgressModal: React.FC<AgentProgressModalProps> = ({ visible, onClos
                               <Progress
                                 percent={Math.round(progress)}
                                 size="small"
-                                strokeColor={agent.color}
+                                strokeColor={{
+                                  '0%': agent.color || '#1890ff',
+                                  '100%': agent.color || '#1890ff'
+                                }}
                                 showInfo={false}
                                 style={{ marginBottom: '8px' }}
                               />

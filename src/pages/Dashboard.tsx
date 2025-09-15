@@ -8,10 +8,7 @@ import {
   EyeOutlined,
   EditOutlined,
   ShareAltOutlined,
-
-
   ThunderboltOutlined,
-
   DatabaseOutlined
 } from '@ant-design/icons'
 import { AnimatedAvatar } from '../components/AdvancedAnimations'
@@ -20,6 +17,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import AgentProgressModal from '../components/AgentProgressModal'
 import { ReportService } from '../services/api/dataService'
+import '../styles/dashboard-responsive.css'
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -142,7 +140,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: '24px', backgroundColor: '#fafafa', minHeight: '100%' }}>
+    <div className="dashboard-container" style={{ padding: '24px', backgroundColor: '#fafafa', minHeight: '100%' }}>
       {/* 欢迎区域 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -150,7 +148,7 @@ const Dashboard: React.FC = () => {
         transition={{ duration: 0.6 }}
         style={{ marginBottom: '32px' }}
       >
-        <div style={{
+        <div className="dashboard-welcome" style={{
           background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
           borderRadius: '16px',
           padding: '32px',
@@ -181,7 +179,7 @@ const Dashboard: React.FC = () => {
           }}></div>
           
           <Row gutter={[24, 24]} align="middle">
-            <Col xs={24} lg={14}>
+            <Col xs={24} sm={24} md={24} lg={14} xl={14}>
               <div style={{ position: 'relative', zIndex: 10 }}>
                 <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px' }}>欢迎回来！</h1>
                 <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>五大智能体已就绪，让我们一起创造专业的山西电网分析报告吧</p>
@@ -192,10 +190,10 @@ const Dashboard: React.FC = () => {
               </div>
             </Col>
             
-            <Col xs={24} lg={10}>
+            <Col xs={24} sm={24} md={24} lg={10} xl={10}>
               <div style={{ position: 'relative', zIndex: 10 }}>
-                <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                <Row gutter={[16, 16]} className="dashboard-stats">
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <div 
                       style={{ 
                         textAlign: 'center', 
@@ -217,11 +215,11 @@ const Dashboard: React.FC = () => {
                         e.currentTarget.style.transform = 'translateY(0)'
                       }}
                     >
-                      <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>{totalReports}</div>
-                      <div style={{ fontSize: '14px', opacity: 0.9 }}>总报告数</div>
+                      <div className="stat-number" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>{totalReports}</div>
+                      <div className="stat-label" style={{ fontSize: '14px', opacity: 0.9 }}>总报告数</div>
                     </div>
                   </Col>
-                  <Col span={12}>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                     <div 
                       style={{ 
                         textAlign: 'center', 
@@ -243,14 +241,15 @@ const Dashboard: React.FC = () => {
                         e.currentTarget.style.transform = 'translateY(0)'
                       }}
                     >
-                      <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>4</div>
-                      <div style={{ fontSize: '14px', opacity: 0.9 }}>总数据源</div>
+                      <div className="stat-number" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>4</div>
+                      <div className="stat-label" style={{ fontSize: '14px', opacity: 0.9 }}>总数据源</div>
                     </div>
                   </Col>
                 </Row>
                 
                 {/* 五大智能体运行状态 - 紧凑版 */}
                 <div 
+                  className="agent-status-compact"
                   style={{ 
                     marginTop: '16px',
                     padding: '16px',
@@ -288,6 +287,7 @@ const Dashboard: React.FC = () => {
                     ].map((agent, index) => (
                       <div
                         key={index}
+                        className="agent-item"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -326,10 +326,10 @@ const Dashboard: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <InteractiveCard effect="lift">
-              <Card title="快捷操作" variant="borderless">
+              <Card title="快捷操作" variant="borderless" className="quick-actions">
                 <Row gutter={[16, 16]}>
                   {quickActions.map((action, index) => (
-                    <Col xs={12} sm={6} md={6} lg={6} xl={6} key={index}>
+                    <Col xs={12} sm={12} md={6} lg={6} xl={6} key={index}>
                       <motion.div
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
@@ -354,6 +354,7 @@ const Dashboard: React.FC = () => {
                           }}
                         >
                           <div 
+                            className="action-icon"
                             style={{
                               width: '36px',
                               height: '36px',
@@ -369,8 +370,8 @@ const Dashboard: React.FC = () => {
                           >
                             {action.icon}
                           </div>
-                          <h4 style={{ fontWeight: '600', color: '#262626', marginBottom: '4px', fontSize: '13px' }}>{action.title}</h4>
-                          <p style={{ fontSize: '11px', color: '#8c8c8c', margin: 0 }}>{action.description}</p>
+                          <h4 className="action-title" style={{ fontWeight: '600', color: '#262626', marginBottom: '4px', fontSize: '13px' }}>{action.title}</h4>
+                          <p className="action-desc" style={{ fontSize: '11px', color: '#8c8c8c', margin: 0 }}>{action.description}</p>
                         </Card>
                       </motion.div>
                     </Col>
@@ -399,6 +400,7 @@ const Dashboard: React.FC = () => {
                   </Button>
                 }
                 variant="borderless"
+                className="recent-reports"
                 style={{ height: '100%' }}
               >
                 <List

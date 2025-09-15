@@ -4,6 +4,14 @@ import Login from '../pages/Login'
 import Register from '../pages/Register'
 import ForgotPassword from '../pages/ForgotPassword'
 import Profile from '../pages/Profile'
+
+// 四大核心模块页面
+import Workspace from '@/pages/Workspace'
+import DataCenter from '@/pages/DataCenter'
+import IntelligentAnalysis from '@/pages/IntelligentAnalysis'
+import ReportFactory from '@/pages/ReportFactory'
+
+// 原有页面保留
 import Dashboard from '../pages/Dashboard'
 import Reports from '../pages/Reports'
 import ReportEditor from '../pages/ReportEditor'
@@ -53,9 +61,27 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
-        element: <Navigate to="/dashboard" replace />,
+          index: true,
+          element: <Navigate to="/workspace" replace />,
+        },
+      // 四大核心模块路由
+      {
+        path: 'workspace',
+        element: <Workspace />,
       },
+      {
+        path: 'data-center',
+        element: <DataCenter />,
+      },
+      {
+        path: 'intelligent-analysis',
+        element: <IntelligentAnalysis />,
+      },
+      {
+        path: 'report-factory',
+        element: <ReportFactory />,
+      },
+      // 原有页面路由保留
       {
         path: 'dashboard',
         element: <Dashboard />,

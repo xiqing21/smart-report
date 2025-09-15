@@ -1,5 +1,6 @@
 /* Tailwind CSS v4 导入 */
 @import "tailwindcss";
+@import './responsive.css';
 
 /* 全局样式 - 智能报告生成系统 */
 
