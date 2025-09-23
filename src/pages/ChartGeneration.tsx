@@ -220,159 +220,222 @@ const ChartGeneration: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6 }}
+        className="mb-8"
       >
-        <Title level={2} className="mb-6">
-          🎨 对话式图表生成
-        </Title>
-        <Text type="secondary" className="block mb-6">
-          使用自然语言描述您想要的图表，AI将为您智能生成可视化图表
-        </Text>
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+          <Title level={2} className="flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 mb-3">
+            对话式图表生成
+          </Title>
+          <Text className="text-gray-300 text-lg">
+            通过自然语言描述自动生成图表，让数据可视化更加智能便捷
+          </Text>
+        </div>
+      </motion.div>
 
-        <Row gutter={[24, 24]}>
+      <Row gutter={[24, 24]}>
           {/* 左侧输入区域 */}
           <Col xs={24} lg={8}>
-            <Card title="📝 图表描述" className="h-fit">
-              <Space direction="vertical" className="w-full" size="middle">
-                <div>
-                  <Text strong>数据集选择：</Text>
-                  <Select
-                    value={selectedDataset}
-                    onChange={setSelectedDataset}
-                    className="w-full mt-2"
-                  >
-                    <Option value="sales">销售数据</Option>
-                    <Option value="categories">分类数据</Option>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Text strong>描述您想要的图表：</Text>
-                  <TextArea
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="例如：生成一个显示月度销售趋势的折线图"
-                    rows={4}
-                    className="mt-2"
-                  />
-                </div>
-                
-                <Button
-                  type="primary"
-                  icon={<SendOutlined />}
-                  onClick={handleSubmit}
-                  loading={loading}
-                  className="w-full"
-                  size="large"
-                >
-                  {loading ? '正在生成图表...' : '生成图表'}
-                </Button>
-                
-                {/* 示例查询 */}
-                <div>
-                  <Text strong>💡 示例查询：</Text>
-                  <div className="mt-2 space-y-1">
-                    {[
-                      '生成销售趋势折线图',
-                      '创建分类占比饼图',
-                      '显示数据对比柱状图',
-                    ].map((example, index) => (
-                      <Tag
-                        key={index}
-                        className="cursor-pointer mb-1"
-                        onClick={() => setQuery(example)}
-                      >
-                        {example}
-                      </Tag>
-                    ))}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card 
+                title={<span className="text-white/90 text-lg">📝 图表描述</span>}
+                className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg h-fit"
+              >
+                <Space direction="vertical" className="w-full" size="large">
+                  <div>
+                    <Text strong className="text-white/80">数据集选择：</Text>
+                    <Select
+                      value={selectedDataset}
+                      onChange={setSelectedDataset}
+                      className="w-full mt-2 bg-white/10 border border-white/20 rounded-lg text-white"
+                    >
+                      <Option value="sales" className="bg-gray-800 text-white">销售数据</Option>
+                      <Option value="categories" className="bg-gray-800 text-white">分类数据</Option>
+                    </Select>
                   </div>
-                </div>
-              </Space>
-            </Card>
+                  
+                  <div>
+                    <Text strong className="text-white/80">描述您想要的图表：</Text>
+                    <TextArea
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="例如：生成一个显示月度销售趋势的折线图"
+                      rows={4}
+                      className="w-full mt-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 hover:border-white/40 focus:border-blue-400 transition-all duration-300"
+                    />
+                  </div>
+                  
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      type="primary"
+                      icon={<SendOutlined />}
+                      onClick={handleSubmit}
+                      loading={loading}
+                      className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 border-none text-white hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg transition-all duration-300 shadow-md rounded-xl"
+                      size="large"
+                    >
+                      {loading ? '正在生成图表...' : '生成图表'}
+                    </Button>
+                  </motion.div>
+                  
+                  {/* 示例查询 */}
+                  <div>
+                    <Text strong className="text-white/80">💡 示例查询：</Text>
+                    <div className="mt-3 space-y-2">
+                      {[
+                        '生成销售趋势折线图',
+                        '创建分类占比饼图',
+                        '显示数据对比柱状图',
+                      ].map((example, index) => (
+                        <motion.div
+                          key={index}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Tag
+                            className="cursor-pointer bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 rounded-full px-3 py-1"
+                            onClick={() => setQuery(example)}
+                          >
+                            {example}
+                          </Tag>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </Space>
+              </Card>
+            </motion.div>
           </Col>
 
           {/* 右侧图表展示区域 */}
           <Col xs={24} lg={16}>
-            <Card
-              title="📊 图表展示"
-              extra={
-                chartConfig && (
-                  <Space>
-                    <Button
-                      icon={<DownloadOutlined />}
-                      onClick={downloadChart}
-                    >
-                      下载
-                    </Button>
-                    <Button
-                      icon={<ReloadOutlined />}
-                      onClick={() => setChartConfig(null)}
-                    >
-                      重置
-                    </Button>
-                  </Space>
-                )
-              }
-              className="min-h-[500px]"
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {loading ? (
-                <div className="flex items-center justify-center h-96">
-                  <Spin size="large" />
-                  <Text className="ml-3">AI正在为您生成图表...</Text>
-                </div>
-              ) : chartConfig ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <ReactECharts
-                    option={chartConfig.options}
-                    style={{ height: '400px', width: '100%' }}
-                    notMerge={true}
-                    lazyUpdate={true}
-                  />
-                  
-                  {/* 图表类型切换 */}
-                  {suggestedCharts.length > 0 && (
-                    <>
-                      <Divider />
-                      <div>
-                        <Text strong>🔄 尝试其他图表类型：</Text>
-                        <div className="mt-2">
-                          {suggestedCharts.map(type => {
-                            const chartType = CHART_TYPES.find(t => t.value === type);
-                            return chartType ? (
-                              <Button
-                                key={type}
-                                onClick={() => switchChartType(type)}
-                                className="mr-2 mb-2"
-                              >
-                                {chartType.icon} {chartType.label}
-                              </Button>
-                            ) : null;
-                          })}
+              <Card
+                title={<span className="text-white/90 text-lg">📊 图表展示</span>}
+                extra={
+                  chartConfig && (
+                    <Space>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          icon={<DownloadOutlined />}
+                          onClick={downloadChart}
+                          className="bg-gradient-to-r from-green-500 to-emerald-500 border-none text-white hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-md rounded-lg"
+                        >
+                          下载
+                        </Button>
+                      </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          icon={<ReloadOutlined />}
+                          onClick={() => setChartConfig(null)}
+                          className="bg-gradient-to-r from-gray-500 to-slate-500 border-none text-white hover:from-gray-600 hover:to-slate-600 transition-all duration-300 shadow-md rounded-lg"
+                        >
+                          重置
+                        </Button>
+                      </motion.div>
+                    </Space>
+                  )
+                }
+                className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg min-h-[500px]"
+              >
+                {loading ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center justify-center h-96"
+                  >
+                    <Spin size="large" className="text-blue-400" />
+                    <Text className="ml-3 text-white/80">AI正在为您生成图表...</Text>
+                  </motion.div>
+                ) : chartConfig ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="p-6"
+                  >
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/10">
+                      <ReactECharts
+                        option={chartConfig.options}
+                        style={{ height: '400px', width: '100%' }}
+                        notMerge={true}
+                        lazyUpdate={true}
+                      />
+                    </div>
+                    
+                    {/* 图表类型切换 */}
+                    {suggestedCharts.length > 0 && (
+                      <>
+                        <Divider className="border-white/20" />
+                        <div>
+                          <Text strong className="text-white/80">🔄 尝试其他图表类型：</Text>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {suggestedCharts.map(type => {
+                              const chartType = CHART_TYPES.find(t => t.value === type);
+                              return chartType ? (
+                                <motion.div
+                                  key={type}
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                >
+                                  <Button
+                                    onClick={() => switchChartType(type)}
+                                    className="bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 rounded-lg"
+                                  >
+                                    {chartType.icon} {chartType.label}
+                                  </Button>
+                                </motion.div>
+                              ) : null;
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    </>
-                  )}
-                </motion.div>
-              ) : (
-                <div className="flex items-center justify-center h-96 text-gray-400">
-                  <div className="text-center">
-                    <div className="text-6xl mb-4">📈</div>
-                    <Text type="secondary">请在左侧输入图表描述，开始生成您的专属图表</Text>
-                  </div>
-                </div>
-              )}
-            </Card>
+                      </>
+                    )}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                    className="flex items-center justify-center h-96 text-white/60"
+                  >
+                    <div className="text-center">
+                      <motion.div 
+                        className="text-6xl mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        📈
+                      </motion.div>
+                      <Text className="text-white/80 text-lg">请在左侧输入图表描述，开始生成您的专属图表</Text>
+                    </div>
+                  </motion.div>
+                )}
+              </Card>
+            </motion.div>
           </Col>
-        </Row>
-      </motion.div>
+      </Row>
     </div>
   );
 };

@@ -442,67 +442,136 @@ const KnowledgeBase: React.FC = () => {
   const totalVectors = stats.totalVectors;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <Title level={2} className="mb-2">
-          <BookOutlined className="mr-2" />
-          向量知识库
-        </Title>
-        <Paragraph className="text-gray-600">
-          构建智能知识库，支持文档向量化存储、语义搜索和智能问答
-        </Paragraph>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 p-8">
+      {/* 页面标题 - 玻璃拟态风格 */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-8"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+              知识库管理
+            </h1>
+            <p className="text-gray-300 text-lg">智能文档管理与语义搜索，支持多格式文档的智能问答</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-green-500/30">
+              <BrainCircuitOutlined className="text-green-400 text-lg" />
+              <span className="text-green-300 font-medium">AI服务在线</span>
+            </div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                type="primary"
+                icon={<HistoryOutlined />}
+                onClick={() => setShowHistoryModal(true)}
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 border-none rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                历史记录
+              </Button>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
 
-      {/* 统计卡片 */}
-      <Row gutter={16} className="mb-6">
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="文档总数"
-              value={totalDocuments}
-              prefix={<DatabaseOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="已处理文档"
-              value={completedDocuments}
-              prefix={<FileTextOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="向量总数"
-              value={totalVectors}
-              prefix={<BulbOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="处理成功率"
-              value={totalDocuments > 0 ? Math.round((completedDocuments / totalDocuments) * 100) : 0}
-              suffix="%"
-              prefix={<QuestionCircleOutlined />}
-            />
-          </Card>
-        </Col>
-      </Row>
+      {/* 统计卡片 - 玻璃拟态风格 */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="mb-8"
+      >
+        <Row gutter={[24, 24]}>
+          <Col span={6}>
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <Statistic
+                  title={<span className="text-gray-300">文档总数</span>}
+                  value={totalDocuments}
+                  prefix={<DatabaseOutlined className="text-indigo-400 text-xl" />}
+                  valueStyle={{ color: '#f0f9ff', fontSize: '28px', fontWeight: 'bold' }}
+                />
+              </Card>
+            </motion.div>
+          </Col>
+          <Col span={6}>
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <Statistic
+                  title={<span className="text-gray-300">已处理文档</span>}
+                  value={completedDocuments}
+                  prefix={<FileTextOutlined className="text-green-400 text-xl" />}
+                  valueStyle={{ color: '#f0f9ff', fontSize: '28px', fontWeight: 'bold' }}
+                />
+              </Card>
+            </motion.div>
+          </Col>
+          <Col span={6}>
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <Statistic
+                  title={<span className="text-gray-300">向量总数</span>}
+                  value={totalVectors}
+                  prefix={<BulbOutlined className="text-purple-400 text-xl" />}
+                  valueStyle={{ color: '#f0f9ff', fontSize: '28px', fontWeight: 'bold' }}
+                />
+              </Card>
+            </motion.div>
+          </Col>
+          <Col span={6}>
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <Statistic
+                  title={<span className="text-gray-300">处理成功率</span>}
+                  value={totalDocuments > 0 ? Math.round((completedDocuments / totalDocuments) * 100) : 0}
+                  suffix="%"
+                  prefix={<QuestionCircleOutlined className="text-cyan-400 text-xl" />}
+                  valueStyle={{ color: '#f0f9ff', fontSize: '28px', fontWeight: 'bold' }}
+                />
+              </Card>
+            </motion.div>
+          </Col>
+        </Row>
+      </motion.div>
 
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
+      <Tabs activeKey={activeTab} onChange={setActiveTab} className="glass-tabs">
         {/* 文档管理 */}
         <TabPane tab="文档管理" key="documents">
-          <Card>
-            <div className="mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mb-6"
+          >
+            <div className="mb-6">
               <Upload {...uploadProps}>
-                <Button icon={<UploadOutlined />} loading={uploading}>
-                  上传文档
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button 
+                    icon={<UploadOutlined />} 
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 border-none text-white hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    size="large"
+                    loading={uploading}
+                  >
+                    上传文档
+                  </Button>
+                </motion.div>
               </Upload>
               <Text type="secondary" className="ml-4">
                 支持 PDF、Word、TXT、Markdown、JSON 格式，最大 50MB
@@ -529,238 +598,318 @@ const KnowledgeBase: React.FC = () => {
               )}
             </div>
             
-            <Table
-              columns={documentColumns}
-              dataSource={documents}
-              rowKey="id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total) => `共 ${total} 个文档`
-              }}
-            />
-          </Card>
+            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl overflow-hidden">
+              <Table
+                columns={documentColumns}
+                dataSource={documents}
+                rowKey="id"
+                className="glass-table"
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total) => `共 ${total} 个文档`,
+                  className: "glass-pagination"
+                }}
+              />
+            </div>
+          </motion.div>
         </TabPane>
 
         {/* 语义搜索 */}
         <TabPane tab="语义搜索" key="search">
-          <Card>
-            <div className="mb-4">
-              <Space.Compact style={{ width: '100%' }}>
-                <Input
-                  placeholder="输入搜索内容，支持自然语言查询"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onPressEnter={handleSearch}
-                />
-                <Button
-                  type="primary"
-                  icon={<SearchOutlined />}
-                  loading={searching}
-                  onClick={handleSearch}
-                  disabled={searching}
-                >
-                  搜索
-                </Button>
-              </Space.Compact>
-            </div>
-            
-            {searchResults.length > 0 && (
-              <List
-                itemLayout="vertical"
-                dataSource={searchResults}
-                renderItem={(item) => (
-                  <List.Item
-                    key={item.id}
-                    extra={
-                      <div className="text-right">
-                        <div className="text-sm text-gray-500 mb-1">
-                          相似度: {(item.similarity * 100).toFixed(1)}%
-                        </div>
-                        <Progress
-                          percent={item.similarity * 100}
-                          size="small"
-                          showInfo={false}
-                        />
-                      </div>
-                    }
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Card className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl">
+              <div className="mb-6">
+                <Space.Compact style={{ width: '100%' }}>
+                  <Input
+                    placeholder="输入搜索内容，支持自然语言查询"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onPressEnter={handleSearch}
+                    className="bg-white/20 border-white/30 text-white placeholder-white/70 rounded-l-xl"
+                  />
+                  <Button
+                    type="primary"
+                    icon={<SearchOutlined />}
+                    loading={searching}
+                    onClick={handleSearch}
+                    disabled={searching}
+                    className="bg-blue-500/80 border-blue-400 hover:bg-blue-600/90 rounded-r-xl px-6"
                   >
-                    <List.Item.Meta
-                      title={
-                        <Space>
-                          <FileTextOutlined />
-                          <span>{item.source}</span>
-                          <Tag color="blue">
-                            {item.metadata?.page ? `第${item.metadata.page}页` : 
-                             item.metadata?.line ? `第${item.metadata.line}行` : '未知位置'}
-                          </Tag>
-                        </Space>
-                      }
-                      description={item.content}
-                    />
-                  </List.Item>
-                )}
-              />
-            )}
-          </Card>
+                    搜索
+                  </Button>
+                </Space.Compact>
+              </div>
+            
+              {searchResults.length > 0 && (
+                <List
+                  itemLayout="vertical"
+                  dataSource={searchResults}
+                  renderItem={(item) => (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <List.Item
+                        key={item.id}
+                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl mb-3 p-4 hover:bg-white/10 transition-all duration-300"
+                        extra={
+                          <div className="text-right">
+                            <div className="text-sm text-white/70 mb-2">
+                              相似度: {(item.similarity * 100).toFixed(1)}%
+                            </div>
+                            <Progress
+                              percent={item.similarity * 100}
+                              size="small"
+                              showInfo={false}
+                              strokeColor="#60a5fa"
+                              trailColor="rgba(255,255,255,0.1)"
+                            />
+                          </div>
+                        }
+                      >
+                        <List.Item.Meta
+                          title={
+                            <Space>
+                              <FileTextOutlined className="text-blue-400" />
+                              <span className="text-white font-medium">{item.source}</span>
+                              <Tag color="blue" className="bg-blue-500/20 border-blue-400/30 text-blue-300">
+                                {item.metadata?.page ? `第${item.metadata.page}页` : 
+                                 item.metadata?.line ? `第${item.metadata.line}行` : '未知位置'}
+                              </Tag>
+                            </Space>
+                          }
+                          description={<div className="text-white/80 mt-2">{item.content}</div>}
+                        />
+                      </List.Item>
+                    </motion.div>
+                  )}
+                />
+              )}
+            </Card>
+          </motion.div>
         </TabPane>
 
         {/* 智能问答 */}
         <TabPane tab="智能问答" key="chat">
-          <Card
-            extra={
-              <Space>
-                <Button
-                  icon={<PlusOutlined />}
-                  onClick={handleCreateConversation}
-                  size="small"
-                >
-                  新对话
-                </Button>
-                <Button
-                  icon={<HistoryOutlined />}
-                  onClick={() => {
-                    loadConversationHistory();
-                    setShowHistoryModal(true);
-                  }}
-                  size="small"
-                >
-                  历史对话
-                </Button>
-              </Space>
-            }
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
           >
-            {conversationId && (
-              <div className="mb-2">
-                <Tag color="blue">当前对话: {conversationId.substring(0, 20)}...</Tag>
-              </div>
-            )}
-            <div className="h-96 overflow-y-auto mb-4 p-4 bg-gray-50 rounded">
-              {chatMessages.length === 0 ? (
-                <div className="text-center text-gray-500 mt-8">
-                  <RobotOutlined className="text-4xl mb-4" />
-                  <p>开始与您的知识库对话吧！</p>
-                  <p className="text-sm mt-2">我可以帮您查找文档内容、回答问题、总结信息等。</p>
+            <Card
+              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl"
+              extra={
+                <Space>
+                  <Button
+                    icon={<PlusOutlined />}
+                    onClick={handleCreateConversation}
+                    size="small"
+                    className="bg-blue-500/20 border-blue-400/30 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200"
+                  >
+                    新对话
+                  </Button>
+                  <Button
+                    icon={<HistoryOutlined />}
+                    onClick={() => {
+                      loadConversationHistory();
+                      setShowHistoryModal(true);
+                    }}
+                    size="small"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  >
+                    历史对话
+                  </Button>
+                </Space>
+              }
+            >
+              {conversationId && (
+                <div className="mb-4">
+                  <Tag color="blue" className="bg-blue-500/20 border-blue-400/30 text-blue-300">
+                    当前对话: {conversationId.substring(0, 20)}...
+                  </Tag>
                 </div>
-              ) : (
-                chatMessages.map((message) => (
-                  <div key={message.id} className={`mb-4 ${message.type === 'user' ? 'text-right' : 'text-left'}`}>
-                    <div className={`inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      message.type === 'user'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white border'
-                    }`}>
-                      <div className="flex items-start space-x-2">
-                        {message.type === 'assistant' && <RobotOutlined className="text-sm mt-0.5" />}
-                        {message.type === 'user' && <UserOutlined className="text-sm mt-0.5" />}
-                        <div className="flex-1">
-                          <div>{message.content}</div>
-                          <div className="text-xs mt-1 opacity-70">
-                            {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              )}
+              <div className="h-96 overflow-y-auto mb-6 p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
+                {chatMessages.length === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center text-white/70 mt-8"
+                  >
+                    <RobotOutlined className="text-4xl mb-4 text-blue-400" />
+                    <p className="text-lg">开始与您的知识库对话吧！</p>
+                    <p className="text-sm mt-2 text-white/60">我可以帮您查找文档内容、回答问题、总结信息等。</p>
+                  </motion.div>
+                ) : (
+                  chatMessages.map((message, index) => (
+                    <motion.div 
+                      key={message.id} 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`mb-4 ${message.type === 'user' ? 'text-right' : 'text-left'}`}
+                    >
+                      <div className={`inline-block max-w-xs lg:max-w-md px-4 py-3 rounded-xl backdrop-blur-sm ${
+                        message.type === 'user'
+                          ? 'bg-blue-500/80 border border-blue-400/50 text-white shadow-lg'
+                          : 'bg-white/10 border border-white/20 text-white shadow-lg'
+                      }`}>
+                        <div className="flex items-start space-x-2">
+                          {message.type === 'assistant' && <RobotOutlined className="text-sm mt-1 text-blue-400" />}
+                          {message.type === 'user' && <UserOutlined className="text-sm mt-1" />}
+                          <div className="flex-1">
+                            <div className="text-sm">{message.content}</div>
+                            <div className="text-xs mt-2 opacity-70">
+                              {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    {message.sources && message.sources.length > 0 && (
-                      <div className="mt-2 text-left">
-                        <Text type="secondary" className="text-xs">参考来源：</Text>
-                        {message.sources.map((source, index) => (
-                          <Tag key={index} className="mt-1">
-                            {source.document_name} (相似度: {(source.similarity * 100).toFixed(1)}%)
-                          </Tag>
-                        ))}
+                      
+                      {message.sources && message.sources.length > 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-3 text-left"
+                        >
+                          <Text type="secondary" className="text-xs text-white/60">参考来源：</Text>
+                          {message.sources.map((source, srcIndex) => (
+                            <motion.div
+                              key={srcIndex}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: srcIndex * 0.1 }}
+                            >
+                              <Tag className="mt-1 bg-white/10 border-white/20 text-white/80">
+                                {source.document_name} (相似度: {(source.similarity * 100).toFixed(1)}%)
+                              </Tag>
+                            </motion.div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  ))
+                )}
+                
+                {chatting && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-left mb-4"
+                  >
+                    <div className="inline-block bg-white/10 border border-white/20 px-4 py-3 rounded-xl backdrop-blur-sm">
+                      <div className="flex items-center space-x-3">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+                        <span className="text-white/80">AI正在思考中...</span>
                       </div>
-                    )}
-                  </div>
-                ))
-              )}
-              
-              {chatting && (
-                <div className="text-left mb-4">
-                  <div className="inline-block bg-white border px-4 py-2 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                      <span>AI正在思考中...</span>
                     </div>
-                  </div>
-                </div>
-              )}
-              <div ref={chatEndRef} />
-            </div>
+                  </motion.div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
             
-            <Space.Compact style={{ width: '100%' }}>
-              <TextArea
-                placeholder="输入您的问题，AI将基于知识库为您解答"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onPressEnter={(e) => {
-                  if (!e.shiftKey) {
-                    e.preventDefault();
-                    handleChat();
-                  }
-                }}
-                autoSize={{ minRows: 1, maxRows: 3 }}
-              />
-              <Button
-                type="primary"
-                icon={<SendOutlined />}
-                loading={chatting}
-                onClick={handleChat}
-                disabled={chatting || !chatInput.trim()}
-              >
-                发送
-              </Button>
-            </Space.Compact>
-            
-            <div className="mt-2 text-xs text-gray-500">
-              按 Enter 发送，Shift + Enter 换行
-            </div>
-          </Card>
+              <Space.Compact style={{ width: '100%' }}>
+                <TextArea
+                  placeholder="输入您的问题，AI将基于知识库为您解答"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onPressEnter={(e) => {
+                    if (!e.shiftKey) {
+                      e.preventDefault();
+                      handleChat();
+                    }
+                  }}
+                  autoSize={{ minRows: 1, maxRows: 3 }}
+                  className="bg-white/20 border-white/30 text-white placeholder-white/70 rounded-l-xl"
+                />
+                <Button
+                  type="primary"
+                  icon={<SendOutlined />}
+                  loading={chatting}
+                  onClick={handleChat}
+                  disabled={chatting || !chatInput.trim()}
+                  className="bg-blue-500/80 border-blue-400 hover:bg-blue-600/90 rounded-r-xl px-6"
+                >
+                  发送
+                </Button>
+              </Space.Compact>
+              
+              <div className="mt-3 text-xs text-white/60">
+                按 Enter 发送，Shift + Enter 换行
+              </div>
+            </Card>
+          </motion.div>
         </TabPane>
       </Tabs>
 
       {/* 对话历史模态框 */}
       <Modal
-        title="对话历史"
+        title={<span className="text-white font-medium">对话历史</span>}
         open={showHistoryModal}
         onCancel={() => setShowHistoryModal(false)}
         footer={null}
         width={600}
+        className="glass-modal"
+        styles={{
+          mask: {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backdropFilter: 'blur(10px)'
+          },
+          content: {
+            backgroundColor: 'rgba(30, 41, 59, 0.9)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px'
+          }
+        }}
       >
         <List
           dataSource={conversationHistory}
           renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button
-                  type="link"
-                  onClick={() => handleSelectConversation(item.id)}
-                >
-                  选择
-                </Button>,
-                <Button
-                  type="link"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => handleDeleteConversation(item.id)}
-                >
-                  删除
-                </Button>
-              ]}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
             >
-              <List.Item.Meta
-                title={item.title}
-                description={
-                  <div>
-                    <div>消息数: {item.messages?.length || 0}</div>
-                    <div>创建时间: {new Date(item.createdAt).toLocaleString()}</div>
-                    {item.summary && <div>摘要: {item.summary}</div>}
-                  </div>
-                }
-              />
-            </List.Item>
+              <List.Item
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl mb-3 p-4 hover:bg-white/10 transition-all duration-300"
+                actions={[
+                  <Button
+                    type="link"
+                    onClick={() => handleSelectConversation(item.id)}
+                    className="text-blue-400 hover:text-blue-300"
+                  >
+                    选择
+                  </Button>,
+                  <Button
+                    type="link"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleDeleteConversation(item.id)}
+                    className="text-red-400 hover:text-red-300"
+                  >
+                    删除
+                  </Button>
+                ]}
+              >
+                <List.Item.Meta
+                  title={<span className="text-white font-medium">{item.title}</span>}
+                  description={
+                    <div className="text-white/70">
+                      <div className="mb-1">消息数: {item.messages?.length || 0}</div>
+                      <div className="mb-1">创建时间: {new Date(item.createdAt).toLocaleString()}</div>
+                      {item.summary && <div className="text-sm text-white/60">摘要: {item.summary}</div>}
+                    </div>
+                  }
+                />
+              </List.Item>
+            </motion.div>
           )}
         />
       </Modal>

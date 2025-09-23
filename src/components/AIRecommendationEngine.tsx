@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Typography, Space, Tag, Button, Tooltip, Progress, Alert } from 'antd'
+import { Card, Typography, Space, Tag, Tooltip, Progress, Alert } from 'antd'
 import {
   BulbOutlined,
   ThunderboltOutlined,
@@ -155,24 +155,24 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
     return (
       <Card 
         style={{ 
-          marginBottom: designSystem.spacing.lg,
+          marginBottom: designSystem.spacing[16],
           border: `1px solid ${designSystem.colors.primary}20`,
-          borderRadius: designSystem.borderRadius.lg
+          borderRadius: designSystem.borderRadius[16]
         }}
       >
-        <div style={{ textAlign: 'center', padding: designSystem.spacing.xl }}>
+        <div style={{ textAlign: 'center', padding: designSystem.spacing[24] }}>
           <RobotOutlined 
             style={{ 
               fontSize: '32px', 
-              color: designSystem.colors.primary,
-              marginBottom: designSystem.spacing.md
+              color: designSystem.colors.primary[500],
+              marginBottom: designSystem.spacing[8]
             }} 
           />
           <Title level={4} style={{ color: designSystem.colors.text.primary }}>
             AI正在分析您的需求...
           </Title>
           <Progress percent={75} size="small" style={{ maxWidth: '200px', margin: '0 auto' }} />
-          <Text style={{ color: designSystem.colors.text.secondary, display: 'block', marginTop: designSystem.spacing.sm }}>
+          <Text style={{ color: designSystem.colors.text.secondary, display: 'block', marginTop: designSystem.spacing[4] }}>
             正在生成个性化推荐
           </Text>
         </div>
@@ -181,20 +181,20 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
   }
 
   return (
-    <div style={{ marginBottom: designSystem.spacing.lg }}>
+    <div style={{ marginBottom: designSystem.spacing[16] }}>
       <div style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        marginBottom: designSystem.spacing.md,
-        padding: designSystem.spacing.sm,
+        marginBottom: designSystem.spacing[8],
+        padding: designSystem.spacing[4],
         backgroundColor: designSystem.colors.background.secondary,
-        borderRadius: designSystem.borderRadius.md,
+        borderRadius: designSystem.borderRadius[8],
         border: `1px solid ${designSystem.colors.primary}20`
       }}>
         <RobotOutlined style={{ 
-          color: designSystem.colors.primary, 
+          color: designSystem.colors.primary[500], 
           fontSize: '18px',
-          marginRight: designSystem.spacing.sm 
+          marginRight: designSystem.spacing[4] 
         }} />
         <Title level={5} style={{ margin: 0, color: designSystem.colors.text.primary }}>
           AI智能推荐
@@ -202,7 +202,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
         <FireOutlined style={{ 
           color: designSystem.colors.error, 
           fontSize: '14px',
-          marginLeft: designSystem.spacing.xs 
+          marginLeft: designSystem.spacing[2] 
         }} />
       </div>
 
@@ -221,18 +221,18 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
                   border: selectedRecommendations.includes(recommendation.id)
                     ? `2px solid ${designSystem.colors.primary}`
                     : `1px solid ${designSystem.colors.border}`,
-                  borderRadius: designSystem.borderRadius.md,
+                  borderRadius: designSystem.borderRadius[8],
                   transition: 'all 0.3s ease'
                 }}
                 onClick={() => handleRecommendationSelect(recommendation)}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: designSystem.spacing.sm }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: designSystem.spacing[4] }}>
                       {getTypeIcon(recommendation.type)}
                       <Title level={5} style={{ 
                         margin: 0, 
-                        marginLeft: designSystem.spacing.sm,
+                        marginLeft: designSystem.spacing[4],
                         color: designSystem.colors.text.primary 
                       }}>
                         {recommendation.title}
@@ -240,14 +240,14 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
                       {selectedRecommendations.includes(recommendation.id) && (
                         <CheckCircleOutlined style={{ 
                           color: designSystem.colors.success,
-                          marginLeft: designSystem.spacing.sm
+                          marginLeft: designSystem.spacing[4]
                         }} />
                       )}
                     </div>
                     
                     <Paragraph style={{ 
                       color: designSystem.colors.text.secondary,
-                      marginBottom: designSystem.spacing.sm
+                      marginBottom: designSystem.spacing[4]
                     }}>
                       {recommendation.description}
                     </Paragraph>
@@ -270,7 +270,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
                     </Space>
                   </div>
                   
-                  <div style={{ marginLeft: designSystem.spacing.md }}>
+                  <div style={{ marginLeft: designSystem.spacing[8] }}>
                     <Tooltip title={`置信度: ${recommendation.confidence}%`}>
                       <Progress
                         type="circle"
@@ -295,7 +295,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
-          style={{ marginTop: designSystem.spacing.md }}
+          style={{ marginTop: designSystem.spacing[8] }}
         >
           <Alert
             message={`已选择 ${selectedRecommendations.length} 个AI推荐`}

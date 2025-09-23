@@ -83,7 +83,7 @@ class WebSocketManager {
 
       this.ws = new WebSocket(wsUrl);
 
-      this.ws.onopen = (event) => {
+      this.ws.onopen = () => {
         console.log('WebSocket connected');
         this.isConnecting = false;
         this.reconnectAttempts = 0;

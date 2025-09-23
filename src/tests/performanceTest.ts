@@ -88,10 +88,10 @@ class PerformanceTest {
     for (let i = 0; i < testQuestions.length; i++) {
       try {
         await this.measureTime(`问答测试-问题${i + 1}`, async () => {
-          return await chatService.answerQuestion(
+          return await chatService.chat(
             testQuestions[i],
             undefined,
-            'test_user'
+            { userId: 'test_user' }
           );
         });
       } catch (error) {
@@ -122,10 +122,10 @@ class PerformanceTest {
 
       for (let i = 0; i < conversations.length; i++) {
         await this.measureTime(`上下文对话-轮次${i + 1}`, async () => {
-          return await chatService.answerQuestion(
+          return await chatService.chat(
             conversations[i],
             contextId,
-            'test_user'
+            { userId: 'test_user' }
           );
         });
       }
@@ -175,9 +175,9 @@ class PerformanceTest {
     try {
       await this.measureTime('文档处理测试', async () => {
         return await embeddingService.processDocument(
-          testDocument.title,
+          'test_doc_id',
           testDocument.content,
-          'test_user'
+          { title: testDocument.title, userId: 'test_user' }
         );
       });
     } catch (error) {

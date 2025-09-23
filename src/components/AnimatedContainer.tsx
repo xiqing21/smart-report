@@ -1,6 +1,6 @@
 import React from 'react'
-import { motion, AnimatePresence, Variants } from 'framer-motion'
-import { ReactNode } from 'react'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import type { ReactNode } from 'react'
 
 interface AnimatedContainerProps {
   children: ReactNode
@@ -164,36 +164,33 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
   children,
   direction = 'right'
 }) => {
-  const getTransition = () => {
-    const transitions = {
-      left: {
-        initial: { x: -100, opacity: 0 },
-        animate: { x: 0, opacity: 1 },
-        exit: { x: 100, opacity: 0 }
-      },
-      right: {
-        initial: { x: 100, opacity: 0 },
-        animate: { x: 0, opacity: 1 },
-        exit: { x: -100, opacity: 0 }
-      },
-      up: {
-        initial: { y: -100, opacity: 0 },
-        animate: { y: 0, opacity: 1 },
-        exit: { y: 100, opacity: 0 }
-      },
-      down: {
-        initial: { y: 100, opacity: 0 },
-        animate: { y: 0, opacity: 1 },
-        exit: { y: -100, opacity: 0 }
-      }
+  const transition = {
+    left: {
+      initial: { x: -100, opacity: 0 },
+      animate: { x: 0, opacity: 1 },
+      exit: { x: 100, opacity: 0 }
+    },
+    right: {
+      initial: { x: 100, opacity: 0 },
+      animate: { x: 0, opacity: 1 },
+      exit: { x: -100, opacity: 0 }
+    },
+    up: {
+      initial: { y: -100, opacity: 0 },
+      animate: { y: 0, opacity: 1 },
+      exit: { y: 100, opacity: 0 }
+    },
+    down: {
+      initial: { y: 100, opacity: 0 },
+      animate: { y: 0, opacity: 1 },
+      exit: { y: -100, opacity: 0 }
     }
-    return transitions[direction]
-  }
+  }[direction]
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        {...getTransition()}
+        {...transition}
         transition={{
           duration: 0.3,
           ease: "easeInOut"

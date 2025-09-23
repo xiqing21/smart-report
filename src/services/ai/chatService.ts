@@ -1,7 +1,8 @@
 import { embeddingService } from './embeddingService';
-import { contextService, ConversationContext, ContextMessage } from './contextService';
+import { contextService } from './contextService';
 import { supabase } from '../../lib/supabase';
-import { mockChatCompletion, isBrowserEnvironment, type MockChatResponse } from './mockAIService';
+import { mockChatCompletion, isBrowserEnvironment } from './mockAIService';
+import type { ConversationContext, ContextMessage } from './contextService';
 
 // 在浏览器环境中使用模拟服务，在服务器环境中使用真实API
 let zhipuClient: any = null;
@@ -31,40 +32,9 @@ interface ChatMessage {
   }[];
 }
 
-interface ChatResponse {
-  choices: {
-    message: {
-      content: string;
-      role: string;
-    };
-    finish_reason: string;
-    index: number;
-  }[];
-  created: number;
-  id: string;
-  model: string;
-  object: string;
-  usage: {
-    completion_tokens: number;
-    prompt_tokens: number;
-    total_tokens: number;
-  };
-}
-
-interface ConversationContext {
-  id: string;
-  messages: ChatMessage[];
-  userId?: string;
-  title?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 class ChatService {
   private apiKey: string;
-  private baseUrl: string = 'https://open.bigmodel.cn/api/paas/v4';
   private model: string = 'glm-4';
-  private maxContextLength: number = 8000;
   private maxRetrievalResults: number = 5;
 
   constructor() {
@@ -116,7 +86,7 @@ class ChatService {
         response = await zhipuClient.chat.completions.create({
           model: this.model,
           messages: chatMessages,
-          temperature: 0.7,
+          temperature,
           max_tokens: 2000,
         });
       }

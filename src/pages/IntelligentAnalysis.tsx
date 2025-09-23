@@ -349,99 +349,59 @@ const IntelligentAnalysis: React.FC = () => {
   ]
 
   return (
-    <div>
-      {/* 页面标题 */}
+    <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        style={{ marginBottom: designSystem.spacing.xl }}
+        transition={{ duration: 0.6 }}
+        className="mb-8"
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <Title level={2} style={{ 
-              margin: 0, 
-              color: designSystem.colors.text.primary,
-              fontSize: designSystem.typography.fontSize.xl
-            }}>
-              智能分析
-            </Title>
-            <Text style={{ 
-              color: designSystem.colors.text.secondary,
-              fontSize: designSystem.typography.fontSize.sm
-            }}>
-              AI驱动的数据分析和洞察发现
-            </Text>
-          </div>
-          <Button 
-            variant="primary"
-            size="md"
-            onClick={() => setIsModalVisible(true)}
-          >
-            <PlusOutlined /> 创建分析任务
-          </Button>
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
+          <Title level={2} className="flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-3">
+            <RobotOutlined className="text-cyan-400 text-3xl" />
+            智能分析
+          </Title>
+          <Text className="text-gray-300 text-lg">
+            基于AI智能体的自动化数据分析，提供深度洞察和智能建议
+          </Text>
         </div>
       </motion.div>
 
-      {/* 数据概览卡片 */}
+      {/* 数据概览卡片 - 玻璃拟态风格 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
+        className="mb-8"
       >
-        <Row gutter={[24, 24]} style={{ marginBottom: designSystem.spacing.xl }}>
+        <Row gutter={[24, 24]}>
           {statsCards.map((stat, index) => (
             <Col xs={24} sm={12} md={6} key={index}>
-              <Card 
-                hoverable
-                style={{ 
-                  textAlign: 'center',
-                  border: `1px solid ${designSystem.colors.border.light}`,
-                  borderRadius: designSystem.borderRadius.lg
-                }}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ duration: 0.3 }}
               >
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div style={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: designSystem.borderRadius.full,
-                    background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}40)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 16px',
-                    color: stat.color,
-                    fontSize: '24px'
-                  }}>
-                    {stat.icon}
+                <Card className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <div className="text-2xl" style={{ color: stat.color }}>
+                        {stat.icon}
+                      </div>
+                    </div>
+                    <Title level={4} className="text-white text-2xl mb-2">
+                      {stat.value}
+                    </Title>
+                    <Text className="text-gray-300 text-sm mb-2">
+                      {stat.title}
+                    </Text>
+                    <div className="mt-2">
+                      <Text className="text-xs font-medium" style={{ color: stat.color }}>
+                        {stat.trend}
+                      </Text>
+                    </div>
                   </div>
-                  <div style={{ 
-                    fontSize: designSystem.typography.fontSize.xxl, 
-                    fontWeight: designSystem.typography.fontWeight.bold, 
-                    color: designSystem.colors.text.primary,
-                    marginBottom: designSystem.spacing.xs
-                  }}>
-                    {stat.value}
-                  </div>
-                  <div style={{ 
-                    color: designSystem.colors.text.secondary, 
-                    fontSize: designSystem.typography.fontSize.sm,
-                    marginBottom: designSystem.spacing.xs
-                  }}>
-                    {stat.title}
-                  </div>
-                  <div style={{ 
-                    color: stat.color, 
-                    fontSize: designSystem.typography.fontSize.xs,
-                    fontWeight: designSystem.typography.fontWeight.medium
-                  }}>
-                    {stat.trend}
-                  </div>
-                </motion.div>
-              </Card>
+                </Card>
+              </motion.div>
             </Col>
           ))}
         </Row>

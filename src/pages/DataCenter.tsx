@@ -415,41 +415,69 @@ const DataCenter: React.FC = () => {
   ]
 
   return (
-    <div>
-      {/* 页面标题 */}
+    <div style={{ padding: designSystem.spacing.lg }}>
+      {/* 页面标题 - 玻璃拟态风格 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         style={{ marginBottom: designSystem.spacing.xl }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          padding: designSystem.spacing.lg,
+          background: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderRadius: designSystem.borderRadius.xl,
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+        }}>
           <div>
             <Title level={2} style={{ 
               margin: 0, 
               color: designSystem.colors.text.primary,
-              fontSize: designSystem.typography.fontSize.xl
+              fontSize: designSystem.typography.fontSize.xxl,
+              fontWeight: designSystem.typography.fontWeight.bold,
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
             }}>
               数据中心
             </Title>
             <Text style={{ 
               color: designSystem.colors.text.secondary,
-              fontSize: designSystem.typography.fontSize.sm
+              fontSize: designSystem.typography.fontSize.md,
+              marginTop: designSystem.spacing.xs
             }}>
-              统一管理和监控所有数据源连接
+              统一管理和监控所有数据源连接 • 实时监控数据健康状况
             </Text>
           </div>
-          <Button 
-            variant="primary"
-            size="md"
-            onClick={() => setIsModalVisible(true)}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <PlusOutlined /> 添加数据源
-          </Button>
+            <Button 
+              variant="primary"
+              size="lg"
+              onClick={() => setIsModalVisible(true)}
+              style={{
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                border: 'none',
+                borderRadius: designSystem.borderRadius.lg,
+                boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)'
+              }}
+            >
+              <PlusOutlined /> 添加数据源
+            </Button>
+          </motion.div>
         </div>
       </motion.div>
 
-      {/* 数据概览卡片 */}
+      {/* 数据概览卡片 - 玻璃拟态风格 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -458,62 +486,100 @@ const DataCenter: React.FC = () => {
         <Row gutter={[24, 24]} style={{ marginBottom: designSystem.spacing.xl }}>
           {statsCards.map((stat, index) => (
             <Col xs={24} sm={12} md={6} key={index}>
-              <Card 
-                hoverable
-                style={{ 
-                  textAlign: 'center',
-                  border: `1px solid ${designSystem.colors.border.light}`,
-                  borderRadius: designSystem.borderRadius.lg
-                }}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
               >
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
+                <Card 
+                  hoverable
+                  style={{ 
+                    textAlign: 'center',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: designSystem.borderRadius.xl,
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
+                    e.currentTarget.style.boxShadow = '0 16px 48px rgba(99, 102, 241, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
+                  }}
                 >
-                  <div style={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: designSystem.borderRadius.full,
-                    background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}40)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 16px',
-                    color: stat.color,
-                    fontSize: '24px'
-                  }}>
-                    {stat.icon}
-                  </div>
-                  <div style={{ 
-                    fontSize: designSystem.typography.fontSize.xxl, 
-                    fontWeight: designSystem.typography.fontWeight.bold, 
-                    color: designSystem.colors.text.primary,
-                    marginBottom: designSystem.spacing.xs
-                  }}>
-                    {stat.value}
-                  </div>
-                  <div style={{ 
-                    color: designSystem.colors.text.secondary, 
-                    fontSize: designSystem.typography.fontSize.sm,
-                    marginBottom: designSystem.spacing.xs
-                  }}>
-                    {stat.title}
-                  </div>
-                  <div style={{ 
-                    color: stat.color, 
-                    fontSize: designSystem.typography.fontSize.xs,
-                    fontWeight: designSystem.typography.fontWeight.medium
-                  }}>
-                    {stat.trend}
-                  </div>
-                </motion.div>
-              </Card>
+                  <motion.div
+                    whileHover={{ scale: 1.05, rotate: 5 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div style={{
+                      width: '70px',
+                      height: '70px',
+                      borderRadius: designSystem.borderRadius.full,
+                      background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}60)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 20px',
+                      color: stat.color,
+                      fontSize: '28px',
+                      boxShadow: `0 8px 24px ${stat.color}30`
+                    }}>
+                      {stat.icon}
+                    </div>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
+                      style={{ 
+                        fontSize: designSystem.typography.fontSize.xxxl, 
+                        fontWeight: designSystem.typography.fontWeight.bold, 
+                        color: designSystem.colors.text.primary,
+                        marginBottom: designSystem.spacing.sm,
+                        background: `linear-gradient(135deg, ${stat.color}, ${stat.color}aa)`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      }}
+                    >
+                      {stat.value}
+                    </motion.div>
+                    <div style={{ 
+                      color: designSystem.colors.text.secondary, 
+                      fontSize: designSystem.typography.fontSize.md,
+                      marginBottom: designSystem.spacing.sm,
+                      fontWeight: designSystem.typography.fontWeight.medium
+                    }}>
+                      {stat.title}
+                    </div>
+                    <motion.div 
+                      style={{ 
+                        color: stat.color, 
+                        fontSize: designSystem.typography.fontSize.sm,
+                        fontWeight: designSystem.typography.fontWeight.semibold,
+                        background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}40)`,
+                        padding: '4px 12px',
+                        borderRadius: designSystem.borderRadius.lg,
+                        display: 'inline-block'
+                      }}
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {stat.trend}
+                    </motion.div>
+                  </motion.div>
+                </Card>
+              </motion.div>
             </Col>
           ))}
         </Row>
       </motion.div>
 
-      {/* 数据源管理 */}
+      {/* 数据源管理 - 玻璃拟态风格 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -521,25 +587,47 @@ const DataCenter: React.FC = () => {
       >
         <Card 
           title={
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.sm }}>
+              <DatabaseOutlined style={{ color: designSystem.colors.primary, fontSize: '24px' }} />
               <span style={{ 
-                fontSize: designSystem.typography.fontSize.lg,
+                fontSize: designSystem.typography.fontSize.xl,
                 fontWeight: designSystem.typography.fontWeight.semibold,
-                color: designSystem.colors.text.primary
+                background: `linear-gradient(135deg, ${designSystem.colors.primary}, ${designSystem.colors.primary}aa)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
               }}>
                 数据源管理
               </span>
-              <Space>
-                <Select
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  options={categories}
-                  style={{ width: 120 }}
-                  size="small"
-                />
+            </div>
+          }
+          extra={
+            <div style={{ display: 'flex', gap: designSystem.spacing.sm }}>
+              <Select
+                value={selectedCategory}
+                onChange={setSelectedCategory}
+                style={{ 
+                  width: '140px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: designSystem.borderRadius.lg
+                }}
+                dropdownStyle={{
+                  background: 'rgba(30, 41, 59, 0.95)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: designSystem.borderRadius.lg
+                }}
+                options={[
+                  { value: 'all', label: '全部分类' },
+                  ...categories.map(cat => ({ value: cat.value, label: cat.label }))
+                ]}
+              />
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button 
-                  variant="ghost"
-                  size="sm"
+                  type="primary" 
+                  icon={<SyncOutlined />}
                   onClick={() => {
                     dataSources.forEach(ds => {
                       if (ds.status === 'connected') {
@@ -547,39 +635,79 @@ const DataCenter: React.FC = () => {
                       }
                     })
                   }}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    border: 'none',
+                    borderRadius: designSystem.borderRadius.lg,
+                    boxShadow: '0 4px 16px rgba(16, 185, 129, 0.3)'
+                  }}
                 >
-                  <SyncOutlined /> 批量同步
+                  批量同步
                 </Button>
-              </Space>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  type="primary" 
+                  icon={<PlusOutlined />}
+                  onClick={() => setIsModalVisible(true)}
+                  style={{
+                    background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                    border: 'none',
+                    borderRadius: designSystem.borderRadius.lg,
+                    boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)'
+                  }}
+                >
+                  添加数据源
+                </Button>
+              </motion.div>
             </div>
           }
-          style={{
-            border: `1px solid ${designSystem.colors.border.light}`,
-            borderRadius: designSystem.borderRadius.lg
+          style={{ 
+            borderRadius: designSystem.borderRadius.xl,
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+          }}
+          headStyle={{
+            background: 'transparent',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '24px'
+          }}
+          bodyStyle={{
+            padding: '24px'
           }}
         >
-          <Table
-            columns={columns}
-            dataSource={filteredDataSources}
-            rowKey="id"
-            scroll={{ x: 800 }}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total) => `共 ${total} 个数据源`,
-              responsive: true
-            }}
-            style={{
-              '& .ant-table-thead > tr > th': {
-                backgroundColor: designSystem.colors.background.secondary,
-                borderBottom: `1px solid ${designSystem.colors.border.light}`,
-                fontSize: designSystem.typography.fontSize.sm,
-                fontWeight: designSystem.typography.fontWeight.semibold,
-                color: designSystem.colors.text.primary
-              }
-            }}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Table
+              columns={columns}
+              dataSource={filteredDataSources}
+              rowKey="id"
+              scroll={{ x: 800 }}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total) => `共 ${total} 个数据源`,
+                responsive: true,
+                style: {
+                  marginTop: '24px',
+                  padding: '16px'
+                }
+              }}
+              style={{ 
+                borderRadius: designSystem.borderRadius.lg,
+                overflow: 'hidden',
+                background: 'transparent'
+              }}
+              className="glass-table"
+            />
+          </motion.div>
         </Card>
       </motion.div>
 

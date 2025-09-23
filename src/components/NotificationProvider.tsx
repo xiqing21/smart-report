@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext, type ReactNode, useEffect } from 'react'
 import { notification, message } from 'antd'
 import { CheckCircleOutlined, ExclamationCircleOutlined, InfoCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 
@@ -29,7 +29,7 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   // 配置全局通知样式
-  React.useEffect(() => {
+  useEffect(() => {
     notification.config({
       placement: 'topRight',
       duration: 4.5,

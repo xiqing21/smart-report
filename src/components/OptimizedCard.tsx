@@ -18,7 +18,7 @@ const { Text, Title } = Typography
 
 interface ActionItem {
   label: string
-  type?: 'primary' | 'ghost' | 'default'
+  type?: 'primary' | 'default' | 'link'
   icon?: string | React.ReactNode
   danger?: boolean
   onClick: () => void
@@ -159,7 +159,7 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
 
   const cardStyle: React.CSSProperties = {
     border: `1px solid ${designSystem.colors.border.light}`,
-    borderRadius: designSystem.borderRadius.lg,
+    borderRadius: designSystem.borderRadius[16],
     borderLeft: priority ? `4px solid ${getPriorityColor(priority)}` : undefined,
     transition: 'all 0.3s ease',
     cursor: onClick ? 'pointer' : 'default',
@@ -173,7 +173,7 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
       className={className}
       style={cardStyle}
       bodyStyle={{
-        padding: designSystem.spacing.lg,
+        padding: designSystem.spacing[16],
         height: '100%',
         display: 'flex',
         flexDirection: 'column'
@@ -185,15 +185,15 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: designSystem.spacing.md
+        marginBottom: designSystem.spacing[8]
       }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* 标题和状态 */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: designSystem.spacing.sm,
-            marginBottom: designSystem.spacing.xs
+            gap: designSystem.spacing[4],
+            marginBottom: designSystem.spacing[2]
           }}>
             {normalizedStatus?.icon}
             <Title
@@ -264,7 +264,7 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
       {description && (
         <div style={{
           flex: 1,
-          marginBottom: designSystem.spacing.md
+          marginBottom: designSystem.spacing[8]
         }}>
           <Text
             style={{
@@ -286,7 +286,7 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
       {children && (
         <div style={{
           flex: 1,
-          marginBottom: designSystem.spacing.md
+          marginBottom: designSystem.spacing[8]
         }}>
           {children}
         </div>

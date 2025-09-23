@@ -352,21 +352,26 @@ const TrendPrediction: React.FC = () => {
               </Card>
 
               {/* 预警规则 */}
-              <Card title="🚨 预警规则">
+              <Card title={<span className="text-white/90">🚨 预警规则</span>} className="bg-gradient-to-br from-red-500/20 to-orange-500/20 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg">
                 <Space direction="vertical" className="w-full" size="small">
                   {alertRules.map(rule => (
-                    <div key={rule.id} className="flex items-center justify-between p-2 border rounded">
+                    <motion.div
+                      key={rule.id}
+                      className="flex items-center justify-between p-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-300"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
                       <div className="flex-1">
-                        <Text strong>{rule.name}</Text>
+                        <Text strong className="text-white/90">{rule.name}</Text>
                         <br />
-                        <Text type="secondary" style={{ fontSize: '12px' }}>
+                        <Text type="secondary" style={{ fontSize: '12px' }} className="text-white/60">
                           {rule.condition.replace('threshold', rule.threshold.toString())}
                         </Text>
                       </div>
                       <Tag color={rule.enabled ? 'green' : 'default'}>
                         {rule.enabled ? '启用' : '禁用'}
                       </Tag>
-                    </div>
+                    </motion.div>
                   ))}
                 </Space>
               </Card>
@@ -380,18 +385,18 @@ const TrendPrediction: React.FC = () => {
               {predictionResult && (
                 <Row gutter={16}>
                   <Col xs={24} sm={12} md={6}>
-                    <Card>
+                    <Card className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg">
                       <Statistic
-                        title="预测算法"
+                        title={<span className="text-white/80">预测算法</span>}
                         value={predictionResult.algorithm}
-                        valueStyle={{ fontSize: '16px' }}
+                        valueStyle={{ fontSize: '16px', color: 'rgba(255,255,255,0.9)' }}
                       />
                     </Card>
                   </Col>
                   <Col xs={24} sm={12} md={6}>
-                    <Card>
+                    <Card className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg">
                       <Statistic
-                        title="预测准确率"
+                        title={<span className="text-white/80">预测准确率</span>}
                         value={predictionResult.accuracy}
                         suffix="%"
                         valueStyle={{ color: '#52c41a' }}

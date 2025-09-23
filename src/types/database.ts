@@ -21,6 +21,9 @@ export type AnalysisTask = Tables<'analysis_tasks'>;
 export type AnalysisResult = Tables<'analysis_results'>;
 export type ReportTemplate = Tables<'report_templates'>;
 export type Report = Tables<'reports'>;
+export type ConversationContext = Tables<'conversation_contexts'>;
+export type Document = Tables<'documents'>;
+export type DocumentChunk = Tables<'document_chunks'>;
 
 // 插入类型
 export type OrganizationInsert = TablesInsert<'organizations'>;
@@ -31,6 +34,9 @@ export type AnalysisTaskInsert = TablesInsert<'analysis_tasks'>;
 export type AnalysisResultInsert = TablesInsert<'analysis_results'>;
 export type ReportTemplateInsert = TablesInsert<'report_templates'>;
 export type ReportInsert = TablesInsert<'reports'>;
+export type ConversationContextInsert = TablesInsert<'conversation_contexts'>;
+export type DocumentInsert = TablesInsert<'documents'>;
+export type DocumentChunkInsert = TablesInsert<'document_chunks'>;
 
 // 更新类型
 export type OrganizationUpdate = TablesUpdate<'organizations'>;
@@ -41,6 +47,9 @@ export type AnalysisTaskUpdate = TablesUpdate<'analysis_tasks'>;
 export type AnalysisResultUpdate = TablesUpdate<'analysis_results'>;
 export type ReportTemplateUpdate = TablesUpdate<'report_templates'>;
 export type ReportUpdate = TablesUpdate<'reports'>;
+export type ConversationContextUpdate = TablesUpdate<'conversation_contexts'>;
+export type DocumentUpdate = TablesUpdate<'documents'>;
+export type DocumentChunkUpdate = TablesUpdate<'document_chunks'>;
 
 export interface Database {
   public: {
@@ -537,6 +546,120 @@ export interface Database {
           updated_at?: string;
         };
       };
+      
+      // 对话上下文表
+      conversation_contexts: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          title: string;
+          messages: any[]; // JSONB
+          summary: string | null;
+          keywords: string[] | null;
+          token_count: number;
+          max_tokens: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          title: string;
+          messages?: any[];
+          summary?: string | null;
+          keywords?: string[] | null;
+          token_count?: number;
+          max_tokens?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          title?: string;
+          messages?: any[];
+          summary?: string | null;
+          keywords?: string[] | null;
+          token_count?: number;
+          max_tokens?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      
+      // 文档表
+      documents: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          title: string;
+          content: string | null;
+          status: string;
+          chunks: number | null;
+          vectors: number | null;
+          metadata: any | null; // JSONB
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          title: string;
+          content?: string | null;
+          status?: string;
+          chunks?: number | null;
+          vectors?: number | null;
+          metadata?: any | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          title?: string;
+          content?: string | null;
+          status?: string;
+          chunks?: number | null;
+          vectors?: number | null;
+          metadata?: any | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      
+      // 文档块表
+      document_chunks: {
+        Row: {
+          id: string;
+          document_id: string;
+          chunk_index: number;
+          content: string;
+          embedding: string; // JSON string
+          metadata: any; // JSONB
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          document_id: string;
+          chunk_index: number;
+          content: string;
+          embedding: string;
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          document_id?: string;
+          chunk_index?: number;
+          content?: string;
+          embedding?: string;
+          metadata?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     }
     Views: {
       [_ in never]: never
@@ -572,6 +695,23 @@ export interface Database {
           progress: number;
           created_at: string;
           total_count: number;
+        }[];
+      };
+      
+      search_documents: {
+        Args: {
+          query_embedding: string;
+          match_threshold: number;
+          match_count: number;
+          filter_user_id: string | null;
+        };
+        Returns: {
+          id: string;
+          document_id: string;
+          document_name: string;
+          content: string;
+          similarity: number;
+          metadata: any;
         }[];
       };
     }

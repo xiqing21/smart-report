@@ -241,116 +241,198 @@ const DataPipeline: React.FC = () => {
   const selectedTaskData = tasks.find(task => task.id === selectedTask);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* 页面标题 */}
-        <div className="flex justify-between items-center mb-8">
+    <div className="p-8 min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* 页面标题 - 玻璃拟态风格 */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-8"
+      >
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">数据处理监控</h1>
-            <p className="text-gray-600">实时监控数据处理管道状态，支持交互式控制和参数调整</p>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+              数据处理监控
+            </h1>
+            <p className="text-gray-300 text-lg">实时监控数据处理流程，管理任务执行状态</p>
           </div>
-          <div className="flex gap-3 items-center">
-            <div className="flex items-center gap-2">
-              {wsConnected ? (
-                <>
-                  <Wifi className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-green-600">实时连接</span>
-                </>
-              ) : (
-                <>
-                  <WifiOff className="w-4 h-4 text-red-500" />
-                  <span className="text-sm text-red-600">离线模式</span>
-                </>
-              )}
-            </div>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-              刷新
-            </button>
-            <button 
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          <div className="flex items-center gap-4">
+            <motion.div
+              animate={wsConnected ? { scale: [1, 1.1, 1] } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
+            >
+              <div className={`w-3 h-3 rounded-full ${wsConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+              <span className={`text-sm font-medium ${wsConnected ? 'text-green-300' : 'text-red-300'}`}>
+                {wsConnected ? '实时连接' : '连接断开'}
+              </span>
+            </motion.div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={() => setIsControlPanelVisible(true)}
             >
-              <Settings className="w-4 h-4" />
-              <span>控制面板</span>
-            </button>
+              <Settings className="w-5 h-5" />
+              控制面板
+            </motion.button>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 任务列表 */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">处理任务</h2>
-              <div className="space-y-4">
-                {tasks.map(task => (
-                  <div 
-                    key={task.id}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                      selectedTask === task.id 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setSelectedTask(task.id)}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-gray-900">{task.name}</h3>
-                      {getStatusIcon(task.status)}
-                    </div>
-                    <div className="mb-2">
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>进度</span>
-                        <span>{Math.round(task.progress)}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full transition-all duration-300 ${getStatusColor(task.status)}`}
-                          style={{ width: `${task.progress}%` }}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500">
-                        {task.startTime && `开始于 ${task.startTime.toLocaleTimeString()}`}
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-7xl mx-auto"
+      >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* 任务列表 - 玻璃拟态风格 */}
+            <div className="lg:col-span-2">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <Card 
+                  title={
+                    <div className="flex items-center gap-3">
+                      <Activity className="w-6 h-6 text-blue-400" />
+                      <span className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        处理任务
                       </span>
-                      <div className="flex space-x-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleTaskControl(task.id, task.status === 'running' ? 'pause' : 'play');
-                          }}
-                          className="p-1 rounded hover:bg-gray-200 transition-colors"
-                        >
-                          {task.status === 'running' ? 
-                            <Pause className="w-4 h-4 text-gray-600" /> : 
-                            <Play className="w-4 h-4 text-gray-600" />
-                          }
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleTaskControl(task.id, 'stop');
-                          }}
-                          className="p-1 rounded hover:bg-gray-200 transition-colors"
-                        >
-                          <Square className="w-4 h-4 text-gray-600" />
-                        </button>
-                      </div>
                     </div>
+                  }
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl"
+                  headStyle={{
+                    background: 'transparent',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '24px'
+                  }}
+                  bodyStyle={{
+                    padding: '24px'
+                  }}
+                >
+                  <div className="space-y-6">
+                    {tasks.map((task, index) => (
+                      <motion.div
+                        key={task.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300"
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-4">
+                            <h3 className="font-semibold text-white text-lg">{task.name}</h3>
+                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              task.status === 'running' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                              task.status === 'completed' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                              task.status === 'failed' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                              'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                            }`}>
+                              {getStatusText(task.status)}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                task.status === 'paused' 
+                                  ? 'bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30' 
+                                  : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 hover:bg-yellow-500/30'
+                              }`}
+                              onClick={() => handleTaskControl(task.id, task.status === 'paused' ? 'play' : 'pause')}
+                            >
+                              {task.status === 'paused' ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition-all duration-200"
+                              onClick={() => handleTaskControl(task.id, 'stop')}
+                            >
+                              <Square className="w-4 h-4" />
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30 transition-all duration-200"
+                              onClick={() => handleTaskRestart(task.id)}
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </motion.button>
+                          </div>
+                        </div>
+                        
+                        <div className="mb-4">
+                          <div className="flex justify-between text-sm text-gray-300 mb-2">
+                            <span>处理进度</span>
+                            <span className="font-semibold">{Math.round(task.progress)}%</span>
+                          </div>
+                          <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+                            <motion.div
+                              className={`h-3 rounded-full ${
+                                task.status === 'running' ? 'bg-gradient-to-r from-blue-400 to-purple-400' :
+                                task.status === 'completed' ? 'bg-gradient-to-r from-green-400 to-emerald-400' :
+                                task.status === 'failed' ? 'bg-gradient-to-r from-red-400 to-pink-400' :
+                                'bg-gradient-to-r from-yellow-400 to-orange-400'
+                              }`}
+                              initial={{ width: 0 }}
+                              animate={{ width: `${task.progress}%` }}
+                              transition={{ duration: 0.5 }}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-3">
+                          {task.nodes.map((node, nodeIndex) => (
+                            <motion.div
+                              key={node.id}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ duration: 0.3, delay: 0.5 + nodeIndex * 0.1 }}
+                              className="flex items-center gap-3 px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-200"
+                            >
+                              <div className={`w-2 h-2 rounded-full ${
+                                node.status === 'completed' ? 'bg-green-400' :
+                                node.status === 'running' ? 'bg-blue-400 animate-pulse' :
+                                node.status === 'failed' ? 'bg-red-400' :
+                                node.status === 'paused' ? 'bg-yellow-400' :
+                                'bg-gray-400'
+                              }`} />
+                              <span className="text-sm font-medium text-white">{node.name}</span>
+                              <span className="text-xs text-gray-400 font-mono">{node.progress}%</span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </Card>
+              </motion.div>
             </div>
-          </div>
 
-          {/* 任务流可视化 */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        {/* 任务流可视化 - 玻璃拟态风格 */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="lg:col-span-2"
+        >
+            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">任务流可视化</h2>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                <h2 className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  任务流可视化
+                </h2>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white hover:bg-white/20 transition-all duration-200"
+                >
                   <Settings className="w-4 h-4" />
                   <span>参数设置</span>
-                </button>
+                </motion.button>
               </div>
 
               {selectedTaskData && (
@@ -358,32 +440,47 @@ const DataPipeline: React.FC = () => {
                   {/* 节点流程图 */}
                   <div className="flex flex-col space-y-4">
                     {selectedTaskData.nodes.map((node, index) => (
-                      <div key={node.id} className="flex items-center">
+                      <motion.div
+                        key={node.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 * index }}
+                        className="flex items-center"
+                      >
                         {/* 节点 */}
-                        <div className={`flex-shrink-0 w-48 p-4 rounded-lg border-2 ${
-                          node.status === 'running' ? 'border-blue-500 bg-blue-50' :
-                          node.status === 'completed' ? 'border-green-500 bg-green-50' :
-                          node.status === 'failed' ? 'border-red-500 bg-red-50' :
-                          'border-gray-300 bg-gray-50'
+                        <div className={`flex-shrink-0 w-48 p-4 rounded-xl border ${
+                          node.status === 'running' ? 'border-blue-400/50 bg-blue-500/10 backdrop-blur-sm' :
+                          node.status === 'completed' ? 'border-green-400/50 bg-green-500/10 backdrop-blur-sm' :
+                          node.status === 'failed' ? 'border-red-400/50 bg-red-500/10 backdrop-blur-sm' :
+                          'border-white/20 bg-white/5 backdrop-blur-sm'
                         }`}>
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium text-gray-900">{node.name}</h4>
-                            {getStatusIcon(node.status)}
+                            <h4 className="font-medium text-white">{node.name}</h4>
+                            <div className="transform scale-75">
+                              {getStatusIcon(node.status)}
+                            </div>
                           </div>
                           <div className="mb-2">
-                            <div className="flex justify-between text-sm text-gray-600 mb-1">
+                            <div className="flex justify-between text-sm text-gray-300 mb-1">
                               <span>进度</span>
-                              <span>{Math.round(node.progress)}%</span>
+                              <span className="font-semibold">{Math.round(node.progress)}%</span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
-                              <div 
-                                className={`h-1.5 rounded-full transition-all duration-300 ${getStatusColor(node.status)}`}
-                                style={{ width: `${node.progress}%` }}
+                            <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                              <motion.div 
+                                className={`h-1.5 rounded-full transition-all duration-300 ${
+                                  node.status === 'running' ? 'bg-gradient-to-r from-blue-400 to-purple-400' :
+                                  node.status === 'completed' ? 'bg-gradient-to-r from-green-400 to-emerald-400' :
+                                  node.status === 'failed' ? 'bg-gradient-to-r from-red-400 to-pink-400' :
+                                  'bg-gradient-to-r from-gray-400 to-gray-500'
+                                }`}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${node.progress}%` }}
+                                transition={{ duration: 0.8 }}
                               />
                             </div>
                           </div>
                           {node.duration && (
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-gray-400">
                               耗时: {node.duration}s
                             </div>
                           )}
@@ -392,89 +489,162 @@ const DataPipeline: React.FC = () => {
                         {/* 连接线 */}
                         {index < selectedTaskData.nodes.length - 1 && (
                           <div className="flex-1 flex items-center justify-center mx-4">
-                            <div className="w-full h-0.5 bg-gray-300"></div>
-                            <div className="w-2 h-2 bg-gray-400 rounded-full mx-2"></div>
+                            <div className="w-full h-0.5 bg-gradient-to-r from-blue-400/30 to-purple-400/30"></div>
+                            <motion.div 
+                              className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mx-2"
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                            />
                           </div>
                         )}
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
 
                   {/* 实时日志 */}
-                  <div className="mt-8">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">实时日志</h3>
-                    <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm h-48 overflow-y-auto">
-                      <div>[{new Date().toLocaleTimeString()}] 数据清洗进行中...</div>
-                      <div>[{new Date(Date.now() - 30000).toLocaleTimeString()}] 发现 15 个异常值</div>
-                      <div>[{new Date(Date.now() - 60000).toLocaleTimeString()}] 数据验证完成，共处理 10,000 条记录</div>
-                      <div>[{new Date(Date.now() - 90000).toLocaleTimeString()}] 开始加载数据文件: load_data.csv</div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="mt-8"
+                  >
+                    <h3 className="text-lg font-semibold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-4">
+                      实时日志
+                    </h3>
+                    <div className="bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl p-4 font-mono text-sm h-48 overflow-y-auto">
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.8 }}
+                        className="text-green-400"
+                      >
+                        [{new Date().toLocaleTimeString()}] 数据清洗进行中...
+                      </motion.div>
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 1.0 }}
+                        className="text-yellow-400"
+                      >
+                        [{new Date(Date.now() - 30000).toLocaleTimeString()}] 发现 15 个异常值
+                      </motion.div>
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 1.2 }}
+                        className="text-blue-400"
+                      >
+                        [{new Date(Date.now() - 60000).toLocaleTimeString()}] 数据验证完成，共处理 10,000 条记录
+                      </motion.div>
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 1.4 }}
+                        className="text-cyan-400"
+                      >
+                        [{new Date(Date.now() - 90000).toLocaleTimeString()}] 开始加载数据文件: load_data.csv
+                      </motion.div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        {/* 控制面板 */}
-        <div className="mt-6">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">交互式控制面板</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">任务控制</h3>
-                <div className="flex space-x-2">
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+        {/* 控制面板 - 玻璃拟态风格 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-8"
+        >
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl p-6">
+            <h2 className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-6">
+              交互式控制面板
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+                className="space-y-4"
+              >
+                <h3 className="font-medium text-white text-lg">任务控制</h3>
+                <div className="flex space-x-3">
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
                     <Play className="w-4 h-4" />
                     <span>开始</span>
-                  </button>
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors">
+                  </motion.button>
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
                     <Pause className="w-4 h-4" />
                     <span>暂停</span>
-                  </button>
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                  </motion.button>
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
                     <Square className="w-4 h-4" />
                     <span>停止</span>
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
               
-              <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">参数调整</h3>
-                <div className="space-y-2">
-                  <label className="block text-sm text-gray-600">批处理大小</label>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.0 }}
+                className="space-y-4"
+              >
+                <h3 className="font-medium text-white text-lg">参数调整</h3>
+                <div className="space-y-3">
+                  <label className="block text-sm text-gray-300 font-medium">批处理大小</label>
                   <input 
                     type="range" 
                     min="100" 
                     max="10000" 
                     defaultValue="1000"
-                    className="w-full"
+                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
                   />
-                  <div className="text-xs text-gray-500">当前值: 1000</div>
+                  <div className="text-xs text-blue-300 font-semibold">当前值: 1000</div>
                 </div>
-              </div>
+              </motion.div>
               
-              <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">系统状态</h3>
-                <div className="space-y-2">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.2 }}
+                className="space-y-4"
+              >
+                <h3 className="font-medium text-white text-lg">系统状态</h3>
+                <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">CPU使用率</span>
-                    <span className="text-gray-900">45%</span>
+                    <span className="text-gray-300">CPU使用率</span>
+                    <span className="text-green-400 font-semibold">45%</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">内存使用率</span>
-                    <span className="text-gray-900">62%</span>
+                    <span className="text-gray-300">内存使用率</span>
+                    <span className="text-yellow-400 font-semibold">62%</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">活跃任务</span>
-                    <span className="text-gray-900">1</span>
+                    <span className="text-gray-300">活跃任务</span>
+                    <span className="text-blue-400 font-semibold">1</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

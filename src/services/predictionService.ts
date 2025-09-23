@@ -35,27 +35,6 @@ export interface AnomalyResult {
   threshold: number;
 }
 
-// 移动平均算法
-class MovingAverage {
-  static simple(data: number[], window: number): number[] {
-    const result = [];
-    for (let i = window - 1; i < data.length; i++) {
-      const sum = data.slice(i - window + 1, i + 1).reduce((a, b) => a + b, 0);
-      result.push(sum / window);
-    }
-    return result;
-  }
-  
-  static exponential(data: number[], alpha: number = 0.3): number[] {
-    const result = [data[0]];
-    for (let i = 1; i < data.length; i++) {
-      const ema = alpha * data[i] + (1 - alpha) * result[i - 1];
-      result.push(ema);
-    }
-    return result;
-  }
-}
-
 // 线性回归算法
 class LinearRegression {
   private slope: number = 0;
@@ -85,14 +64,12 @@ class LinearRegression {
 class SimpleARIMA {
   private p: number; // AR阶数
   private d: number; // 差分阶数
-  private q: number; // MA阶数
   private arCoeffs: number[] = [];
-  private maCoeffs: number[] = [];
+  // private maCoeffs: number[] = []; // 保持兼容性
   
-  constructor(p: number = 1, d: number = 1, q: number = 1) {
+  constructor(p: number = 1, d: number = 1) {
     this.p = p;
     this.d = d;
-    this.q = q;
   }
   
   // 差分操作
@@ -111,8 +88,8 @@ class SimpleARIMA {
     
     // 简化的AR系数估计（使用最小二乘法）
     if (this.p > 0 && diffData.length > this.p) {
-      const X = [];
-      const y = [];
+      const X: number[][] = [];
+      const y: number[] = [];
       
       for (let i = this.p; i < diffData.length; i++) {
         X.push(diffData.slice(i - this.p, i));
@@ -130,7 +107,7 @@ class SimpleARIMA {
     }
     
     // MA系数（简化处理）
-    this.maCoeffs = new Array(this.q).fill(0.1);
+    // this.maCoeffs = new Array(this.q).fill(0.1); // 未使用，已注释
   }
   
   // 计算相关系数
@@ -263,7 +240,7 @@ class ExponentialSmoothing {
       averages.push(seasonData.reduce((a, b) => a + b, 0) / seasonLength);
     }
     
-    const overallAverage = averages.reduce((a, b) => a + b, 0) / averages.length;
+    // const overallAverage = averages.reduce((a, b) => a + b, 0) / averages.length; // 未使用，已注释
     
     for (let i = 0; i < seasonLength; i++) {
       let sum = 0;
@@ -289,7 +266,7 @@ class AnomalyDetection {
     const variance = data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length;
     const stdDev = Math.sqrt(variance);
     
-    const anomalies = [];
+    const anomalies: any[] = [];
     
     data.forEach((value, index) => {
       const zScore = Math.abs((value - mean) / stdDev);
@@ -322,7 +299,7 @@ class AnomalyDetection {
     const lowerBound = q1 - 1.5 * iqr;
     const upperBound = q3 + 1.5 * iqr;
     
-    const anomalies = [];
+    const anomalies: any[] = [];
     
     data.forEach((value, index) => {
       if (value < lowerBound || value > upperBound) {
@@ -380,7 +357,7 @@ export class PredictionService {
   static async arima(data: DataPoint[], days: number): Promise<PredictionResult> {
     const values = data.map(d => d.value);
     
-    const arima = new SimpleARIMA(2, 1, 1);
+    const arima = new SimpleARIMA(2, 1);
     arima.fit(values);
     
     const predictions = arima.predict(values, days);

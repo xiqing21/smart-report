@@ -380,270 +380,279 @@ const DataButler: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* 页面标题 */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">AI数据管家</h1>
-              <p className="text-gray-600">智能数据质量评估、EDA分析和修复建议</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8">
+      {/* 页面标题 - 玻璃拟态风格 */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-8"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+              AI数据管家
+            </h1>
+            <p className="text-gray-300 text-lg">智能数据质量检测、异常识别与自动修复</p>
+          </div>
+          <motion.div
+            animate={wsConnected ? { scale: [1, 1.1, 1] } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+            className={`flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-sm border ${
+              wsConnected 
+                ? 'bg-green-500/10 text-green-300 border-green-500/30' 
+                : 'bg-red-500/10 text-red-300 border-red-500/30'
+            }`}
+          >
+            {wsConnected ? <Wifi className="w-5 h-5" /> : <WifiOff className="w-5 h-5" />}
+            <span className="font-medium">{wsConnected ? '在线模式' : '离线模式'}</span>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* 标签页导航 - 玻璃拟态风格 */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="mb-8"
+      >
+        <div className="flex space-x-2 bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20">
+          {[
+            { key: 'upload', label: '数据上传', icon: Upload },
+            { key: 'health', label: '健康检测', icon: Activity },
+            { key: 'eda', label: 'EDA分析', icon: BarChart3 },
+            { key: 'repair', label: '智能修复', icon: Zap }
+          ].map(({ key, label, icon: Icon }) => (
+            <motion.button
+              key={key}
+              onClick={() => setActiveTab(key as any)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                activeTab === key
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Icon className="w-5 h-5" />
+              {label}
+            </motion.button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* 数据上传标签页 - 玻璃拟态风格 */}
+      {activeTab === 'upload' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl"
+        >
+          <div className="text-center">
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Upload className="mx-auto h-12 w-12 text-blue-300 mb-4" />
+            </motion.div>
+            <h3 className="text-lg font-medium text-white mb-2">上传数据文件</h3>
+            <p className="text-blue-200 mb-6">支持 CSV、Excel、JSON 格式文件，最大 100MB</p>
+            
+            <div className="max-w-md mx-auto">
+              <motion.label
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-300/50 rounded-xl cursor-pointer bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300"
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <FileText className="w-8 h-8 mb-2 text-blue-300" />
+                  <p className="mb-2 text-sm text-blue-200">
+                    <span className="font-semibold text-white">点击上传</span> 或拖拽文件到此处
+                  </p>
+                  <p className="text-xs text-blue-300">CSV, XLSX, JSON (最大 100MB)</p>
+                </div>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept=".csv,.xlsx,.json"
+                />
+              </motion.label>
             </div>
-            <div className="flex gap-3 items-center">
-              <div className="flex items-center gap-2">
-                {wsConnected ? (
-                  <>
-                    <Wifi className="w-4 h-4 text-green-500" />
-                    <span className="text-sm text-green-600">AI服务在线</span>
-                  </>
-                ) : (
-                  <>
-                    <WifiOff className="w-4 h-4 text-red-500" />
-                    <span className="text-sm text-red-600">离线模式</span>
-                  </>
+          </div>
+        </motion.div>
+      )}
+
+      {/* 健康检测标签页 */}
+      {activeTab === 'health' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="space-y-6"
+        >
+          {/* 健康检测卡片 */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+            <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <Activity className="w-6 h-6 text-green-400" />
+              数据健康检测
+            </h3>
+            
+            {isAnalyzing ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                <p className="text-blue-200">正在进行数据健康检测...</p>
+              </div>
+            ) : analysisComplete && healthReport ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <div className="text-sm text-gray-300 mb-1">总体评分</div>
+                    <div className={`text-2xl font-bold ${getScoreColor(healthReport.overallScore)}`}>
+                      {healthReport.overallScore}/100
+                    </div>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <div className="text-sm text-gray-300 mb-1">问题数量</div>
+                    <div className="text-2xl font-bold text-orange-400">
+                      {healthReport.issues?.length || 0}
+                    </div>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <div className="text-sm text-gray-300 mb-1">修复建议</div>
+                    <div className="text-2xl font-bold text-green-400">
+                      {healthReport.recommendations?.length || 0}
+                    </div>
+                  </div>
+                </div>
+                
+                {healthReport.issues && healthReport.issues.length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-medium text-white mb-3">检测到的问题</h4>
+                    <div className="space-y-2">
+                      {healthReport.issues.map((issue, index) => (
+                        <div key={index} className={`p-3 rounded-lg border ${getSeverityColor(issue.severity)}`}>
+                          <div className="flex items-center gap-2 mb-1">
+                            {getSeverityIcon(issue.severity)}
+                            <span className="font-medium">{issue.title}</span>
+                          </div>
+                          <p className="text-sm opacity-80">{issue.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
-              <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <Brain className="w-4 h-4" />
-                <span>AI助手</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 标签页导航 */}
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              {[
-                { id: 'upload', name: '数据上传', icon: Upload },
-                { id: 'health', name: '健康报告', icon: Activity },
-                { id: 'eda', name: 'EDA分析', icon: BarChart3 },
-                { id: 'repair', name: '智能修复', icon: Zap }
-              ].map(tab => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === tab.id
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{tab.name}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-
-        {/* 数据上传标签页 */}
-        {activeTab === 'upload' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <div className="text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">上传数据文件</h3>
-              <p className="text-gray-600 mb-6">支持 CSV、Excel、JSON 格式文件，最大 100MB</p>
-              
-              <div className="max-w-md mx-auto">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <FileText className="w-8 h-8 mb-2 text-gray-400" />
-                    <p className="mb-2 text-sm text-gray-500">
-                      <span className="font-semibold">点击上传</span> 或拖拽文件到此处
-                    </p>
-                    <p className="text-xs text-gray-500">CSV, XLSX, JSON (最大 100MB)</p>
-                  </div>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".csv,.xlsx,.json"
-                    onChange={handleFileUpload}
-                  />
-                </label>
-              </div>
-
-              {uploadedFile && (
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <div className="flex items-center justify-center space-x-2">
-                    <FileText className="w-5 h-5 text-blue-600" />
-                    <span className="text-blue-900 font-medium">{uploadedFile.name}</span>
-                    <span className="text-blue-600">({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* 数据健康报告标签页 */}
-        {activeTab === 'health' && (
-          <div className="space-y-6">
-            {isAnalyzing ? (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                <RefreshCw className="mx-auto h-12 w-12 text-blue-500 animate-spin mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">正在分析数据质量...</h3>
-                <p className="text-gray-600">请稍候，AI正在检测数据质量问题</p>
-              </div>
             ) : (
-              <>
-                {/* 总体健康评分 */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900">数据健康评分</h2>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <div className={`text-3xl font-bold ${getScoreColor(healthReport.overallScore)}`}>
-                          {healthReport.overallScore}
-                        </div>
-                        <div className="text-sm text-gray-500">总分 100</div>
-                      </div>
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                        healthReport.overallScore >= 80 ? 'bg-green-100' :
-                        healthReport.overallScore >= 60 ? 'bg-yellow-100' : 'bg-red-100'
-                      }`}>
-                        {healthReport.overallScore >= 80 ? 
-                          <CheckCircle className="w-8 h-8 text-green-600" /> :
-                          <AlertTriangle className="w-8 h-8 text-yellow-600" />
-                        }
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-gray-900">{healthReport.totalRows.toLocaleString()}</div>
-                      <div className="text-sm text-gray-600">总行数</div>
-                    </div>
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-gray-900">{healthReport.totalColumns}</div>
-                      <div className="text-sm text-gray-600">总列数</div>
-                    </div>
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-gray-900">{healthReport.issues.length}</div>
-                      <div className="text-sm text-gray-600">发现问题</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 问题详情 */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">数据质量问题</h3>
-                  <div className="space-y-4">
-                    {healthReport.issues.map((issue, index) => (
-                      <div key={index} className={`p-4 rounded-lg border ${getSeverityColor(issue.severity)}`}>
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start space-x-3">
-                            {getSeverityIcon(issue.severity)}
-                            <div>
-                              <h4 className="font-medium text-gray-900">{issue.column} 字段</h4>
-                              <p className="text-sm text-gray-600 mt-1">{issue.description}</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-semibold">{issue.count} 条</div>
-                            <div className="text-sm text-gray-500">{issue.percentage}%</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
+              <div className="text-center py-8 text-gray-400">
+                <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>请先上传数据文件以开始健康检测</p>
+              </div>
             )}
           </div>
-        )}
+        </motion.div>
+      )}
 
-        {/* EDA分析标签页 */}
-        {activeTab === 'eda' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">探索性数据分析 (EDA)</h2>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* EDA分析标签页 */}
+      {activeTab === 'eda' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="space-y-6"
+        >
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+            <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <BarChart3 className="w-6 h-6 text-blue-400" />
+              探索性数据分析
+            </h3>
+            
+            {edaInsights && edaInsights.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {edaInsights.map((insight, index) => (
-                  <div key={index} className="p-6 border border-gray-200 rounded-lg">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        {insight.type === 'correlation' && <TrendingUp className="w-5 h-5 text-blue-500" />}
-                        {insight.type === 'distribution' && <BarChart3 className="w-5 h-5 text-green-500" />}
-                        {insight.type === 'trend' && <Activity className="w-5 h-5 text-purple-500" />}
-                        {insight.type === 'anomaly' && <AlertTriangle className="w-5 h-5 text-red-500" />}
-                        <h3 className="font-semibold text-gray-900">{insight.title}</h3>
-                      </div>
-                      <span className="text-sm text-gray-500">{Math.round(insight.confidence * 100)}% 置信度</span>
+                  <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+                      <h4 className="font-medium text-white">{insight.title}</h4>
                     </div>
-                    
-                    <p className="text-gray-600 mb-4">{insight.description}</p>
-                    
-                    {/* 简化的可视化占位符 */}
-                    <div className="h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <PieChart className="w-8 h-8 mx-auto mb-2" />
-                        <div className="text-sm">图表可视化</div>
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-300 mb-2">{insight.description}</p>
+                    <div className="text-xs text-blue-300">{insight.details}</div>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* 智能修复标签页 */}
-        {activeTab === 'repair' && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">智能修复建议</h2>
-            
-            <div className="space-y-4">
-              {healthReport.suggestions.map((suggestion, index) => (
-                <div key={index} className="p-6 border border-gray-200 rounded-lg">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-2">{suggestion.method.replace('_', ' ').toUpperCase()}</h3>
-                      <p className="text-gray-600">{suggestion.description}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-500 mb-2">置信度</div>
-                      <div className="font-semibold text-blue-600">{Math.round(suggestion.confidence * 100)}%</div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center space-x-2">
-                      <Zap className="w-4 h-4 text-yellow-500" />
-                      <span className="text-sm text-gray-600">自动修复可用</span>
-                    </div>
-                    <div className="space-x-2">
-                      <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        预览
-                      </button>
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        应用修复
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <CheckCircle className="w-5 h-5 text-blue-600" />
-                <span className="font-medium text-blue-900">批量修复</span>
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>请先上传数据文件以开始EDA分析</p>
               </div>
-              <p className="text-blue-800 text-sm mb-4">应用所有推荐的修复策略，预计可提升数据质量评分至 92 分</p>
-              <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                一键修复所有问题
-              </button>
-            </div>
+            )}
           </div>
-        )}
-      </div>
+        </motion.div>
+      )}
+
+      {/* 智能修复标签页 */}
+      {activeTab === 'repair' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="space-y-6"
+        >
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+            <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-purple-400" />
+              智能修复建议
+            </h3>
+            
+            {healthReport?.recommendations && healthReport.recommendations.length > 0 ? (
+              <div className="space-y-3">
+                {healthReport.recommendations.map((recommendation, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="bg-white/5 rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-white text-xs font-bold">{index + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-white mb-1">{recommendation.title}</h4>
+                        <p className="text-sm text-gray-300 mb-2">{recommendation.description}</p>
+                        <div className="flex gap-2">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg transition-colors duration-200"
+                            onClick={() => applyFix(recommendation)}
+                          >
+                            应用修复
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-colors duration-200"
+                          >
+                            查看详情
+                          </motion.button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <Zap className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>请先进行数据健康检测以获取修复建议</p>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };

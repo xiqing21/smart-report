@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Progress, Typography, Space, Button, Tag, Alert, Spin } from 'antd'
+import { Card, Progress, Typography, Space, Button, Tag, Alert } from 'antd'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   RobotOutlined,
@@ -30,10 +30,8 @@ interface AIAnalysisEngineProps {
 }
 
 const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
-  reportData,
   analysisType,
-  onAnalysisComplete,
-  onAnalysisError
+  onAnalysisComplete
 }) => {
   const [analysisSteps, setAnalysisSteps] = useState<AnalysisStep[]>([
     {
@@ -74,7 +72,6 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
 
   useEffect(() => {
     if (isAnalyzing && currentStepIndex < analysisSteps.length) {
-      const currentStep = analysisSteps[currentStepIndex]
       
       // 模拟AI分析过程
       const simulateStepAnalysis = () => {
@@ -190,7 +187,7 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
   const getStepIcon = (status: string) => {
     switch (status) {
       case 'processing':
-        return <SyncOutlined spin style={{ color: designSystem.colors.primary }} />
+        return <SyncOutlined spin style={{ color: designSystem.colors.primary[500] }} />
       case 'completed':
         return <CheckCircleOutlined style={{ color: designSystem.colors.success }} />
       case 'error':
@@ -204,20 +201,20 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
     <Card
       title={
         <Space>
-          <ThunderboltOutlined style={{ color: designSystem.colors.primary }} />
+          <ThunderboltOutlined style={{ color: designSystem.colors.primary[500] }} />
           <span>AI智能分析引擎</span>
           <Tag color="blue">{analysisType}</Tag>
         </Space>
       }
       style={{
         borderRadius: designSystem.borderRadius.lg,
-        boxShadow: designSystem.shadows.card
+        boxShadow: designSystem.shadows.lg
       }}
     >
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {/* 整体进度 */}
         <div>
-          <div style={{ marginBottom: designSystem.spacing.sm }}>
+          <div style={{ marginBottom: designSystem.spacing[2] }}>
             <Text strong>分析进度</Text>
             <Text style={{ float: 'right', color: designSystem.colors.text.secondary }}>
               {Math.round(overallProgress)}%
@@ -226,7 +223,7 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
           <Progress
             percent={overallProgress}
             strokeColor={{
-              '0%': designSystem.colors.primary,
+              '0%': designSystem.colors.primary[500],
               '100%': designSystem.colors.success
             }}
             trailColor={designSystem.colors.background.secondary}
@@ -235,8 +232,8 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
 
         {/* 分析步骤 */}
         <div>
-          <Title level={5} style={{ marginBottom: designSystem.spacing.md }}>
-            <BulbOutlined style={{ marginRight: designSystem.spacing.xs }} />
+          <Title level={5} style={{ marginBottom: designSystem.spacing[4] }}>
+            <BulbOutlined style={{ marginRight: designSystem.spacing[1] }} />
             分析步骤
           </Title>
           
@@ -252,11 +249,11 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
                   size="small"
                   style={{
                     backgroundColor: step.status === 'processing' 
-                      ? designSystem.colors.background.highlight
+                      ? designSystem.colors.background.secondary
                       : 'transparent',
                     border: step.status === 'processing'
-                      ? `1px solid ${designSystem.colors.primary}`
-                      : `1px solid ${designSystem.colors.border}`,
+                      ? `1px solid ${designSystem.colors.primary[500]}`
+                      : `1px solid ${designSystem.colors.border.default}`,
                     borderRadius: designSystem.borderRadius.sm
                   }}
                 >
@@ -266,10 +263,10 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
                     </div>
                     
                     <div style={{ flex: 1 }}>
-                      <div style={{ marginBottom: designSystem.spacing.xs }}>
+                      <div style={{ marginBottom: designSystem.spacing[1] }}>
                         <Text strong>{step.title}</Text>
                         <Text style={{ 
-                          marginLeft: designSystem.spacing.sm,
+                          marginLeft: designSystem.spacing[4],
                           color: designSystem.colors.text.secondary,
                           fontSize: '12px'
                         }}>
@@ -287,10 +284,10 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
                       )}
                       
                       {step.status === 'completed' && step.result && (
-                        <div style={{ marginTop: designSystem.spacing.xs }}>
+                        <div style={{ marginTop: designSystem.spacing[1] }}>
                           <Space wrap>
                             {Object.entries(step.result).map(([key, value]) => (
-                              <Tag key={key} color="green" size="small">
+                              <Tag key={key} color="green">
                                 {key}: {typeof value === 'number' ? value.toLocaleString() : String(value)}
                               </Tag>
                             ))}
@@ -337,7 +334,7 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
                 message="分析完成"
                 description={
                   <div>
-                    <Paragraph style={{ marginBottom: designSystem.spacing.sm }}>
+                    <Paragraph style={{ marginBottom: designSystem.spacing[2] }}>
                       {analysisResults.summary}
                     </Paragraph>
                     <Space>
@@ -365,8 +362,8 @@ const AIAnalysisEngine: React.FC<AIAnalysisEngineProps> = ({
             style={{
               borderRadius: designSystem.borderRadius.md,
               height: '40px',
-              paddingLeft: designSystem.spacing.lg,
-              paddingRight: designSystem.spacing.lg
+              paddingLeft: designSystem.spacing[6],
+              paddingRight: designSystem.spacing[6]
             }}
           >
             {isAnalyzing ? '分析中...' : '开始AI分析'}

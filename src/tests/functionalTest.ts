@@ -86,11 +86,9 @@ class FunctionalTest {
       const content = '这是一个用于测试的文档内容，包含多个段落和信息。';
       const userId = 'test_user';
       
-      const result = await embeddingService.processDocument(title, content, userId);
+      await embeddingService.processDocument('test_doc_id', content, { title, userId });
       
-      if (!result || typeof result !== 'object') {
-        throw new Error('文档处理返回结果格式错误');
-      }
+      // Test passes if no exception is thrown
     });
   }
 
@@ -100,13 +98,13 @@ class FunctionalTest {
     
     await this.runTest('基础问答', async () => {
       const question = '你好，请介绍一下自己';
-      const response = await chatService.answerQuestion(question, undefined, 'test_user');
+      const response = await chatService.chat(question, undefined, { userId: 'test_user' });
       
-      if (!response || typeof response.content !== 'string') {
+      if (!response || typeof response.response !== 'string') {
         throw new Error('问答响应格式错误');
       }
       
-      if (response.content.trim().length === 0) {
+      if (response.response.trim().length === 0) {
         throw new Error('问答响应内容为空');
       }
     });
@@ -117,17 +115,17 @@ class FunctionalTest {
       
       try {
         const question = '请记住我的名字是张三';
-        const response = await chatService.answerQuestion(question, context.id, 'test_user');
+        const response = await chatService.chat(question, context.id, { userId: 'test_user' });
         
-        if (!response || typeof response.content !== 'string') {
+        if (!response || typeof response.response !== 'string') {
           throw new Error('带上下文问答响应格式错误');
         }
         
         // 测试上下文记忆
         const followUpQuestion = '我的名字是什么？';
-        const followUpResponse = await chatService.answerQuestion(followUpQuestion, context.id, 'test_user');
+        const followUpResponse = await chatService.chat(followUpQuestion, context.id, { userId: 'test_user' });
         
-        if (!followUpResponse || typeof followUpResponse.content !== 'string') {
+        if (!followUpResponse || typeof followUpResponse.response !== 'string') {
           throw new Error('上下文记忆问答响应格式错误');
         }
         
@@ -139,13 +137,13 @@ class FunctionalTest {
 
     await this.runTest('知识检索问答', async () => {
       const question = '系统有哪些主要功能？';
-      const response = await chatService.answerQuestion(question, undefined, 'test_user');
+      const response = await chatService.chat(question, undefined, { userId: 'test_user' });
       
-      if (!response || typeof response.content !== 'string') {
+      if (!response || typeof response.response !== 'string') {
         throw new Error('知识检索问答响应格式错误');
       }
       
-      if (response.content.trim().length === 0) {
+      if (response.response.trim().length === 0) {
         throw new Error('知识检索问答响应内容为空');
       }
     });
@@ -185,19 +183,15 @@ class FunctionalTest {
       });
 
       await this.runTest('添加对话消息', async () => {
-        await contextService.addMessage(testContextId!, {
-          role: 'user',
-          content: '这是一条测试消息'
-        });
+        await contextService.addMessage(testContextId!, 'user', '这是一条测试消息');
         
-        await contextService.addMessage(testContextId!, {
-          role: 'assistant',
-          content: '这是助手的回复'
-        });
+        await contextService.addMessage(testContextId!, 'assistant', '这是助手的回复');
         
         // 验证消息是否添加成功
         const context = await contextService.getContext(testContextId!);
-        if (!context.messages || context.messages.length < 2) {
+        if (context && context.messages && context.messages.length >= 2) {
+          // 消息添加成功
+        } else {
           throw new Error('消息添加失败');
         }
       });
@@ -238,7 +232,7 @@ class FunctionalTest {
     
     await this.runTest('语义搜索', async () => {
       const query = '系统功能介绍';
-      const results = await embeddingService.semanticSearch(query, 'test_user', 5);
+      const results = await embeddingService.semanticSearch(query, { limit: 5 });
       
       if (!Array.isArray(results)) {
         throw new Error('搜索结果不是数组格式');
