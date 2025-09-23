@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col, Typography, Space, Divider, List, Avatar, Tag, Modal, Form, Input, Select, Upload, message, Statistic } from 'antd'
 import {
   FileTextOutlined,
@@ -27,13 +27,20 @@ import {
   FundOutlined,
   LineChartOutlined,
   PieChartOutlined,
-  AreaChartOutlined
+  AreaChartOutlined,
+  RobotOutlined
 } from '@ant-design/icons'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import type { UploadProps } from 'antd'
 import { Card, Button, Status } from '@/components/ui'
 import { designSystem } from '@/styles/design-system'
+import ReportCreationWizard from '@/components/ReportCreationWizard'
+import SimpleFilter from '@/components/SimpleFilter'
+import OptimizedCard from '@/components/OptimizedCard'
+import SkeletonCard, { SkeletonCardList } from '@/components/SkeletonCard'
+import { useLoading } from '@/components/LoadingProvider'
+import { useNotification } from '@/components/NotificationProvider'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -67,10 +74,32 @@ interface Template {
 
 const ReportFactory: React.FC = () => {
   const navigate = useNavigate()
+  const { showLoading, hideLoading } = useLoading()
+  const { showSuccess, showError, showWarning } = useNotification()
   const [activeTab, setActiveTab] = useState<'reports' | 'templates'>('reports')
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [isWizardVisible, setIsWizardVisible] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [searchText, setSearchText] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
   const [form] = Form.useForm()
+
+  // 模拟数据加载
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true)
+        // 模拟API调用延迟
+        await new Promise(resolve => setTimeout(resolve, 1500))
+      } catch (error) {
+        showError('数据加载失败，请刷新页面重试')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadData()
+  }, [])
 
   // 模拟数据
   const [reports, setReports] = useState<Report[]>([
@@ -336,38 +365,96 @@ const ReportFactory: React.FC = () => {
     navigate(`/report-factory/editor/${report.id}`)
   }
 
-  const handleCopyReport = (report: Report) => {
-    const newReport: Report = {
-      ...report,
-      id: Date.now().toString(),
-      title: `${report.title} (副本)`,
-      status: 'draft',
-      createTime: new Date().toLocaleString('zh-CN'),
-      updateTime: new Date().toLocaleString('zh-CN'),
-      views: 0,
-      shares: 0
+  const handleCopyReport = async (report: Report) => {
+    try {
+      showLoading('正在复制报告...')
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 800))
+      
+      const newReport: Report = {
+        ...report,
+        id: Date.now().toString(),
+        title: `${report.title} (副本)`,
+        status: 'draft',
+        createTime: new Date().toLocaleString('zh-CN'),
+        updateTime: new Date().toLocaleString('zh-CN'),
+        views: 0,
+        shares: 0
+      }
+      setReports(prev => [newReport, ...prev])
+      showSuccess('报告复制成功')
+    } catch (error) {
+      showError('复制报告失败，请重试')
+    } finally {
+      hideLoading()
     }
-    setReports(prev => [newReport, ...prev])
-    message.success('报告复制成功')
   }
 
   const handleDeleteReport = (report: Report) => {
     Modal.confirm({
       title: '确认删除',
       content: `确定要删除报告 "${report.title}" 吗？`,
-      onOk: () => {
-        setReports(prev => prev.filter(item => item.id !== report.id))
-        message.success('报告删除成功')
+      onOk: async () => {
+        try {
+          showLoading('正在删除报告...')
+          // 模拟异步操作
+          await new Promise(resolve => setTimeout(resolve, 600))
+          
+          setReports(prev => prev.filter(item => item.id !== report.id))
+          showSuccess('报告删除成功')
+        } catch (error) {
+          showError('删除报告失败，请重试')
+        } finally {
+          hideLoading()
+        }
       }
     })
   }
 
-  const handleShareReport = (report: Report) => {
-    navigator.clipboard.writeText(`${window.location.origin}/reports/${report.id}`)
-    message.success('分享链接已复制到剪贴板')
+  const handleShareReport = async (report: Report) => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/reports/${report.id}`)
+      showSuccess('分享链接已复制到剪贴板')
+    } catch (error) {
+      showError('复制链接失败，请重试')
+    }
   }
 
   const handleCreateReport = () => {
+    setIsWizardVisible(true)
+  }
+
+  const handleWizardSuccess = (reportData: any) => {
+    const selectedTemplate = templates.find(t => t.id === reportData.selectedTemplate)
+    const newReport: Report = {
+      id: Date.now().toString(),
+      title: reportData.title,
+      description: reportData.description,
+      status: reportData.status || 'draft',
+      template: selectedTemplate?.name || '自定义模板',
+      author: '当前用户',
+      createTime: reportData.createTime,
+      updateTime: reportData.createTime,
+      views: 0,
+      shares: 0,
+      tags: reportData.tags || [],
+      category: selectedTemplate?.category || '其他',
+      priority: reportData.priority || 'medium'
+    }
+    
+    setReports(prev => [newReport, ...prev])
+    setIsWizardVisible(false)
+    
+    if (reportData.creationMode === 'ai') {
+      message.success('AI智能分析已开始，请稍后查看结果')
+    } else {
+      message.success('报告创建成功')
+    }
+    
+    navigate(`/report-factory/editor/${newReport.id}`)
+  }
+
+  const handleLegacyCreateReport = () => {
     form.validateFields().then(values => {
       const newReport: Report = {
         id: Date.now().toString(),
@@ -392,25 +479,35 @@ const ReportFactory: React.FC = () => {
     })
   }
 
-  const handleUseTemplate = (template: Template) => {
-    const newReport: Report = {
-      id: Date.now().toString(),
-      title: `基于${template.name}的新报告`,
-      description: `使用${template.name}创建的报告`,
-      status: 'draft',
-      template: template.name,
-      author: '当前用户',
-      createTime: new Date().toLocaleString('zh-CN'),
-      updateTime: new Date().toLocaleString('zh-CN'),
-      views: 0,
-      shares: 0,
-      tags: [template.category],
-      category: template.category,
-      priority: 'medium'
+  const handleUseTemplate = async (template: Template) => {
+    try {
+      showLoading('正在基于模板创建报告...')
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const newReport: Report = {
+        id: Date.now().toString(),
+        title: `基于${template.name}的新报告`,
+        description: `使用${template.name}创建的报告`,
+        status: 'draft',
+        template: template.name,
+        author: '当前用户',
+        createTime: new Date().toLocaleString('zh-CN'),
+        updateTime: new Date().toLocaleString('zh-CN'),
+        views: 0,
+        shares: 0,
+        tags: [template.category],
+        category: template.category,
+        priority: 'medium'
+      }
+      setReports(prev => [newReport, ...prev])
+      showSuccess('基于模板创建报告成功')
+      navigate(`/report-factory/editor/${newReport.id}`)
+    } catch (error) {
+      showError('创建报告失败，请重试')
+    } finally {
+      hideLoading()
     }
-    setReports(prev => [newReport, ...prev])
-    message.success('基于模板创建报告成功')
-    navigate(`/report-factory/editor/${newReport.id}`)
   }
 
   const uploadProps: UploadProps = {
@@ -430,13 +527,23 @@ const ReportFactory: React.FC = () => {
   const totalShares = reports.reduce((sum, r) => sum + r.shares, 0)
 
   // 过滤数据
-  const filteredReports = selectedCategory === 'all' 
-    ? reports 
-    : reports.filter(r => r.category === selectedCategory)
+  const filteredReports = reports.filter(r => {
+    const matchesCategory = selectedCategory === 'all' || r.category === selectedCategory
+    const matchesSearch = !searchText || 
+      r.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      r.description.toLowerCase().includes(searchText.toLowerCase()) ||
+      r.tags.some(tag => tag.toLowerCase().includes(searchText.toLowerCase()))
+    return matchesCategory && matchesSearch
+  })
 
-  const filteredTemplates = selectedCategory === 'all' 
-    ? templates 
-    : templates.filter(t => t.category === selectedCategory)
+  const filteredTemplates = templates.filter(t => {
+    const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory
+    const matchesSearch = !searchText || 
+      t.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      t.description.toLowerCase().includes(searchText.toLowerCase()) ||
+      t.features.some(feature => feature.toLowerCase().includes(searchText.toLowerCase()))
+    return matchesCategory && matchesSearch
+  })
 
   const categories = ['all', '销售', '用户', '财务', '监控', '市场', '客户']
   const categoryLabels: Record<string, string> = {
@@ -448,6 +555,17 @@ const ReportFactory: React.FC = () => {
     市场: '市场研究',
     客户: '客户研究'
   }
+
+  // 筛选器配置
+  const filterCategories = [
+    { key: 'all', label: '全部', icon: <FileTextOutlined />, count: filteredReports.length },
+    { key: '销售分析', label: '销售分析', icon: <BarChartOutlined />, count: reports.filter(r => r.category === '销售分析').length },
+    { key: '用户研究', label: '用户研究', icon: <UserOutlined />, count: reports.filter(r => r.category === '用户研究').length },
+    { key: '财务分析', label: '财务分析', icon: <FundOutlined />, count: reports.filter(r => r.category === '财务分析').length },
+    { key: '产品分析', label: '产品分析', icon: <LineChartOutlined />, count: reports.filter(r => r.category === '产品分析').length },
+    { key: '市场研究', label: '市场研究', icon: <PieChartOutlined />, count: reports.filter(r => r.category === '市场研究').length },
+    { key: '客户研究', label: '客户研究', icon: <HeartOutlined />, count: reports.filter(r => r.category === '客户研究').length }
+  ]
 
   return (
     <div>
@@ -476,13 +594,22 @@ const ReportFactory: React.FC = () => {
               智能报告创建与管理平台，让数据洞察触手可及
             </Text>
           </div>
-          <Button 
-            variant="primary"
-            size="lg"
-            onClick={() => setIsModalVisible(true)}
-          >
-            <PlusOutlined /> 创建报告
-          </Button>
+          <Space size="middle">
+            <Button 
+              variant="primary"
+              size="lg"
+              onClick={handleCreateReport}
+            >
+              <BulbOutlined /> 智能创建报告
+            </Button>
+            <Button 
+              variant="ghost"
+              size="lg"
+              onClick={() => navigate('/intelligent-analysis')}
+            >
+              <RobotOutlined /> AI分析助手
+            </Button>
+          </Space>
         </div>
       </motion.div>
 
@@ -636,19 +763,13 @@ const ReportFactory: React.FC = () => {
               
               <Divider type="vertical" style={{ height: '24px' }} />
               
-              <Space wrap>
-                {categories.map(category => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? 'primary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                  >
-                    {category !== 'all' && getCategoryIcon(category)}
-                    {categoryLabels[category]}
-                  </Button>
-                ))}
-              </Space>
+              <SimpleFilter
+                categories={filterCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                searchText={searchText}
+                onSearchChange={setSearchText}
+              />
             </div>
             
             <Space>
@@ -672,219 +793,69 @@ const ReportFactory: React.FC = () => {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
               >
-                <List
-                  grid={{ 
-                    gutter: [24, 24], 
-                    xs: 1, 
-                    sm: 1, 
-                    md: 2, 
-                    lg: 2, 
-                    xl: 3, 
-                    xxl: 3 
-                  }}
-                  dataSource={filteredReports}
-                  renderItem={(report, index) => (
-                    <List.Item>
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                        whileHover={{ y: -4 }}
-                      >
-                        <Card
-                          style={{
-                            height: '100%',
-                            border: `1px solid ${designSystem.colors.border.light}`,
-                            borderRadius: designSystem.borderRadius.lg,
-                            borderLeft: `4px solid ${getPriorityColor(report.priority)}`,
-                            transition: 'all 0.3s ease'
-                          }}
-                          bodyStyle={{ 
-                            padding: designSystem.spacing.lg,
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column'
-                          }}
+                {isLoading ? (
+                  <SkeletonCardList count={6} />
+                ) : (
+                  <List
+                    grid={{ 
+                      gutter: [24, 24], 
+                      xs: 1, 
+                      sm: 1, 
+                      md: 2, 
+                      lg: 2, 
+                      xl: 3, 
+                      xxl: 3 
+                    }}
+                    dataSource={filteredReports}
+                    renderItem={(report, index) => (
+                      <List.Item>
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
                         >
-                          {/* 报告头部 */}
-                          <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'flex-start',
-                            marginBottom: designSystem.spacing.md
-                          }}>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.sm, marginBottom: designSystem.spacing.xs }}>
-                                {getStatusIcon(report.status)}
-                                <Title level={5} style={{ 
-                                  margin: 0,
-                                  color: designSystem.colors.text.primary,
-                                  fontSize: designSystem.typography.fontSize.md,
-                                  fontWeight: designSystem.typography.fontWeight.semibold
-                                }}>
-                                  {report.title}
-                                </Title>
-                              </div>
-                              <Space size="small">
-                                <Status 
-                                  type={getStatusColor(report.status)}
-                                  text={getStatusText(report.status)}
-                                />
-                                <Text style={{ 
-                                  fontSize: designSystem.typography.fontSize.xs,
-                                  color: designSystem.colors.text.secondary
-                                }}>
-                                  {report.category}
-                                </Text>
-                              </Space>
-                            </div>
-                          </div>
-
-                          {/* 报告描述 */}
-                          <Paragraph style={{ 
-                            color: designSystem.colors.text.secondary,
-                            fontSize: designSystem.typography.fontSize.sm,
-                            lineHeight: 1.6,
-                            marginBottom: designSystem.spacing.md,
-                            flex: 1,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden'
-                          }}>
-                            {report.description}
-                          </Paragraph>
-
-                          {/* 标签 */}
-                          <div style={{ marginBottom: designSystem.spacing.md }}>
-                            <Space wrap size="small">
-                              {report.tags.slice(0, 3).map(tag => (
-                                <Tag 
-                                  key={tag} 
-                                  style={{
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    border: `1px solid ${designSystem.colors.border.light}`,
-                                    borderRadius: designSystem.borderRadius.sm,
-                                    background: designSystem.colors.background.secondary
-                                  }}
-                                >
-                                  {tag}
-                                </Tag>
-                              ))}
-                              {report.tags.length > 3 && (
-                                <Text style={{ 
-                                  fontSize: designSystem.typography.fontSize.xs,
-                                  color: designSystem.colors.text.secondary
-                                }}>
-                                  +{report.tags.length - 3}
-                                </Text>
-                              )}
-                            </Space>
-                          </div>
-
-                          {/* 报告信息 */}
-                          <div style={{ 
-                            padding: `${designSystem.spacing.sm} 0`,
-                            borderTop: `1px solid ${designSystem.colors.border.light}`,
-                            marginBottom: designSystem.spacing.md
-                          }}>
-                            <Row gutter={[16, 8]}>
-                              <Col span={12}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.xs }}>
-                                  <UserOutlined style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }} />
-                                  <Text style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }}>
-                                    {report.author}
-                                  </Text>
-                                </div>
-                              </Col>
-                              <Col span={12}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.xs }}>
-                                  <CalendarOutlined style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }} />
-                                  <Text style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }}>
-                                    {report.updateTime.split(' ')[0]}
-                                  </Text>
-                                </div>
-                              </Col>
-                              <Col span={12}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.xs }}>
-                                  <EyeOutlined style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }} />
-                                  <Text style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }}>
-                                    {report.views}
-                                  </Text>
-                                </div>
-                              </Col>
-                              <Col span={12}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.xs }}>
-                                  <ShareAltOutlined style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }} />
-                                  <Text style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }}>
-                                    {report.shares}
-                                  </Text>
-                                </div>
-                              </Col>
-                            </Row>
-                          </div>
-
-                          {/* 操作按钮 */}
-                          <div style={{ display: 'flex', gap: designSystem.spacing.sm }}>
-                            <Button 
-                              variant="primary"
-                              size="sm"
-                              style={{ flex: 1 }}
-                              onClick={() => handleEditReport(report)}
-                            >
-                              <EditOutlined /> 编辑
-                            </Button>
-                            <Button 
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleCopyReport(report)}
-                            >
-                              <CopyOutlined />
-                            </Button>
-                            <Button 
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleShareReport(report)}
-                            >
-                              <ShareAltOutlined />
-                            </Button>
-                            <Button 
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteReport(report)}
-                            >
-                              <DeleteOutlined />
-                            </Button>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    </List.Item>
-                  )}
-                />
+                          <OptimizedCard
+                            title={report.title}
+                            description={report.description}
+                            status={report.status}
+                            priority={report.priority}
+                            category={report.category}
+                            tags={report.tags}
+                            metadata={{
+                              author: report.author,
+                              updateTime: report.updateTime.split(' ')[0],
+                              views: report.views,
+                              shares: report.shares
+                            }}
+                            actions={[
+                              {
+                                label: '编辑',
+                                type: 'primary',
+                                onClick: () => handleEditReport(report.id)
+                              },
+                              {
+                                label: '复制',
+                                type: 'ghost',
+                                onClick: () => handleCopyReport(report)
+                              },
+                              {
+                                label: '分享',
+                                type: 'ghost',
+                                onClick: () => handleShareReport(report)
+                              },
+                              {
+                                label: '删除',
+                                type: 'ghost',
+                                danger: true,
+                                onClick: () => handleDeleteReport(report)
+                              }
+                            ]}
+                          />
+                        </motion.div>
+                      </List.Item>
+                    )}
+                  />
+                )}
               </motion.div>
             )}
 
@@ -897,212 +868,60 @@ const ReportFactory: React.FC = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <List
-                  grid={{ 
-                    gutter: [24, 24], 
-                    xs: 1, 
-                    sm: 1, 
-                    md: 2, 
-                    lg: 2, 
-                    xl: 3, 
-                    xxl: 3 
-                  }}
-                  dataSource={filteredTemplates}
-                  renderItem={(template, index) => (
-                    <List.Item>
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                        whileHover={{ y: -4 }}
-                      >
-                        <Card
-                          style={{
-                            height: '100%',
-                            border: `1px solid ${designSystem.colors.border.light}`,
-                            borderRadius: designSystem.borderRadius.lg,
-                            transition: 'all 0.3s ease'
-                          }}
-                          bodyStyle={{ 
-                            padding: designSystem.spacing.lg,
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column'
-                          }}
+                {isLoading ? (
+                  <SkeletonCardList count={6} />
+                ) : (
+                  <List
+                    grid={{ 
+                      gutter: [24, 24], 
+                      xs: 1, 
+                      sm: 1, 
+                      md: 2, 
+                      lg: 2, 
+                      xl: 3, 
+                      xxl: 3 
+                    }}
+                    dataSource={filteredTemplates}
+                    renderItem={(template, index) => (
+                      <List.Item>
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          whileHover={{ y: -4 }}
                         >
-                          {/* 模板预览 */}
-                          <div style={{ 
-                            height: '120px',
-                            background: `linear-gradient(135deg, ${designSystem.colors.primary}15, ${designSystem.colors.secondary}15)`,
-                            borderRadius: designSystem.borderRadius.md,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: designSystem.spacing.md,
-                            position: 'relative'
-                          }}>
-                            {getCategoryIcon(template.category)}
-                            <div style={{
-                              fontSize: '48px',
-                              color: designSystem.colors.primary,
-                              opacity: 0.8
-                            }}>
-                              <FileOutlined />
-                            </div>
-                            <div style={{
-                              position: 'absolute',
-                              top: designSystem.spacing.sm,
-                              right: designSystem.spacing.sm,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: designSystem.spacing.xs,
-                              background: designSystem.colors.background.primary,
-                              padding: `${designSystem.spacing.xs} ${designSystem.spacing.sm}`,
-                              borderRadius: designSystem.borderRadius.sm,
-                              border: `1px solid ${designSystem.colors.border.light}`
-                            }}>
-                              <StarOutlined style={{ 
-                                fontSize: designSystem.typography.fontSize.xs,
-                                color: designSystem.colors.warning
-                              }} />
-                              <Text style={{ 
-                                fontSize: designSystem.typography.fontSize.xs,
-                                color: designSystem.colors.text.primary,
-                                fontWeight: designSystem.typography.fontWeight.medium
-                              }}>
-                                {template.rating}
-                              </Text>
-                            </div>
-                          </div>
-
-                          {/* 模板信息 */}
-                          <div style={{ flex: 1 }}>
-                            <div style={{ 
-                              display: 'flex', 
-                              justifyContent: 'space-between', 
-                              alignItems: 'flex-start',
-                              marginBottom: designSystem.spacing.sm
-                            }}>
-                              <Title level={5} style={{ 
-                                margin: 0,
-                                color: designSystem.colors.text.primary,
-                                fontSize: designSystem.typography.fontSize.md,
-                                fontWeight: designSystem.typography.fontWeight.semibold
-                              }}>
-                                {template.name}
-                              </Title>
-                              <Space size="small">
-                                <Tag 
-                                  color={getComplexityColor(template.complexity)}
-                                  style={{
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    border: 'none',
-                                    borderRadius: designSystem.borderRadius.sm
-                                  }}
-                                >
-                                  {getComplexityText(template.complexity)}
-                                </Tag>
-                              </Space>
-                            </div>
-
-                            <Paragraph style={{ 
-                              color: designSystem.colors.text.secondary,
-                              fontSize: designSystem.typography.fontSize.sm,
-                              lineHeight: 1.6,
-                              marginBottom: designSystem.spacing.md,
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden'
-                            }}>
-                              {template.description}
-                            </Paragraph>
-
-                            {/* 特性标签 */}
-                            <div style={{ marginBottom: designSystem.spacing.md }}>
-                              <Space wrap size="small">
-                                {template.features.slice(0, 3).map(feature => (
-                                  <Tag 
-                                    key={feature}
-                                    style={{
-                                      fontSize: designSystem.typography.fontSize.xs,
-                                      border: `1px solid ${designSystem.colors.primary}30`,
-                                      borderRadius: designSystem.borderRadius.sm,
-                                      background: `${designSystem.colors.primary}10`,
-                                      color: designSystem.colors.primary
-                                    }}
-                                  >
-                                    {feature}
-                                  </Tag>
-                                ))}
-                                {template.features.length > 3 && (
-                                  <Text style={{ 
-                                    fontSize: designSystem.typography.fontSize.xs,
-                                    color: designSystem.colors.text.secondary
-                                  }}>
-                                    +{template.features.length - 3}
-                                  </Text>
-                                )}
-                              </Space>
-                            </div>
-                          </div>
-
-                          {/* 使用统计 */}
-                          <div style={{ 
-                            padding: `${designSystem.spacing.sm} 0`,
-                            borderTop: `1px solid ${designSystem.colors.border.light}`,
-                            marginBottom: designSystem.spacing.md,
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                          }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: designSystem.spacing.xs }}>
-                              <FireOutlined style={{ 
-                                fontSize: designSystem.typography.fontSize.sm,
-                                color: designSystem.colors.warning
-                              }} />
-                              <Text style={{ 
-                                fontSize: designSystem.typography.fontSize.sm,
-                                color: designSystem.colors.text.secondary
-                              }}>
-                                已使用 {template.usage} 次
-                              </Text>
-                            </div>
-                            <Tag 
-                              style={{
-                                fontSize: designSystem.typography.fontSize.xs,
-                                border: `1px solid ${designSystem.colors.border.light}`,
-                                borderRadius: designSystem.borderRadius.sm,
-                                background: designSystem.colors.background.secondary
-                              }}
-                            >
-                              {template.category}
-                            </Tag>
-                          </div>
-
-                          {/* 操作按钮 */}
-                          <div style={{ display: 'flex', gap: designSystem.spacing.sm }}>
-                            <Button 
-                              variant="primary"
-                              size="sm"
-                              style={{ flex: 1 }}
-                              onClick={() => handleUseTemplate(template)}
-                            >
-                              <PlusOutlined /> 使用模板
-                            </Button>
-                            <Button 
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => message.info('预览功能开发中')}
-                            >
-                              <EyeOutlined /> 预览
-                            </Button>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    </List.Item>
-                  )}
-                />
+                          <OptimizedCard
+                            title={template.name}
+                            status="active"
+                            priority="medium"
+                            category={template.category}
+                            tags={template.features}
+                            description={template.description}
+                            metadata={[
+                              { label: '评分', value: template.rating, icon: 'star' },
+                              { label: '使用次数', value: `${template.usage}次`, icon: 'fire' },
+                              { label: '复杂度', value: getComplexityText(template.complexity), icon: 'tag' }
+                            ]}
+                            actions={[
+                              {
+                                label: '使用模板',
+                                type: 'primary',
+                                icon: 'plus',
+                                onClick: () => handleUseTemplate(template)
+                              },
+                              {
+                                label: '预览',
+                                type: 'ghost',
+                                icon: 'eye',
+                                onClick: () => showWarning('预览功能开发中')
+                              }
+                            ]}
+                          />
+                        </motion.div>
+                      </List.Item>
+                    )}
+                  />
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -1118,7 +937,7 @@ const ReportFactory: React.FC = () => {
           </div>
         }
         open={isModalVisible}
-        onOk={handleCreateReport}
+        onOk={handleLegacyCreateReport}
         onCancel={() => {
           setIsModalVisible(false)
           form.resetFields()
@@ -1287,6 +1106,14 @@ const ReportFactory: React.FC = () => {
           </Row>
         </Form>
       </Modal>
+
+      {/* 统一创建向导 */}
+      <ReportCreationWizard
+        visible={isWizardVisible}
+        onCancel={() => setIsWizardVisible(false)}
+        onSuccess={handleWizardSuccess}
+        templates={templates}
+      />
     </div>
   )
 }

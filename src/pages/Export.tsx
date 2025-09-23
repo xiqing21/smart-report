@@ -210,32 +210,70 @@ const Export: React.FC = () => {
               <Card title="选择导出格式" className="mb-6">
                 <Paragraph type="secondary" className="mb-4">
                   选择最适合您需求的文档格式
+                  {selectedFormat && (
+                    <div className="ml-2 inline-flex items-center">
+                      <div 
+                        className="w-3 h-3 rounded-full mr-2 animate-pulse"
+                        style={{ backgroundColor: '#1890ff' }}
+                      />
+                      <Text type="success">
+                        当前选中: {exportFormats.find(f => f.id === selectedFormat)?.name}
+                      </Text>
+                    </div>
+                  )}
                 </Paragraph>
                 <Space direction="vertical" style={{ width: '100%' }} size="middle">
                   {exportFormats.map((format) => (
-                    <Card
-                      key={format.id}
-                      size="small"
-                      className={`cursor-pointer transition-all ${
-                        selectedFormat === format.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'hover:border-gray-400'
-                      }`}
-                      onClick={() => setSelectedFormat(format.id)}
-                    >
-                      <div className="flex items-start space-x-3">
-                        {format.icon}
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <Title level={5} className="mb-0">{format.name}</Title>
-                            <Badge color="blue" text={format.size} />
+                    <div key={format.id} className="relative">
+                      {selectedFormat === format.id && (
+                        <div className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-1 h-12 bg-gradient-to-b from-blue-400 to-blue-600 rounded-r-full shadow-lg animate-pulse" />
+                      )}
+                      <Card
+                        size="small"
+                        className={`cursor-pointer transition-all duration-300 border-2 ${
+                          selectedFormat === format.id
+                            ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg transform scale-[1.02]'
+                            : 'border-gray-200 hover:border-gray-400 hover:shadow-md hover:scale-[1.01]'
+                        }`}
+                        onClick={() => {
+                          console.log('点击格式:', format.id, '当前选中:', selectedFormat);
+                          setSelectedFormat(format.id);
+                        }}
+                        style={{
+                          boxShadow: selectedFormat === format.id ? '0 0 20px rgba(59, 130, 246, 0.3)' : undefined
+                        }}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`p-2 rounded-lg transition-all ${
+                            selectedFormat === format.id 
+                              ? 'bg-blue-100 text-blue-600 shadow-inner' 
+                              : 'bg-gray-50 text-gray-600'
+                          }`}>
+                            {format.icon}
                           </div>
-                          <Text type="secondary" className="text-sm">
-                            {format.description}
-                          </Text>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <Title level={5} className={`mb-0 transition-colors ${
+                                selectedFormat === format.id ? 'text-blue-700' : ''
+                              }`}>
+                                {format.name}
+                              </Title>
+                              <div className="flex items-center space-x-2">
+                                <Badge color={selectedFormat === format.id ? "blue" : "default"} text={format.size} />
+                                {selectedFormat === format.id && (
+                                  <CheckCircleOutlined style={{ color: '#1890ff', fontSize: '16px' }} className="animate-bounce" />
+                                )}
+                              </div>
+                            </div>
+                            <Text type="secondary" className={`text-sm transition-colors ${
+                              selectedFormat === format.id ? 'text-blue-600' : ''
+                            }`}>
+                              {format.description}
+                            </Text>
+                          </div>
                         </div>
-                      </div>
-                    </Card>
+                      </Card>
+                    </div>
                   ))}
                 </Space>
               </Card>

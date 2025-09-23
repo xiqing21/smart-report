@@ -750,10 +750,7 @@ const IntelligentAnalysis: React.FC = () => {
                             <Progress 
                               percent={task.progress} 
                               status="active"
-                              strokeColor={{
-                                from: designSystem.colors.primary,
-                                to: designSystem.colors.success
-                              }}
+                              strokeColor={designSystem.colors.primary}
                               style={{ marginTop: designSystem.spacing.xs }}
                             />
                           )}

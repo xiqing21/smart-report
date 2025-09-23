@@ -181,8 +181,8 @@ const Dashboard: React.FC = () => {
           <Row gutter={[24, 24]} align="middle">
             <Col xs={24} sm={24} md={24} lg={14} xl={14}>
               <div style={{ position: 'relative', zIndex: 10 }}>
-                <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px' }}>欢迎回来！</h1>
-                <p style={{ color: '#bae7ff', fontSize: '18px', marginBottom: '24px' }}>五大智能体已就绪，让我们一起创造专业的山西电网分析报告吧</p>
+                <h1 style={{ fontSize: '30px', fontWeight: 'bold', marginBottom: '8px', color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>欢迎回来！</h1>
+                <p style={{ color: '#e6f7ff', fontSize: '18px', marginBottom: '24px', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>五大智能体已就绪，让我们一起创造专业的山西电网分析报告吧</p>
                 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
                   {/* 删除快速创建报告按钮 */}
@@ -215,8 +215,8 @@ const Dashboard: React.FC = () => {
                         e.currentTarget.style.transform = 'translateY(0)'
                       }}
                     >
-                      <div className="stat-number" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>{totalReports}</div>
-                      <div className="stat-label" style={{ fontSize: '14px', opacity: 0.9 }}>总报告数</div>
+                      <div className="stat-number" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{totalReports}</div>
+                      <div className="stat-label" style={{ fontSize: '14px', color: '#e6f7ff', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>总报告数</div>
                     </div>
                   </Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
@@ -241,8 +241,8 @@ const Dashboard: React.FC = () => {
                         e.currentTarget.style.transform = 'translateY(0)'
                       }}
                     >
-                      <div className="stat-number" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px' }}>4</div>
-                      <div className="stat-label" style={{ fontSize: '14px', opacity: 0.9 }}>总数据源</div>
+                      <div className="stat-number" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>4</div>
+                      <div className="stat-label" style={{ fontSize: '14px', color: '#e6f7ff', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>总数据源</div>
                     </div>
                   </Col>
                 </Row>
@@ -273,7 +273,7 @@ const Dashboard: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <ThunderboltOutlined style={{ fontSize: '16px' }} />
-                      <span style={{ fontSize: '14px', fontWeight: 'bold' }}>智能体状态</span>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>智能体状态</span>
                     </div>
                     <Badge count={5} style={{ backgroundColor: '#52c41a' }} />
                   </div>
@@ -306,7 +306,7 @@ const Dashboard: React.FC = () => {
                             backgroundColor: agent.status === 'active' ? '#52c41a' : '#fa8c16'
                           }}
                         />
-                        <span>{agent.name}</span>
+                        <span style={{ color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>{agent.name}</span>
                       </div>
                     ))}
                   </div>

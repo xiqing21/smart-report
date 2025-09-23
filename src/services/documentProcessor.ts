@@ -1,5 +1,6 @@
 import { embeddingService } from './ai/embeddingService';
 import { supabase } from '../lib/supabase';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ProcessingProgress {
   documentId: string;
@@ -219,8 +220,8 @@ class DocumentProcessor {
     file: File,
     metadata: Partial<DocumentMetadata> = {}
   ): Promise<string> {
-    // 生成文档ID
-    const documentId = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // 生成文档ID - 使用UUID格式以匹配数据库schema
+    const documentId = uuidv4();
 
     try {
       // 1. 验证文件
@@ -250,14 +251,15 @@ class DocumentProcessor {
         .insert({
           id: documentId,
           name: documentMetadata.fileName,
-          file_type: documentMetadata.fileType,
-          file_size: documentMetadata.fileSize,
+          type: documentMetadata.fileType,
+          size: documentMetadata.fileSize,
           status: 'processing',
           user_id: documentMetadata.userId,
-          tags: documentMetadata.tags || [],
-          description: documentMetadata.description,
-          created_at: documentMetadata.uploadedAt.toISOString(),
-          updated_at: documentMetadata.uploadedAt.toISOString()
+          metadata: {
+            tags: documentMetadata.tags || [],
+            description: documentMetadata.description
+          },
+          upload_time: documentMetadata.uploadedAt.toISOString()
         });
 
       if (insertError) {
@@ -423,7 +425,7 @@ class DocumentProcessor {
       let query = supabase
         .from('documents')
         .select('*', { count: 'exact' })
-        .order('created_at', { ascending: false })
+        .order('upload_time', { ascending: false })
         .range(offset, offset + limit - 1);
 
       if (userId) {

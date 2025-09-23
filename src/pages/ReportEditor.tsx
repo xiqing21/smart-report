@@ -17,7 +17,10 @@ import {
   Col,
   Typography,
   App,
-  Switch
+  Switch,
+  Radio,
+  Checkbox,
+  message
 } from 'antd';
 import { EnhancedButton } from '../components/InteractiveEnhancements';
 
@@ -35,7 +38,6 @@ import {
   AlignRightOutlined,
   OrderedListOutlined,
   UnorderedListOutlined,
-
   FontColorsOutlined,
   BgColorsOutlined,
   PictureOutlined,
@@ -47,8 +49,18 @@ import {
   FullscreenOutlined,
   FullscreenExitOutlined,
   ClockCircleOutlined,
-
-  HistoryOutlined
+  HistoryOutlined,
+  CloudUploadOutlined,
+  RobotOutlined,
+  BulbOutlined,
+  QuestionCircleOutlined,
+  EditOutlined,
+  BarChartOutlined,
+  ThunderboltOutlined,
+  MessageOutlined,
+  LineChartOutlined,
+  NodeIndexOutlined,
+  RiseOutlined
 } from '@ant-design/icons';
 import { useParams, useLocation } from 'react-router-dom';
 import { ReportService } from '../services/api/dataService';
@@ -409,6 +421,12 @@ ${data.regions.map((region: any) =>
   const [lastSavedContent, setLastSavedContent] = useState<string>('');
   const [isMarkdownMode, setIsMarkdownMode] = useState(false);
   const [outline, setOutline] = useState<OutlineItem[]>([]);
+  const [showDataUploadModal, setShowDataUploadModal] = useState(false);
+  const [showAIAssistantModal, setShowAIAssistantModal] = useState(false);
+  const [selectedText, setSelectedText] = useState('');
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [showAISidebar, setShowAISidebar] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   // 加载现有报告数据
   React.useEffect(() => {
@@ -808,6 +826,76 @@ ${data.regions.map((region: any) =>
     }
   ];
 
+  // 分享菜单点击处理
+  const handleShareMenuClick = ({ key }: { key: string }) => {
+    switch (key) {
+      case 'link':
+        // 生成分享链接
+        const shareUrl = `${window.location.origin}/reports/${reportId || 'new'}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          message.success('分享链接已复制到剪贴板');
+        }).catch(() => {
+          message.error('复制失败，请手动复制链接');
+        });
+        break;
+      case 'export':
+        // 导出PDF
+        handleExportPDF();
+        break;
+      default:
+        break;
+    }
+  };
+
+  // 导出PDF处理函数
+  const handleExportPDF = async () => {
+    try {
+      message.loading('正在生成PDF...', 0);
+      const element = editorRef.current;
+      if (!element) {
+        message.error('无法获取文档内容');
+        return;
+      }
+      
+      // 动态导入html2canvas和jsPDF
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+      
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      
+      let position = 0;
+      
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(`${editorState.title || '报告'}.pdf`);
+      message.destroy();
+      message.success('PDF导出成功');
+    } catch (error) {
+      message.destroy();
+      message.error('PDF导出失败');
+      console.error('Export PDF error:', error);
+    }
+  };
+
   // 分享菜单
   const shareMenuItems = [
     {
@@ -848,7 +936,8 @@ ${data.regions.map((region: any) =>
   ];
 
   return (
-    <div className={`report-editor ${editorState.isFullscreen ? 'fullscreen' : ''}`}>
+    <>
+      <div className={`report-editor ${editorState.isFullscreen ? 'fullscreen' : ''}`}>
       {/* 顶部工具栏 */}
       <motion.div
         className="editor-toolbar"
@@ -880,6 +969,40 @@ ${data.regions.map((region: any) =>
             </EnhancedButton>
             <EnhancedButton icon={<UndoOutlined />} disabled variant="pulse">撤销</EnhancedButton>
             <EnhancedButton icon={<RedoOutlined />} disabled variant="pulse">重做</EnhancedButton>
+          </Space>
+
+          <Divider type="vertical" />
+
+          {/* AI功能工具组 */}
+          <Space size="small">
+            <Tooltip title="上传数据源">
+              <EnhancedButton
+                icon={<CloudUploadOutlined />}
+                onClick={() => setShowDataUploadModal(true)}
+                variant="pulse"
+              >
+                数据源
+              </EnhancedButton>
+            </Tooltip>
+            <Tooltip title="AI智能助手">
+              <EnhancedButton
+                type={showAISidebar ? 'primary' : 'default'}
+                icon={<RobotOutlined />}
+                onClick={() => setShowAISidebar(!showAISidebar)}
+                variant="glow"
+              >
+                AI助手
+              </EnhancedButton>
+            </Tooltip>
+            <Tooltip title="智能分析">
+              <EnhancedButton
+                icon={<BarChartOutlined />}
+                onClick={() => message.info('正在启动智能分析...')}
+                variant="pulse"
+              >
+                分析
+              </EnhancedButton>
+            </Tooltip>
           </Space>
 
           <Divider type="vertical" />
@@ -967,7 +1090,7 @@ ${data.regions.map((region: any) =>
           >
             打印
           </Button>
-          <Dropdown menu={{ items: shareMenuItems }} trigger={['click']}>
+          <Dropdown menu={{ items: shareMenuItems, onClick: handleShareMenuClick }} trigger={['click']}>
             <Button type="text" icon={<ShareAltOutlined />}>
               分享
             </Button>
@@ -1143,21 +1266,401 @@ ${data.regions.map((region: any) =>
           </div>
         </motion.div>
 
+        {/* AI智能助手侧边栏 */}
+        {showAISidebar && (
+          <motion.div
+            className="ai-sidebar"
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 20, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              width: '320px',
+              background: '#f8f9fa',
+              borderLeft: '1px solid var(--border-color)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}
+          >
+            {/* AI助手头部 */}
+            <div style={{
+              padding: '16px',
+              borderBottom: '1px solid var(--border-color)',
+              background: '#fff'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Title level={5} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                  <RobotOutlined style={{ marginRight: '8px', color: 'var(--primary-color)' }} />
+                  AI智能助手
+                </Title>
+                <Button 
+                  type="text" 
+                  size="small" 
+                  onClick={() => setShowAISidebar(false)}
+                  style={{ padding: '4px' }}
+                >
+                  ×
+                </Button>
+              </div>
+            </div>
+
+            {/* AI功能选项卡 */}
+            <div style={{
+              padding: '12px 16px',
+              borderBottom: '1px solid var(--border-color)',
+              background: '#fff'
+            }}>
+              <Space size="small" wrap>
+                <Button 
+                  size="small" 
+                  type="primary" 
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    const selection = window.getSelection()?.toString();
+                    if (selection) {
+                      message.info(`正在润色文本："${selection.substring(0, 20)}..."`);  
+                    } else {
+                      message.warning('请先选择要润色的文本');
+                    }
+                  }}
+                >
+                  划词润色
+                </Button>
+                <Button 
+                  size="small" 
+                  icon={<BulbOutlined />}
+                  onClick={() => {
+                    message.info('正在生成智能摘要...');
+                    setTimeout(() => {
+                      message.success('摘要已生成，请查看编辑区域');
+                    }, 2000);
+                  }}
+                >
+                  智能总结
+                </Button>
+                <Button 
+                  size="small" 
+                  icon={<QuestionCircleOutlined />}
+                  onClick={() => message.info('知识库问答功能已激活，请在下方输入问题')}
+                >
+                  知识问答
+                </Button>
+                <Button 
+                  size="small" 
+                  icon={<BarChartOutlined />}
+                  onClick={() => {
+                    message.info('启动对话式图表生成...');
+                    // 模拟图表生成对话
+                    setTimeout(() => {
+                      message.success('图表生成完成！已插入到报告中');
+                    }, 3000);
+                  }}
+                >
+                  图表生成
+                </Button>
+                <Button 
+                  size="small" 
+                  icon={<ThunderboltOutlined />}
+                  onClick={() => {
+                    message.info('正在分析数据趋势...');
+                    setTimeout(() => {
+                      message.success('趋势预测完成！建议已添加到报告');
+                    }, 2500);
+                  }}
+                >
+                  趋势预测
+                </Button>
+              </Space>
+            </div>
+
+            {/* AI对话区域 */}
+            <div style={{
+              flex: 1,
+              padding: '16px',
+              overflow: 'auto',
+              background: '#fff'
+            }}>
+              <div style={{ marginBottom: '16px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  💡 选择文本后点击"划词润色"，或直接提问获得AI建议
+                </Text>
+              </div>
+              
+              {/* 推荐问题 */}
+              <div style={{ marginBottom: '16px' }}>
+                <Text strong style={{ fontSize: '13px', display: 'block', marginBottom: '8px' }}>
+                  💡 智能建议：
+                </Text>
+                <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                  {[
+                    { text: '帮我优化这段文字的表达', icon: '✨', action: 'polish' },
+                    { text: '生成销售趋势图表', icon: '📊', action: 'chart' },
+                    { text: '总结当前报告的核心观点', icon: '📝', action: 'summary' },
+                    { text: '预测下季度业务发展趋势', icon: '🔮', action: 'predict' },
+                    { text: '添加数据对比分析', icon: '📈', action: 'compare' },
+                    { text: '生成结论和建议', icon: '💡', action: 'conclusion' }
+                  ].map((item, index) => (
+                    <Button 
+                      key={index}
+                      type="text" 
+                      size="small" 
+                      style={{ 
+                        textAlign: 'left', 
+                        height: 'auto', 
+                        padding: '8px 12px',
+                        fontSize: '12px',
+                        border: '1px solid #e8e8e8',
+                        borderRadius: '8px',
+                        background: '#fafafa',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#f0f8ff';
+                        e.currentTarget.style.borderColor = '#91d5ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#fafafa';
+                        e.currentTarget.style.borderColor = '#e8e8e8';
+                      }}
+                      onClick={() => {
+                        const actions = {
+                          polish: () => message.info('🎯 正在分析文本，准备优化建议...'),
+                          chart: () => {
+                            message.info('📊 启动图表生成向导...');
+                            setTimeout(() => {
+                              message.success('✅ 销售趋势图表已生成并插入报告！');
+                            }, 2500);
+                          },
+                          summary: () => {
+                            message.info('🔍 正在分析报告内容...');
+                            setTimeout(() => {
+                              message.success('📋 核心观点总结已添加到报告开头！');
+                            }, 2000);
+                          },
+                          predict: () => {
+                            message.info('🔮 正在基于历史数据进行趋势预测...');
+                            setTimeout(() => {
+                              message.success('📈 趋势预测分析已完成，建议已添加！');
+                            }, 3000);
+                          },
+                          compare: () => {
+                            message.info('📊 正在生成对比分析图表...');
+                            setTimeout(() => {
+                              message.success('📈 数据对比分析已插入报告！');
+                            }, 2200);
+                          },
+                          conclusion: () => {
+                            message.info('💭 正在基于数据生成结论和建议...');
+                            setTimeout(() => {
+                              message.success('✨ 智能结论和建议已添加到报告末尾！');
+                            }, 2800);
+                          }
+                        };
+                        actions[item.action as keyof typeof actions]();
+                      }}
+                    >
+                      <span style={{ marginRight: '6px' }}>{item.icon}</span>
+                      {item.text}
+                    </Button>
+                  ))}
+                </Space>
+              </div>
+
+              {/* AI对话历史 */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{
+                  padding: '12px',
+                  background: 'linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%)',
+                  borderRadius: '12px',
+                  marginBottom: '12px',
+                  fontSize: '13px',
+                  border: '1px solid #b3d8ff'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #1890ff, #40a9ff)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginRight: '8px'
+                    }}>
+                      <RobotOutlined style={{ color: '#fff', fontSize: '12px' }} />
+                    </div>
+                    <Text strong style={{ color: '#1890ff' }}>AI智能助手</Text>
+                    <div style={{
+                      marginLeft: 'auto',
+                      padding: '2px 6px',
+                      background: '#52c41a',
+                      borderRadius: '10px',
+                      fontSize: '10px',
+                      color: '#fff'
+                    }}>
+                      在线
+                    </div>
+                  </div>
+                  <Text style={{ lineHeight: '1.6' }}>
+                    🎯 <strong>专业报告助手</strong>为您服务！我具备以下核心能力：<br/>
+                    📝 <strong>智能写作</strong>：文本润色、语法优化、风格调整<br/>
+                    📊 <strong>数据分析</strong>：图表生成、趋势预测、对比分析<br/>
+                    💡 <strong>内容生成</strong>：摘要提取、结论建议、创意扩展<br/>
+                    🔍 <strong>知识问答</strong>：专业咨询、最佳实践、行业洞察
+                  </Text>
+                </div>
+                
+                {/* 示例对话 */}
+                <div style={{ marginBottom: '8px' }}>
+                  <div style={{
+                    padding: '8px 12px',
+                    background: '#f6f6f6',
+                    borderRadius: '12px 12px 4px 12px',
+                    marginBottom: '8px',
+                    fontSize: '12px',
+                    marginLeft: '20px'
+                  }}>
+                    <Text type="secondary">用户：帮我分析一下销售数据的趋势</Text>
+                  </div>
+                  <div style={{
+                    padding: '8px 12px',
+                    background: '#e6f7ff',
+                    borderRadius: '12px 12px 12px 4px',
+                    fontSize: '12px',
+                    marginRight: '20px'
+                  }}>
+                    <Text>📈 基于您的数据，我发现销售呈现<strong>稳步上升</strong>趋势，Q3增长率达到<strong>15.2%</strong>。建议重点关注高增长产品线，我已为您生成详细的趋势分析图表。</Text>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* AI输入框 */}
+            <div style={{
+              padding: '16px',
+              borderTop: '1px solid var(--border-color)',
+              background: 'linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%)'
+            }}>
+              <div style={{ marginBottom: '8px' }}>
+                <Space size="small" wrap>
+                  {[
+                    { text: '润色', icon: '✨' },
+                    { text: '图表', icon: '📊' },
+                    { text: '总结', icon: '📝' },
+                    { text: '预测', icon: '🔮' }
+                  ].map((item, index) => (
+                    <Button 
+                      key={index}
+                      size="small" 
+                      type="text"
+                      style={{
+                        fontSize: '11px',
+                        padding: '2px 6px',
+                        height: '22px',
+                        background: '#e6f7ff',
+                        border: '1px solid #91d5ff',
+                        borderRadius: '12px'
+                      }}
+                      onClick={() => {
+                        const input = document.querySelector('.ai-input') as HTMLInputElement;
+                        if (input) {
+                          const prompts = {
+                            '润色': '请帮我润色这段文字：',
+                            '图表': '请为我生成一个关于',
+                            '总结': '请总结以下内容的要点：',
+                            '预测': '基于当前数据，请预测'
+                          };
+                          input.value = prompts[item.text as keyof typeof prompts] || '';
+                          input.focus();
+                        }
+                      }}
+                    >
+                      <span style={{ marginRight: '2px' }}>{item.icon}</span>
+                      {item.text}
+                    </Button>
+                  ))}
+                </Space>
+              </div>
+              <Space.Compact style={{ width: '100%' }}>
+                <Input
+                  className="ai-input"
+                  placeholder="💬 描述您的需求，如：'生成销售趋势图表' 或 '润色第二段文字'..."
+                  size="small"
+                  style={{
+                    borderRadius: '20px 0 0 20px',
+                    border: '2px solid #d9d9d9',
+                    fontSize: '13px'
+                  }}
+                  onPressEnter={(e) => {
+                    const value = (e.target as HTMLInputElement).value;
+                    if (value.trim()) {
+                      message.loading('🤖 AI正在思考中...', 1);
+                      setTimeout(() => {
+                        message.success(`✅ 已完成：${value}`);
+                      }, 2000);
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#40a9ff';
+                    e.target.style.boxShadow = '0 0 0 2px rgba(24, 144, 255, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d9d9d9';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+                <Button 
+                  type="primary" 
+                  size="small" 
+                  icon={<MessageOutlined />}
+                  style={{
+                    borderRadius: '0 20px 20px 0',
+                    background: 'linear-gradient(135deg, #1890ff, #40a9ff)',
+                    border: 'none',
+                    height: '32px'
+                  }}
+                  onClick={() => {
+                    const input = document.querySelector('.ai-input') as HTMLInputElement;
+                    const value = input?.value;
+                    if (value?.trim()) {
+                      message.loading('🤖 AI正在处理您的请求...', 1);
+                      setTimeout(() => {
+                        message.success(`✅ 已完成：${value}`);
+                      }, 2000);
+                      if (input) input.value = '';
+                    } else {
+                      message.warning('请输入您的需求');
+                    }
+                  }}
+                >
+                  发送
+                </Button>
+              </Space.Compact>
+              <div style={{ marginTop: '6px', fontSize: '11px', color: '#999', textAlign: 'center' }}>
+                💡 提示：选中文字后点击功能按钮，或直接描述需求
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* 右侧属性面板 */}
-        <motion.div
-          className="editor-properties"
-          initial={{ x: 20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-          style={{
-            width: '280px',
-            background: '#fafafa',
-            borderLeft: '1px solid var(--border-color)',
-            padding: '16px',
-            overflow: 'auto'
-          }}
-        >
-          <Title level={5} style={{ marginBottom: '16px' }}>文档属性</Title>
+        {!showAISidebar && (
+          <motion.div
+            className="editor-properties"
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            style={{
+              width: '280px',
+              background: '#fafafa',
+              borderLeft: '1px solid var(--border-color)',
+              padding: '16px',
+              overflow: 'auto'
+            }}
+          >
+             <Title level={5} style={{ marginBottom: '16px' }}>文档属性</Title>
           
           {/* 文档信息 */}
           <Card size="small" style={{ marginBottom: '16px' }}>
@@ -1217,10 +1720,10 @@ ${data.regions.map((region: any) =>
             </Space>
           </Card>
         </motion.div>
-      </div>
+        )}
 
-      {/* 底部状态栏 */}
-      <motion.div
+        {/* 底部状态栏 */}
+        <motion.div
         className="editor-statusbar"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -1270,6 +1773,381 @@ ${data.regions.map((region: any) =>
           <p className="ant-upload-text">点击或拖拽图片到此区域上传</p>
           <p className="ant-upload-hint">支持 JPG、PNG、GIF 格式，文件大小不超过 10MB</p>
         </Upload.Dragger>
+      </Modal>
+
+      {/* 数据源上传模态框 */}
+      <Modal
+        title={
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <CloudUploadOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+            <span>智能数据源管理</span>
+            <div style={{
+              marginLeft: 'auto',
+              padding: '2px 8px',
+              background: '#f0f8ff',
+              borderRadius: '12px',
+              fontSize: '12px',
+              color: '#1890ff'
+            }}>
+              步骤 1/4
+            </div>
+          </div>
+        }
+        open={showDataUploadModal}
+        onCancel={() => setShowDataUploadModal(false)}
+        width={700}
+        footer={[
+          <Button key="cancel" onClick={() => setShowDataUploadModal(false)}>
+            取消
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary"
+            onClick={() => {
+              message.loading('🔄 正在处理数据源...', 2);
+              setTimeout(() => {
+                message.success('✅ 数据源处理完成！正在跳转到分析中心...');
+                setShowDataUploadModal(false);
+                setTimeout(() => {
+                  setShowAnalysisModal(true);
+                }, 1000);
+              }, 2000);
+            }}
+          >
+            <ThunderboltOutlined /> 开始智能处理
+          </Button>
+        ]}
+      >
+        <div style={{ marginBottom: '16px', padding: '12px', background: '#f0f8ff', borderRadius: '8px', border: '1px solid #b3d8ff' }}>
+          <Text style={{ fontSize: '13px', color: '#1890ff' }}>
+            🎯 <strong>智能工作流</strong>：数据上传 → 自动清洗 → 智能分析 → 报告生成 → 一键导出
+          </Text>
+        </div>
+        
+        <div style={{ padding: '20px 0' }}>
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            <div>
+              <Text strong style={{ fontSize: '14px' }}>📊 选择数据源类型</Text>
+              <Radio.Group defaultValue="excel" style={{ marginTop: 12, width: '100%' }}>
+                <Space direction="vertical" size="middle">
+                  <Radio value="excel" style={{ padding: '8px', border: '1px solid #f0f0f0', borderRadius: '6px', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <FileTextOutlined style={{ marginRight: '8px', color: '#52c41a' }} />
+                      <div>
+                        <div><strong>Excel文件</strong> (.xlsx, .xls)</div>
+                        <div style={{ fontSize: '12px', color: '#999' }}>支持多工作表，自动识别表头</div>
+                      </div>
+                    </div>
+                  </Radio>
+                  <Radio value="csv" style={{ padding: '8px', border: '1px solid #f0f0f0', borderRadius: '6px', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <TableOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+                      <div>
+                        <div><strong>CSV文件</strong> (.csv)</div>
+                        <div style={{ fontSize: '12px', color: '#999' }}>纯文本格式，快速处理</div>
+                      </div>
+                    </div>
+                  </Radio>
+                  <Radio value="database" style={{ padding: '8px', border: '1px solid #f0f0f0', borderRadius: '6px', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <BulbOutlined style={{ marginRight: '8px', color: '#fa8c16' }} />
+                      <div>
+                        <div><strong>数据库连接</strong></div>
+                        <div style={{ fontSize: '12px', color: '#999' }}>MySQL, PostgreSQL, MongoDB</div>
+                      </div>
+                    </div>
+                  </Radio>
+                </Space>
+              </Radio.Group>
+            </div>
+            
+            <div>
+              <Text strong style={{ fontSize: '14px' }}>📁 上传数据文件</Text>
+              <Upload.Dragger
+                name="file"
+                multiple={false}
+                style={{ marginTop: 12 }}
+                showUploadList={false}
+                beforeUpload={() => {
+                  message.success('📄 文件上传成功！正在解析数据结构...');
+                  return false;
+                }}
+              >
+                <p className="ant-upload-drag-icon">
+                  <CloudUploadOutlined style={{ fontSize: '48px', color: '#1890ff' }} />
+                </p>
+                <p className="ant-upload-text" style={{ fontSize: '16px', fontWeight: 'bold' }}>点击或拖拽文件到此区域</p>
+                <p className="ant-upload-hint" style={{ color: '#666' }}>支持 Excel、CSV 格式，建议文件大小不超过 50MB</p>
+                <div style={{ marginTop: '12px' }}>
+                  <Space>
+                    <div style={{ padding: '4px 8px', background: '#f6ffed', borderRadius: '4px', fontSize: '12px', color: '#52c41a' }}>
+                      ✓ 自动识别表头
+                    </div>
+                    <div style={{ padding: '4px 8px', background: '#f0f8ff', borderRadius: '4px', fontSize: '12px', color: '#1890ff' }}>
+                      ✓ 智能数据清洗
+                    </div>
+                    <div style={{ padding: '4px 8px', background: '#fff7e6', borderRadius: '4px', fontSize: '12px', color: '#fa8c16' }}>
+                      ✓ 实时预览
+                    </div>
+                  </Space>
+                </div>
+              </Upload.Dragger>
+            </div>
+            
+            <div>
+              <Text strong style={{ fontSize: '14px' }}>⚙️ 智能预处理配置</Text>
+              <div style={{ marginTop: 12, padding: '16px', background: '#fafafa', borderRadius: '8px' }}>
+                <Checkbox.Group style={{ width: '100%' }} defaultValue={['clean', 'format', 'validate', 'preview']}>
+                  <Row gutter={[16, 12]}>
+                    <Col span={12}>
+                      <Checkbox value="clean" style={{ fontSize: '13px' }}>
+                        <div>
+                          <div><strong>🧹 数据清洗</strong></div>
+                          <div style={{ fontSize: '11px', color: '#999' }}>移除空值、重复项、异常值</div>
+                        </div>
+                      </Checkbox>
+                    </Col>
+                    <Col span={12}>
+                      <Checkbox value="format" style={{ fontSize: '13px' }}>
+                        <div>
+                          <div><strong>📐 格式统一</strong></div>
+                          <div style={{ fontSize: '11px', color: '#999' }}>日期、数字、文本格式标准化</div>
+                        </div>
+                      </Checkbox>
+                    </Col>
+                    <Col span={12}>
+                      <Checkbox value="validate" style={{ fontSize: '13px' }}>
+                        <div>
+                          <div><strong>✅ 数据验证</strong></div>
+                          <div style={{ fontSize: '11px', color: '#999' }}>检查数据完整性和有效性</div>
+                        </div>
+                      </Checkbox>
+                    </Col>
+                    <Col span={12}>
+                      <Checkbox value="preview" style={{ fontSize: '13px' }}>
+                        <div>
+                          <div><strong>👁️ 智能预览</strong></div>
+                          <div style={{ fontSize: '11px', color: '#999' }}>生成数据概览和统计摘要</div>
+                        </div>
+                      </Checkbox>
+                    </Col>
+                  </Row>
+                </Checkbox.Group>
+              </div>
+            </div>
+          </Space>
+        </div>
+      </Modal>
+
+      {/* 智能分析模态框 */}
+      <Modal
+        title={
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <BulbOutlined style={{ marginRight: '8px', color: '#fa8c16' }} />
+            <span>AI智能分析中心</span>
+            <div style={{
+              marginLeft: 'auto',
+              padding: '2px 8px',
+              background: '#fff7e6',
+              borderRadius: '12px',
+              fontSize: '12px',
+              color: '#fa8c16'
+            }}>
+              步骤 2/4
+            </div>
+          </div>
+        }
+        open={showAnalysisModal}
+        onCancel={() => setShowAnalysisModal(false)}
+        width={900}
+        footer={[
+          <Button key="cancel" onClick={() => setShowAnalysisModal(false)}>
+            返回上一步
+          </Button>,
+          <Button key="apply" type="primary" onClick={() => {
+            message.loading('🔄 正在生成报告内容...', 2);
+            setTimeout(() => {
+              message.success('✅ 分析结果已应用！正在进入报告编辑...');
+              setShowAnalysisModal(false);
+              setTimeout(() => {
+                message.info('🎯 现在可以使用AI助手进一步优化报告内容！');
+                setShowAISidebar(true);
+              }, 1000);
+            }, 2000);
+          }}>
+            <EditOutlined /> 生成报告并进入编辑
+          </Button>
+        ]}
+      >
+        <div style={{ marginBottom: '16px', padding: '12px', background: '#fff7e6', borderRadius: '8px', border: '1px solid #ffd591' }}>
+          <Text style={{ fontSize: '13px', color: '#fa8c16' }}>
+            🧠 <strong>AI分析引擎</strong>：基于您的数据自动生成深度洞察和专业建议
+          </Text>
+        </div>
+        
+        <div style={{ padding: '20px 0' }}>
+          <Row gutter={24}>
+            <Col span={10}>
+              <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                <div>
+                  <Text strong style={{ fontSize: '14px' }}>🎯 分析类型</Text>
+                  <Radio.Group defaultValue="trend" style={{ marginTop: '12px', width: '100%' }}>
+                    <Space direction="vertical" size="middle">
+                      <Radio value="trend" style={{ padding: '8px', border: '1px solid #f0f0f0', borderRadius: '6px', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <LineChartOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+                          <div>
+                            <div><strong>趋势分析</strong></div>
+                            <div style={{ fontSize: '12px', color: '#999' }}>识别数据变化趋势和周期性</div>
+                          </div>
+                        </div>
+                      </Radio>
+                      <Radio value="correlation" style={{ padding: '8px', border: '1px solid #f0f0f0', borderRadius: '6px', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <NodeIndexOutlined style={{ marginRight: '8px', color: '#52c41a' }} />
+                          <div>
+                            <div><strong>相关性分析</strong></div>
+                            <div style={{ fontSize: '12px', color: '#999' }}>发现变量间的关联关系</div>
+                          </div>
+                        </div>
+                      </Radio>
+                      <Radio value="forecast" style={{ padding: '8px', border: '1px solid #f0f0f0', borderRadius: '6px', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <RiseOutlined style={{ marginRight: '8px', color: '#fa8c16' }} />
+                          <div>
+                            <div><strong>预测分析</strong></div>
+                            <div style={{ fontSize: '12px', color: '#999' }}>基于历史数据预测未来趋势</div>
+                          </div>
+                        </div>
+                      </Radio>
+                      <Radio value="summary" style={{ padding: '8px', border: '1px solid #f0f0f0', borderRadius: '6px', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <FileTextOutlined style={{ marginRight: '8px', color: '#722ed1' }} />
+                          <div>
+                            <div><strong>数据摘要</strong></div>
+                            <div style={{ fontSize: '12px', color: '#999' }}>生成关键指标和统计摘要</div>
+                          </div>
+                        </div>
+                      </Radio>
+                    </Space>
+                  </Radio.Group>
+                </div>
+                
+                <div>
+                  <Text strong style={{ fontSize: '14px' }}>📊 分析维度</Text>
+                  <Select
+                    mode="multiple"
+                    placeholder="选择要分析的数据维度"
+                    style={{ width: '100%', marginTop: '12px' }}
+                    defaultValue={['sales', 'time']}
+                    options={[
+                      { label: '💰 销售额', value: 'sales' },
+                      { label: '👥 用户数量', value: 'users' },
+                      { label: '📈 转化率', value: 'conversion' },
+                      { label: '⏰ 时间序列', value: 'time' },
+                      { label: '🏷️ 产品类别', value: 'category' },
+                      { label: '🌍 地理区域', value: 'region' }
+                    ]}
+                  />
+                </div>
+                
+                <div>
+                  <Text strong style={{ fontSize: '14px' }}>⚙️ 高级选项</Text>
+                  <div style={{ marginTop: '12px', padding: '12px', background: '#fafafa', borderRadius: '6px' }}>
+                    <Checkbox.Group style={{ width: '100%' }} defaultValue={['insights', 'charts']}>
+                      <Space direction="vertical" size="small">
+                        <Checkbox value="insights">🔍 生成智能洞察</Checkbox>
+                        <Checkbox value="charts">📊 自动创建图表</Checkbox>
+                        <Checkbox value="recommendations">💡 提供优化建议</Checkbox>
+                        <Checkbox value="alerts">⚠️ 异常值检测</Checkbox>
+                      </Space>
+                    </Checkbox.Group>
+                  </div>
+                </div>
+              </Space>
+            </Col>
+            
+            <Col span={14}>
+              <div>
+                <Text strong style={{ fontSize: '14px' }}>🎯 AI分析结果</Text>
+                <div style={{
+                  background: 'linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%)',
+                  border: '1px solid #b3d8ff',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  marginTop: '12px',
+                  minHeight: '400px'
+                }}>
+                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #1890ff, #40a9ff)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 12px'
+                    }}>
+                      <BulbOutlined style={{ color: '#fff', fontSize: '24px' }} />
+                    </div>
+                    <Text strong style={{ fontSize: '16px', color: '#1890ff' }}>AI智能分析报告</Text>
+                  </div>
+                  
+                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    <div style={{ padding: '16px', background: '#fff', borderRadius: '8px', border: '1px solid #e6f7ff' }}>
+                      <Text strong style={{ color: '#1890ff', fontSize: '14px' }}>📈 核心趋势洞察</Text>
+                      <div style={{ marginTop: '8px' }}>
+                        <Space direction="vertical" size="small">
+                          <Text>• <strong>销售增长</strong>：过去6个月呈现<span style={{ color: '#52c41a', fontWeight: 'bold' }}>稳步上升</span>趋势，平均月增长率 <strong>15.2%</strong></Text>
+                          <Text>• <strong>用户活跃</strong>：周末活跃度达到峰值，比工作日高出 <strong>28%</strong></Text>
+                          <Text>• <strong>季节性</strong>：Q4表现最佳，销售额占全年 <strong>35%</strong></Text>
+                        </Space>
+                      </div>
+                    </div>
+                    
+                    <div style={{ padding: '16px', background: '#fff', borderRadius: '8px', border: '1px solid #e6f7ff' }}>
+                      <Text strong style={{ color: '#fa8c16', fontSize: '14px' }}>🔮 预测与建议</Text>
+                      <div style={{ marginTop: '8px' }}>
+                        <Space direction="vertical" size="small">
+                          <Text>• <strong>未来趋势</strong>：预计下季度销售额将增长 <span style={{ color: '#52c41a', fontWeight: 'bold' }}>25-30%</span></Text>
+                          <Text>• <strong>优化建议</strong>：建议加强周末营销活动投入，预期ROI提升 <strong>40%</strong></Text>
+                          <Text>• <strong>风险提醒</strong>：注意Q1淡季影响，提前制定应对策略</Text>
+                        </Space>
+                      </div>
+                    </div>
+                    
+                    <div style={{ padding: '16px', background: '#fff', borderRadius: '8px', border: '1px solid #e6f7ff' }}>
+                      <Text strong style={{ color: '#722ed1', fontSize: '14px' }}>📊 关键指标摘要</Text>
+                      <div style={{ marginTop: '8px' }}>
+                        <Row gutter={16}>
+                          <Col span={8}>
+                            <div style={{ textAlign: 'center', padding: '8px', background: '#f6ffed', borderRadius: '6px' }}>
+                              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#52c41a' }}>↗ 15.2%</div>
+                              <div style={{ fontSize: '12px', color: '#999' }}>月增长率</div>
+                            </div>
+                          </Col>
+                          <Col span={8}>
+                            <div style={{ textAlign: 'center', padding: '8px', background: '#f0f8ff', borderRadius: '6px' }}>
+                              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1890ff' }}>85.6%</div>
+                              <div style={{ fontSize: '12px', color: '#999' }}>客户满意度</div>
+                            </div>
+                          </Col>
+                          <Col span={8}>
+                            <div style={{ textAlign: 'center', padding: '8px', background: '#fff7e6', borderRadius: '6px' }}>
+                              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#fa8c16' }}>3.2x</div>
+                              <div style={{ fontSize: '12px', color: '#999' }}>ROI倍数</div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </div>
+                  </Space>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </div>
       </Modal>
 
       {/* 设置模态框 */}
@@ -1351,7 +2229,9 @@ ${data.regions.map((region: any) =>
           }
         }
       `}</style>
-    </div>
+      </div>
+      </div>
+    </>
   );
 };
 

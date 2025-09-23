@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Statistic, List, Avatar, Progress, Space, Typography, Divider } from 'antd'
+import { Row, Col, Statistic, List, Avatar, Progress, Space, Typography, Divider, Badge } from 'antd'
 import { motion } from 'framer-motion'
 import {
   DashboardOutlined,
@@ -17,7 +17,11 @@ import {
   FundProjectionScreenOutlined,
   ThunderboltOutlined,
   EyeOutlined,
-  SettingOutlined
+  SettingOutlined,
+  UserOutlined,
+  TeamOutlined,
+  BulbOutlined,
+  SyncOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { Card, Button, Tag, Status, Empty } from '@/components/ui'
@@ -32,11 +36,60 @@ const Workspace: React.FC = () => {
   const [stats, setStats] = useState({
     totalReports: 156,
     pendingTasks: 8,
-    completedToday: 12,
+    todayCompleted: 12,
     dataSourcesConnected: 5,
     aiAnalysisCount: 23,
     systemHealth: 98
   })
+
+  // 智能体状态数据（从经典仪表板迁移过来）
+  const [agentStats, setAgentStats] = useState({
+    dataCollector: { cpu: 45, memory: 62, tasks: 23, status: 'active' },
+    metricAnalyzer: { cpu: 38, memory: 71, tasks: 18, status: 'active' },
+    policyReader: { cpu: 52, memory: 58, tasks: 15, status: 'active' },
+    dataDetector: { cpu: 41, memory: 65, tasks: 21, status: 'active' },
+    reportGenerator: { cpu: 47, memory: 69, tasks: 12, status: 'active' }
+  })
+
+  // 智能体状态动态更新（从经典仪表板迁移过来）
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAgentStats(prev => ({
+        dataCollector: {
+          cpu: Math.floor(Math.random() * 30) + 30,
+          memory: Math.floor(Math.random() * 25) + 50,
+          tasks: Math.floor(Math.random() * 15) + 15,
+          status: Math.random() > 0.1 ? 'active' : 'busy'
+        },
+        metricAnalyzer: {
+          cpu: Math.floor(Math.random() * 35) + 25,
+          memory: Math.floor(Math.random() * 30) + 55,
+          tasks: Math.floor(Math.random() * 12) + 10,
+          status: Math.random() > 0.15 ? 'active' : 'busy'
+        },
+        policyReader: {
+          cpu: Math.floor(Math.random() * 40) + 35,
+          memory: Math.floor(Math.random() * 20) + 45,
+          tasks: Math.floor(Math.random() * 18) + 8,
+          status: Math.random() > 0.12 ? 'active' : 'busy'
+        },
+        dataDetector: {
+          cpu: Math.floor(Math.random() * 32) + 28,
+          memory: Math.floor(Math.random() * 28) + 52,
+          tasks: Math.floor(Math.random() * 20) + 12,
+          status: Math.random() > 0.08 ? 'active' : 'busy'
+        },
+        reportGenerator: {
+          cpu: Math.floor(Math.random() * 38) + 32,
+          memory: Math.floor(Math.random() * 25) + 58,
+          tasks: Math.floor(Math.random() * 16) + 6,
+          status: Math.random() > 0.2 ? 'active' : 'busy'
+        }
+      }))
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const [recentReports, setRecentReports] = useState([
     {
@@ -72,6 +125,15 @@ const Workspace: React.FC = () => {
       type: 'ai'
     }
   ])
+
+  // 更新总报告数为实际报告数量
+  useEffect(() => {
+    setStats(prev => ({
+      ...prev,
+      totalReports: recentReports.length,
+      todayCompleted: Math.floor(Math.random() * 20) + 5
+    }))
+  }, [recentReports.length])
 
   const [recommendations, setRecommendations] = useState([
     {
@@ -184,21 +246,65 @@ const Workspace: React.FC = () => {
       background: designSystem.colors.background.secondary,
       minHeight: '100vh'
     }}>
+      <style>
+        {`
+          @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+          }
+          .pulse-animation {
+            animation: pulse 2s infinite;
+          }
+        `}
+      </style>
       {/* 欢迎区域 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        style={{ cursor: 'pointer' }}
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
+        onClick={() => navigate('/workspace')}
       >
         <Card
           style={{
             marginBottom: designSystem.spacing.lg,
-            background: `linear-gradient(135deg, ${designSystem.colors.primary} 0%, ${designSystem.colors.secondary} 100%)`,
+            background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
             border: 'none',
-            color: 'white'
+            color: 'white',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(99, 102, 241, 0.4), 0 8px 24px rgba(0, 0, 0, 0.12)',
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            position: 'relative',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)'
           }}
           hoverable={false}
         >
+          {/* 添加装饰性渐变层 */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 30%, rgba(255,255,255,0.05) 70%, transparent 100%)',
+            pointerEvents: 'none'
+          }} />
+          {/* 添加光晕效果 */}
+          <div style={{
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%',
+            width: '200%',
+            height: '200%',
+            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, transparent 50%)',
+            pointerEvents: 'none',
+            animation: 'pulse 3s ease-in-out infinite'
+          }} />
           <div style={{ padding: `${designSystem.spacing.lg} 0` }}>
             <Title 
               level={1} 
@@ -206,7 +312,8 @@ const Workspace: React.FC = () => {
                 color: 'white', 
                 fontSize: '32px', 
                 marginBottom: designSystem.spacing.xs,
-                fontWeight: designSystem.typography.fontWeight.bold
+                fontWeight: designSystem.typography.fontWeight.bold,
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
               }}
             >
               欢迎回到智能报告系统
@@ -236,16 +343,16 @@ const Workspace: React.FC = () => {
       >
         <Card 
           title="快捷操作" 
-          style={{ marginBottom: designSystem.spacing.lg }}
-          extra={
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate('/settings')}
-            >
-              <SettingOutlined /> 设置
-            </Button>
-          }
+          style={{ 
+            marginBottom: designSystem.spacing.lg,
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+          }}
+
         >
           <Row gutter={[16, 16]}>
             {quickActions.map((action) => (
@@ -258,9 +365,24 @@ const Workspace: React.FC = () => {
                     hoverable
                     style={{
                       textAlign: 'center',
-                      border: `2px solid ${designSystem.colors.border.light}`,
-                      borderRadius: designSystem.borderRadius.lg,
-                      cursor: 'pointer'
+                      border: `1px solid rgba(255, 255, 255, 0.1)`,
+                      borderRadius: '16px',
+                      cursor: 'pointer',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'
+                      e.currentTarget.style.boxShadow = '0 12px 40px rgba(99, 102, 241, 0.2), 0 8px 24px rgba(0, 0, 0, 0.12)'
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)'
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
                     }}
                     onClick={() => navigate(action.path)}
                   >
@@ -283,19 +405,50 @@ const Workspace: React.FC = () => {
         </Card>
       </motion.div>
 
-      {/* 系统状态概览 */}
+      {/* 数据统计概览 - 从经典仪表板迁移 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         <Card 
-          title="系统状态概览" 
-          style={{ marginBottom: designSystem.spacing.lg }}
+          title="数据统计概览" 
+          style={{ 
+            marginBottom: designSystem.spacing.lg,
+            borderRadius: '16px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+          }}
         >
           <Row gutter={[24, 24]}>
             <Col xs={24} sm={12} md={6}>
-              <Card className="stat-card">
+              <Card 
+                className="stat-card aurora-card"
+                style={{ 
+                  cursor: 'pointer', 
+                  transition: 'all 0.3s ease',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+                }}
+                onClick={() => navigate('/reports')}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'
+                  e.currentTarget.style.boxShadow = '0 12px 40px rgba(99, 102, 241, 0.2), 0 8px 24px rgba(0, 0, 0, 0.12)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+                }}
+              >
                 <Statistic
                   title="总报告数"
                   value={stats.totalReports}
@@ -305,20 +458,63 @@ const Workspace: React.FC = () => {
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
-              <Card className="stat-card">
+              <Card 
+                className="stat-card aurora-card"
+                style={{ 
+                  cursor: 'pointer', 
+                  transition: 'all 0.3s ease',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
+                }}
+                onClick={() => navigate('/data-center')}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'
+                  e.currentTarget.style.boxShadow = '0 12px 40px rgba(245, 158, 11, 0.2), 0 8px 24px rgba(0, 0, 0, 0.12)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+                }}
+              >
                 <Statistic
-                  title="待处理任务"
-                  value={stats.pendingTasks}
-                  prefix={<ClockCircleOutlined style={{ color: designSystem.colors.warning }} />}
+                  title="数据源连接"
+                  value={stats.dataSourcesConnected}
+                  prefix={<DatabaseOutlined style={{ color: designSystem.colors.warning }} />}
                   valueStyle={{ color: designSystem.colors.warning, fontWeight: 'bold' }}
+                  suffix="/6"
                 />
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
-              <Card className="stat-card">
+              <Card className="stat-card aurora-card"
+                style={{
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)'
+                  e.currentTarget.style.boxShadow = '0 12px 40px rgba(16, 185, 129, 0.2), 0 8px 24px rgba(0, 0, 0, 0.12)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)'
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+                }}>
                 <Statistic
                   title="今日完成"
-                  value={stats.completedToday}
+                  value={stats.todayCompleted}
                   prefix={<CheckCircleOutlined style={{ color: designSystem.colors.success }} />}
                   valueStyle={{ color: designSystem.colors.success, fontWeight: 'bold' }}
                 />
@@ -336,38 +532,77 @@ const Workspace: React.FC = () => {
             </Col>
           </Row>
           
-          <Divider />
-          
-          <Row gutter={[24, 24]}>
-            <Col xs={24} sm={12}>
-              <div style={{ textAlign: 'center' }}>
-                <Text strong>数据源连接状态</Text>
-                <div style={{ marginTop: designSystem.spacing.sm }}>
-                  <Progress 
-                    type="circle" 
-                    percent={Math.round((stats.dataSourcesConnected / 6) * 100)} 
-                    format={() => `${stats.dataSourcesConnected}/6`}
-                    strokeColor={designSystem.colors.success}
-                  />
-                </div>
+          {/* 智能体运行状态 - 优化版 */}
+          <div 
+            style={{ 
+              marginTop: '24px',
+              padding: '20px',
+              borderRadius: '16px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              position: 'relative',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
+            }}
+            onClick={() => navigate('/agent-monitor')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(99, 102, 241, 0.15), 0 8px 24px rgba(0, 0, 0, 0.12)'
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)'
+              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08)'
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ThunderboltOutlined style={{ fontSize: '16px', color: designSystem.colors.primary }} />
+                <span style={{ fontSize: '14px', fontWeight: 'bold', color: designSystem.colors.text.primary }}>智能体状态</span>
               </div>
-            </Col>
-            <Col xs={24} sm={12}>
-              <div style={{ textAlign: 'center' }}>
-                <Text strong>系统健康度</Text>
-                <div style={{ marginTop: designSystem.spacing.sm }}>
-                  <Progress 
-                    type="circle" 
-                    percent={stats.systemHealth} 
-                    strokeColor={{
-                      '0%': designSystem.colors.success,
-                      '100%': designSystem.colors.primary
+              <Badge count={5} style={{ backgroundColor: designSystem.colors.success }} />
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {[
+                { name: '数据采集', status: agentStats.dataCollector.status },
+                { name: '指标分析', status: agentStats.metricAnalyzer.status },
+                { name: '政策解读', status: agentStats.policyReader.status },
+                { name: '数据检测', status: agentStats.dataDetector.status },
+                { name: '报告生成', status: agentStats.reportGenerator.status }
+              ].map((agent, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    background: designSystem.colors.background.secondary,
+                    fontSize: '12px',
+                    border: `1px solid ${designSystem.colors.border.light}`,
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      backgroundColor: agent.status === 'active' ? designSystem.colors.success : designSystem.colors.warning,
+                      transition: 'all 0.2s ease'
                     }}
+                    className={agent.status === 'active' ? 'pulse-animation' : ''}
                   />
+                  <span style={{ color: designSystem.colors.text.secondary, fontWeight: 500 }}>{agent.name}</span>
                 </div>
-              </div>
-            </Col>
-          </Row>
+              ))}
+            </div>
+          </div>
         </Card>
       </motion.div>
 
@@ -381,11 +616,38 @@ const Workspace: React.FC = () => {
           <Col xs={24} lg={14}>
             <Card 
               title="最近报告" 
+              className="glass-effect"
+              style={{
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                fontFamily: designSystem.typography.fontFamily.modern
+              }}
               extra={
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={() => navigate('/report-factory')}
+                  style={{
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    fontFamily: designSystem.typography.fontFamily.modern,
+                    fontWeight: 500,
+                    letterSpacing: '0.25px',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
                 >
                   <EyeOutlined /> 查看全部
                 </Button>
@@ -402,6 +664,18 @@ const Workspace: React.FC = () => {
                           variant="ghost" 
                           size="sm"
                           onClick={() => navigate(`/report-factory/editor/${item.id}`)}
+                          style={{
+                            fontFamily: designSystem.typography.fontFamily.modern,
+                            fontWeight: 500,
+                            letterSpacing: '0.25px',
+                            transition: 'all 0.3s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                          }}
                         >
                           编辑
                         </Button>
@@ -442,6 +716,23 @@ const Workspace: React.FC = () => {
                     <Button 
                       variant="primary"
                       onClick={() => navigate('/report-factory')}
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontFamily: designSystem.typography.fontFamily.modern,
+                        fontWeight: 600,
+                        letterSpacing: '0.5px',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     >
                       <PlusOutlined /> 创建报告
                     </Button>
@@ -454,8 +745,16 @@ const Workspace: React.FC = () => {
           <Col xs={24} lg={10}>
             <Card 
               title="智能推荐" 
+              style={{
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+              }}
               extra={
-                <Tag color="primary" size="sm">
+                <Tag color="primary" size="sm" style={{ background: 'rgba(99, 102, 241, 0.2)', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
                   <ThunderboltOutlined /> AI驱动
                 </Tag>
               }
@@ -467,8 +766,22 @@ const Workspace: React.FC = () => {
                       key={rec.id}
                       size="small"
                       style={{ 
-                        border: `1px solid ${designSystem.colors.border.light}`,
-                        borderRadius: designSystem.borderRadius.md
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '12px',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        backdropFilter: 'blur(5px)',
+                        WebkitBackdropFilter: 'blur(5px)',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)'
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
+                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(99, 102, 241, 0.1)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)'
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
+                        e.currentTarget.style.boxShadow = 'none'
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -491,6 +804,23 @@ const Workspace: React.FC = () => {
                           <Button 
                             variant="primary" 
                             size="sm"
+                            style={{
+                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              border: 'none',
+                              borderRadius: '8px',
+                              transition: 'all 0.3s ease',
+                              fontFamily: designSystem.typography.fontFamily.modern,
+                              fontWeight: 600,
+                              letterSpacing: '0.25px'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform = 'translateY(-1px)'
+                              e.currentTarget.style.boxShadow = '0 4px 16px rgba(99, 102, 241, 0.3)'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform = 'translateY(0)'
+                              e.currentTarget.style.boxShadow = 'none'
+                            }}
                             onClick={() => {
                               if (rec.type === 'template') {
                                 navigate('/report-factory')

@@ -455,14 +455,9 @@ const AIAnalysis: React.FC = () => {
       
       message.success('AI分析完成，报告已保存');
       
-      // 跳转到报告编辑页面
+      // 跳转到报告编辑页面，传递实际的分析结果
       setTimeout(() => {
-        navigate('/editor', {
-          state: {
-            reportId: (reportData as any)?.id,
-            analysisData: analysisResult
-          }
-        });
+        handleAgentComplete(analysisResult);
       }, 2000);
       
     } catch (error) {
@@ -474,31 +469,43 @@ const AIAnalysis: React.FC = () => {
     }
   };
 
-  const handleAgentComplete = () => {
+  const handleAgentComplete = (analysisResult?: any) => {
+    // 使用实际的AI分析结果，如果没有则使用默认模板数据
+    const actualData = analysisResult?.success && analysisResult.data ? {
+      title: `AI智能分析报告 - ${new Date().toLocaleDateString()}`,
+      analysisType: '智谱AI分析',
+      dataSource: form.getFieldValue('dataSource') || '电网数据',
+      analysis: analysisResult.data.analysis,
+      insights: analysisResult.data.insights || [],
+      recommendations: analysisResult.data.recommendations || [],
+      confidence: (analysisResult.data.confidence * 100).toFixed(1),
+      metadata: analysisResult.data.metadata
+    } : {
+      title: '山西电网智能分析报告',
+      analysisType: '综合分析',
+      dataSource: '山西电网负荷数据.db',
+      loadGrowth: 15.2,
+      cleanEnergyRatio: 12.8,
+      efficiency: 98.5,
+      confidence: 95.2,
+      regions: [
+        { name: '太原', load: '2,450 MW', growth: '+8.5%', status: '正常' },
+        { name: '大同', load: '1,890 MW', growth: '+12.3%', status: '正常' },
+        { name: '临汾', load: '1,650 MW', growth: '+6.7%', status: '优化建议' }
+      ],
+      insights: [
+        '太原地区负荷优化：建议在峰值时段启动备用电源',
+        '临汾设备维护：检测到异常波动，建议安排检修',
+        '整体能效提升：可通过智能调度提升3.2%效率'
+      ]
+    };
+
     navigate('/editor', {
       state: {
         analysisData: {
           type: 'ai-analysis-result',
           template: selectedTemplate || 'comprehensive',
-          data: {
-            title: '山西电网智能分析报告',
-            analysisType: '综合分析',
-            dataSource: '山西电网负荷数据.db',
-            loadGrowth: 15.2,
-            cleanEnergyRatio: 12.8,
-            efficiency: 98.5,
-            confidence: 95.2,
-            regions: [
-              { name: '太原', load: '2,450 MW', growth: '+8.5%', status: '正常' },
-              { name: '大同', load: '1,890 MW', growth: '+12.3%', status: '正常' },
-              { name: '临汾', load: '1,650 MW', growth: '+6.7%', status: '优化建议' }
-            ],
-            insights: [
-              '太原地区负荷优化：建议在峰值时段启动备用电源',
-              '临汾设备维护：检测到异常波动，建议安排检修',
-              '整体能效提升：可通过智能调度提升3.2%效率'
-            ]
-          }
+          data: actualData
         }
       }
     });

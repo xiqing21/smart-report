@@ -3,7 +3,7 @@ import MainLayout from '../layouts/MainLayout'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import ForgotPassword from '../pages/ForgotPassword'
-import Profile from '../pages/Profile'
+
 
 // 四大核心模块页面
 import Workspace from '@/pages/Workspace'
@@ -26,6 +26,7 @@ import TestPage from '../pages/TestPage'
 import TestRunner from '../pages/TestRunner'
 import KnowledgeBase from '../pages/KnowledgeBase'
 import Export from '../pages/Export'
+import Profile from '../pages/Profile'
 import ProtectedRoute from '../components/ProtectedRoute'
 
 // 根据环境变量设置basename
@@ -134,6 +135,7 @@ export const router = createBrowserRouter([
         path: 'profile',
         element: <Profile />,
       },
+
       {
         path: 'test',
         element: <TestPage />,

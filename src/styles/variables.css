@@ -1,32 +1,41 @@
 /* 智能报告生成系统 - 设计变量 */
 
 :root {
-  /* 主色调 */
-  --primary-color: #1890FF;
-  --primary-light: #40A9FF;
-  --primary-dark: #096DD9;
-  --primary-ultra-light: #E6F7FF;
+  /* 主色调 - 深空蓝紫渐变系 */
+  --primary-color: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --primary-ultra-light: #f0f4ff;
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary-glow: rgba(99, 102, 241, 0.3);
 
-  /* 辅助色彩 */
-  --success-color: #52C41A;
-  --warning-color: #FAAD14;
-  --error-color: #FF4D4F;
-  --info-color: #1890FF;
+  /* 辅助色彩 - 极光系列 */
+  --secondary-color: #22c55e;
+  --secondary-light: #4ade80;
+  --secondary-dark: #16a34a;
+  --success-color: #10b981;   /* 翡翠绿 */
+  --warning-color: #f59e0b;   /* 琥珀黄 */
+  --error-color: #ef4444;     /* 珊瑚红 */
+  --info-color: #3b82f6;      /* 天空蓝 */
 
-  /* 中性色彩 */
-  --title-color: #262626;
-  --text-color: #595959;
-  --text-secondary: #8C8C8C;
-  --text-disabled: #BFBFBF;
-  --border-color: #D9D9D9;
-  --divider-color: #F0F0F0;
-  --background-color: #FAFAFA;
-  --white: #FFFFFF;
+  /* 中性色彩 - 柔和灰度 */
+  --title-color: #0f172a;
+  --text-color: #334155;
+  --text-secondary: #64748b;
+  --text-disabled: #94a3b8;
+  --border-color: #cbd5e1;
+  --divider-color: #e2e8f0;
+  --background-color: #f8fafc;
+  --white: #ffffff;
+  --dark-bg: #0f172a;
+  --dark-surface: #1e293b;
 
   /* 字体规范 */
   --font-family-zh: 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-family-en: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-family-code: 'Fira Code', Monaco, Consolas, monospace;
+  --font-family-modern: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-elegant: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* 字体大小 */
   --font-size-xl: 28px;
@@ -56,14 +65,26 @@
   --border-radius-lg: 12px;
   --border-radius-round: 50%;
 
-  /* 阴影规范 */
-  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-normal: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-strong: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
+  /* 阴影规范 - 优化为更柔和的阴影 */
+  --shadow-light: 0 2px 8px rgba(99, 102, 241, 0.08);
+  --shadow-normal: 0 4px 12px rgba(99, 102, 241, 0.12);
+  --shadow-strong: 0 8px 24px rgba(99, 102, 241, 0.16);
+  --shadow-hover: 0 6px 16px rgba(99, 102, 241, 0.14);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
 
-  /* 渐变色 */
-  --gradient-primary: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+  /* 渐变色 - 优化为更现代的渐变 */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  
+  /* 玻璃拟态背景色 */
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.1);
+  --bg-glass-strong: rgba(255, 255, 255, 0.15);
+  --bg-glass-border: rgba(255, 255, 255, 0.1);
+  --bg-glass-border-hover: rgba(255, 255, 255, 0.2);
 
   /* 动画时长 */
   --transition-fast: 0.15s;
@@ -98,10 +119,14 @@ body {
   font-family: var(--font-family-zh), var(--font-family-en);
   font-size: var(--font-size-base);
   color: var(--text-color);
-  background-color: var(--background-color);
-  line-height: 1.5;
+  background: var(--background-color);
+  background-image: 
+    radial-gradient(circle at 1% 1%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 99% 99%, rgba(34, 197, 94, 0.05) 0%, transparent 50%);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: all var(--transition-normal) ease;
 }
 
 /* 滚动条样式 */

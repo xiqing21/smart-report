@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react'
 import { Layout, Menu, Avatar, Dropdown, Badge, Typography, Space, Divider, Drawer } from 'antd'
 import {
   DashboardOutlined,
-  FileTextOutlined,
-  EditOutlined,
-  AppstoreOutlined,
+  DatabaseOutlined,
   BarChartOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
+  EditOutlined,
+  DownloadOutlined,
   ExperimentOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  BellOutlined,
-  UserOutlined,
-  SettingOutlined,
-  LogoutOutlined,
   NodeIndexOutlined,
   RobotOutlined,
   LineChartOutlined,
   FundProjectionScreenOutlined,
-  DatabaseOutlined,
-  DownloadOutlined,
+  UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  BellOutlined
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -75,45 +75,67 @@ const MainLayout: React.FC = () => {
     }
   }
 
-  // 菜单项配置
+  // 菜单项配置 - 优化后的架构
   const menuItems = [
     {
       key: '/workspace',
       icon: <DashboardOutlined />,
       label: '工作台',
-      description: '统一工作入口'
+      description: '统一工作入口',
+      onClick: () => navigate('/workspace')
     },
     {
       key: '/data-center',
       icon: <DatabaseOutlined />,
       label: '数据中心',
-      description: '数据源管理'
+      description: '数据源管理',
+      children: [
+        {
+          key: '/data-pipeline',
+          icon: <NodeIndexOutlined />,
+          label: '数据处理监控'
+        },
+        {
+          key: '/data-butler',
+          icon: <RobotOutlined />,
+          label: 'AI数据管家'
+        },
+        {
+          key: '/knowledge-base',
+          icon: <DatabaseOutlined />,
+          label: '知识库管理'
+        }
+      ]
     },
     {
       key: '/intelligent-analysis',
       icon: <BarChartOutlined />,
       label: '智能分析',
-      description: 'AI驱动分析'
+      description: 'AI驱动分析',
+      children: [
+        {
+          key: '/analysis',
+          icon: <BarChartOutlined />,
+          label: 'AI分析中心'
+        },
+        {
+          key: '/chart-generation',
+          icon: <LineChartOutlined />,
+          label: '对话式图表生成'
+        },
+        {
+          key: '/trend-prediction',
+          icon: <FundProjectionScreenOutlined />,
+          label: '趋势预测分析'
+        }
+      ]
     },
     {
       key: '/report-factory',
       icon: <FileTextOutlined />,
       label: '报告工厂',
-      description: '报告创建与管理'
-    },
-    {
-      type: 'divider'
-    },
-    {
-      key: 'legacy',
-      icon: <AppstoreOutlined />,
-      label: '传统功能',
+      description: '报告创建与管理',
       children: [
-        {
-          key: '/dashboard',
-          icon: <DashboardOutlined />,
-          label: '原工作台'
-        },
         {
           key: '/reports',
           icon: <FileTextOutlined />,
@@ -130,53 +152,20 @@ const MainLayout: React.FC = () => {
           label: '模板中心'
         },
         {
-          key: '/analysis',
-          icon: <BarChartOutlined />,
-          label: 'AI分析中心'
-        },
-        {
-          key: '/knowledge-base',
-          icon: <DatabaseOutlined />,
-          label: '知识库'
-        },
-        {
           key: '/export',
           icon: <DownloadOutlined />,
-          label: '导出与模板'
+          label: '导出与发布'
         }
       ]
     },
     {
-      key: 'advanced',
+      type: 'divider'
+    },
+    {
+      key: '/test-runner',
       icon: <ExperimentOutlined />,
-      label: '高级功能',
-      children: [
-        {
-          key: '/data-pipeline',
-          icon: <NodeIndexOutlined />,
-          label: '数据处理监控'
-        },
-        {
-          key: '/data-butler',
-          icon: <RobotOutlined />,
-          label: 'AI数据管家'
-        },
-        {
-          key: '/chart-generation',
-          icon: <LineChartOutlined />,
-          label: '对话式图表生成'
-        },
-        {
-          key: '/trend-prediction',
-          icon: <FundProjectionScreenOutlined />,
-          label: '趋势预测分析'
-        },
-        {
-          key: '/test-runner',
-          icon: <ExperimentOutlined />,
-          label: '🧪 功能测试'
-        }
-      ]
+      label: '🧪 功能测试',
+      description: '系统测试工具'
     }
   ]
 
@@ -184,11 +173,12 @@ const MainLayout: React.FC = () => {
   const handleUserMenuClick = async ({ key }: { key: string }) => {
     switch (key) {
       case 'profile':
-        navigate('/profile')
+        // TODO: 实现个人资料弹窗或页面
+        toast.info('个人资料功能即将上线')
         break
-      case 'settings':
-        // TODO: 实现系统设置页面
-        toast.info('系统设置功能即将上线')
+      case 'account':
+        // TODO: 实现账户设置弹窗或页面
+        toast.info('账户设置功能即将上线')
         break
       case 'logout':
         try {
@@ -209,9 +199,9 @@ const MainLayout: React.FC = () => {
       label: '个人资料',
     },
     {
-      key: 'settings',
+      key: 'account',
       icon: <SettingOutlined />,
-      label: '系统设置',
+      label: '账户设置',
     },
     {
       type: 'divider' as const,
@@ -305,14 +295,37 @@ const MainLayout: React.FC = () => {
                   <div style={{ 
                     fontSize: designSystem.typography.fontSize.lg, 
                     fontWeight: designSystem.typography.fontWeight.bold,
-                    lineHeight: 1.2
-                  }}>
+                    lineHeight: 1.2,
+                    color: designSystem.colors.primary[500],
+                    textShadow: '0 2px 4px rgba(99, 102, 241, 0.3)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
+                    padding: '8px 12px',
+                    borderRadius: designSystem.borderRadius.lg,
+                    border: '1px solid rgba(99, 102, 241, 0.2)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = designSystem.colors.primary[400];
+                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)';
+                    e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = designSystem.colors.primary[500];
+                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)';
+                    e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                  onClick={() => navigate('/dashboard')}
+                  >
                     智能报告系统
                   </div>
                   <div style={{ 
                     fontSize: designSystem.typography.fontSize.xs,
-                    opacity: 0.8,
-                    lineHeight: 1
+                    opacity: 0.9,
+                    lineHeight: 1,
+                    color: designSystem.colors.text.secondary
                   }}>
                     Smart Report Platform
                   </div>
