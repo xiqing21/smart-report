@@ -460,7 +460,7 @@ const KnowledgeBase: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-green-500/30">
-              <BrainCircuitOutlined className="text-green-400 text-lg" />
+              <RobotOutlined className="text-green-400 text-lg" />
               <span className="text-green-300 font-medium">AI服务在线</span>
             </div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
