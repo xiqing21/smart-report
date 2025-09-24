@@ -18,7 +18,9 @@ import {
 } from '@ant-design/icons'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { ColumnsType } from 'antd/es/table'
-import { Card, Button, Status } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
+import Status from '@/components/ui/Status'
 import { designSystem } from '@/styles/design-system'
 
 const { Title, Text } = Typography
@@ -227,10 +229,10 @@ const DataCenter: React.FC = () => {
               {text}
             </div>
             <div style={{ 
-              color: designSystem.colors.text.secondary,
-              fontSize: designSystem.typography.fontSize.xs,
-              marginTop: '2px'
-            }}>
+                        color: '#6b7280',
+                        fontSize: designSystem.typography.fontSize.xs,
+                        marginTop: '2px'
+                      }}>
               {record.description}
             </div>
           </div>
@@ -428,28 +430,22 @@ const DataCenter: React.FC = () => {
           justifyContent: 'space-between', 
           alignItems: 'center',
           padding: designSystem.spacing.lg,
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
+          background: '#ffffff',
           borderRadius: designSystem.borderRadius.xl,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid #e5e7eb',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
         }}>
           <div>
             <Title level={2} style={{ 
               margin: 0, 
-              color: designSystem.colors.text.primary,
+              color: '#1f2937',
               fontSize: designSystem.typography.fontSize.xxl,
-              fontWeight: designSystem.typography.fontWeight.bold,
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
+              fontWeight: designSystem.typography.fontWeight.bold
             }}>
               数据中心
             </Title>
             <Text style={{ 
-              color: designSystem.colors.text.secondary,
+              color: '#6b7280',
               fontSize: designSystem.typography.fontSize.md,
               marginTop: designSystem.spacing.xs
             }}>
@@ -495,10 +491,8 @@ const DataCenter: React.FC = () => {
                   hoverable
                   style={{ 
                     textAlign: 'center',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    background: '#ffffff',
+                    border: '1px solid #e5e7eb',
                     borderRadius: designSystem.borderRadius.xl,
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     transition: 'all 0.3s ease'
@@ -520,14 +514,14 @@ const DataCenter: React.FC = () => {
                       width: '70px',
                       height: '70px',
                       borderRadius: designSystem.borderRadius.full,
-                      background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}60)`,
+                      background: '#f9fafb',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       margin: '0 auto 20px',
                       color: stat.color,
                       fontSize: '28px',
-                      boxShadow: `0 8px 24px ${stat.color}30`
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
                     }}>
                       {stat.icon}
                     </div>
@@ -538,18 +532,14 @@ const DataCenter: React.FC = () => {
                       style={{ 
                         fontSize: designSystem.typography.fontSize.xxxl, 
                         fontWeight: designSystem.typography.fontWeight.bold, 
-                        color: designSystem.colors.text.primary,
-                        marginBottom: designSystem.spacing.sm,
-                        background: `linear-gradient(135deg, ${stat.color}, ${stat.color}aa)`,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text'
+                        color: '#1f2937',
+                        marginBottom: designSystem.spacing.sm
                       }}
                     >
                       {stat.value}
                     </motion.div>
                     <div style={{ 
-                      color: designSystem.colors.text.secondary, 
+                      color: '#6b7280', 
                       fontSize: designSystem.typography.fontSize.md,
                       marginBottom: designSystem.spacing.sm,
                       fontWeight: designSystem.typography.fontWeight.medium
@@ -561,7 +551,7 @@ const DataCenter: React.FC = () => {
                         color: stat.color, 
                         fontSize: designSystem.typography.fontSize.sm,
                         fontWeight: designSystem.typography.fontWeight.semibold,
-                        background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}40)`,
+                        background: '#f9fafb',
                         padding: '4px 12px',
                         borderRadius: designSystem.borderRadius.lg,
                         display: 'inline-block'
@@ -592,10 +582,7 @@ const DataCenter: React.FC = () => {
               <span style={{ 
                 fontSize: designSystem.typography.fontSize.xl,
                 fontWeight: designSystem.typography.fontWeight.semibold,
-                background: `linear-gradient(135deg, ${designSystem.colors.primary}, ${designSystem.colors.primary}aa)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
+                color: '#1f2937'
               }}>
                 数据源管理
               </span>
@@ -608,15 +595,13 @@ const DataCenter: React.FC = () => {
                 onChange={setSelectedCategory}
                 style={{ 
                   width: '140px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: designSystem.borderRadius.lg
                 }}
                 dropdownStyle={{
-                  background: 'rgba(30, 41, 59, 0.95)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: '#ffffff',
+                  border: '1px solid #e5e7eb',
                   borderRadius: designSystem.borderRadius.lg
                 }}
                 options={[
@@ -636,10 +621,10 @@ const DataCenter: React.FC = () => {
                     })
                   }}
                   style={{
-                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    background: '#10b981',
                     border: 'none',
                     borderRadius: designSystem.borderRadius.lg,
-                    boxShadow: '0 4px 16px rgba(16, 185, 129, 0.3)'
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
                   }}
                 >
                   批量同步
@@ -651,10 +636,10 @@ const DataCenter: React.FC = () => {
                   icon={<PlusOutlined />}
                   onClick={() => setIsModalVisible(true)}
                   style={{
-                    background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                    background: '#6366f1',
                     border: 'none',
                     borderRadius: designSystem.borderRadius.lg,
-                    boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)'
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
                   }}
                 >
                   添加数据源
@@ -664,15 +649,13 @@ const DataCenter: React.FC = () => {
           }
           style={{ 
             borderRadius: designSystem.borderRadius.xl,
-            background: 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: '#ffffff',
+            border: '1px solid #e5e7eb',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
           }}
           headStyle={{
             background: 'transparent',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            borderBottom: '1px solid #e5e7eb',
             padding: '24px'
           }}
           bodyStyle={{

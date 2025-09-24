@@ -3,7 +3,7 @@ import { Card, Button, Select, DatePicker, Space, Spin, message, Row, Col, Typog
 import { PlayCircleOutlined, StopOutlined, DownloadOutlined, SettingOutlined, RiseOutlined, WarningOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import { motion } from 'framer-motion';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 const { Option } = Select;

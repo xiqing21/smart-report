@@ -106,14 +106,12 @@ export const AnimatedContainer: React.FC<AnimatedContainerProps> = ({
 // 列表动画容器
 interface AnimatedListProps {
   children: ReactNode[]
-  animation?: 'stagger' | 'cascade'
   staggerDelay?: number
   className?: string
 }
 
 export const AnimatedList: React.FC<AnimatedListProps> = ({
   children,
-  animation = 'stagger',
   staggerDelay = 0.1,
   className
 }) => {

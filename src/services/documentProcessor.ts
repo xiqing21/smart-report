@@ -59,7 +59,7 @@ class DocumentProcessor {
         try {
           // 这里应该使用PDF.js来解析PDF内容
           // 暂时返回文件名作为内容（实际项目中需要集成PDF.js）
-          const arrayBuffer = e.target?.result as ArrayBuffer;
+          // const arrayBuffer = e.target?.result as ArrayBuffer;
           
           // 简化实现：返回文件基本信息
           const content = `PDF文档: ${file.name}\n文件大小: ${file.size} bytes\n\n[注意：这是PDF解析的占位符实现，实际项目中需要集成PDF.js库来提取真实的文本内容]`;
@@ -84,7 +84,7 @@ class DocumentProcessor {
         try {
           // 这里应该使用mammoth.js来解析Word内容
           // 暂时返回文件名作为内容（实际项目中需要集成mammoth.js）
-          const arrayBuffer = e.target?.result as ArrayBuffer;
+          // const arrayBuffer = e.target?.result as ArrayBuffer;
           
           // 简化实现：返回文件基本信息
           const content = `Word文档: ${file.name}\n文件大小: ${file.size} bytes\n\n[注意：这是Word解析的占位符实现，实际项目中需要集成mammoth.js库来提取真实的文本内容]`;
@@ -246,8 +246,8 @@ class DocumentProcessor {
         ...metadata
       };
 
-      const { error: insertError } = await supabase
-        .from('documents')
+      const { error: insertError } = await (supabase
+        .from('documents') as any)
         .insert({
           id: documentId,
           name: documentMetadata.fileName,

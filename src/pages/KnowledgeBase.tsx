@@ -32,7 +32,7 @@ import {
   QuestionCircleOutlined,
   BookOutlined,
   DatabaseOutlined,
-  BrainCircuitOutlined,
+  // BrainCircuitOutlined - doesn't exist in @ant-design/icons
   MessageOutlined,
   SendOutlined,
   RobotOutlined,
@@ -44,7 +44,8 @@ import {
 import type { UploadProps, TableColumnsType } from 'antd';
 import { documentProcessor, ProcessingProgress } from '../services/documentProcessor';
 import { embeddingService } from '../services/ai/embeddingService';
-import { chatService, ChatMessage } from '../services/ai/chatService';
+import { chatService, ChatMessage as ChatMessageService } from '../services/ai/chatService';
+import { motion } from 'framer-motion';
 
 const { TextArea } = Input;
 const { Title, Text, Paragraph } = Typography;
@@ -69,7 +70,7 @@ interface SearchResult {
   metadata: Record<string, any>;
 }
 
-interface ChatMessage {
+interface ChatMessageLocal {
   id: string;
   type: 'user' | 'assistant';
   content: string;
@@ -80,7 +81,7 @@ interface ChatMessage {
 interface ConversationItem {
   id: string;
   title: string;
-  messages: ChatMessage[];
+  messages: ChatMessageLocal[];
   createdAt: string;
   updatedAt: string;
   summary?: string;
@@ -90,7 +91,7 @@ interface ConversationItem {
 const KnowledgeBase: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessageLocal[]>([]);
   const [uploading, setUploading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [chatting, setChatting] = useState(false);
@@ -256,7 +257,7 @@ const KnowledgeBase: React.FC = () => {
       if (conversation) {
         setConversationId(selectedConversationId);
         // 转换消息格式
-        const formattedMessages: ChatMessage[] = conversation.messages.map((msg: any) => ({
+        const formattedMessages: ChatMessageLocal[] = conversation.messages.map((msg: any) => ({
           id: msg.id,
           type: msg.role,
           content: msg.content,
@@ -313,7 +314,7 @@ const KnowledgeBase: React.FC = () => {
       }
     }
     
-    const userMessage: ChatMessage = {
+    const userMessage: ChatMessageLocal = {
       id: `msg_${Date.now()}_user`,
       type: 'user',
       content: chatInput,
@@ -328,7 +329,7 @@ const KnowledgeBase: React.FC = () => {
     try {
        const response = await chatService.answerQuestion(currentInput, currentConversationId, 'current_user');
        
-       const assistantMessage: ChatMessage = {
+       const assistantMessage: ChatMessageLocal = {
          id: `msg_${Date.now()}_assistant`,
          type: 'assistant',
          content: response.content,
@@ -342,7 +343,7 @@ const KnowledgeBase: React.FC = () => {
       console.error('发送消息失败:', error);
       message.error('发送消息失败，请稍后重试');
       
-      const errorMessage: ChatMessage = {
+      const errorMessage: ChatMessageLocal = {
         id: `msg_${Date.now()}_error`,
         type: 'assistant',
         content: '抱歉，我暂时无法回答您的问题。请稍后重试。',

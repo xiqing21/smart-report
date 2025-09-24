@@ -86,7 +86,7 @@ class ChatService {
         response = await zhipuClient.chat.completions.create({
           model: this.model,
           messages: chatMessages,
-          temperature,
+          temperature: 0.7,
           max_tokens: 2000,
         });
       }
@@ -344,7 +344,7 @@ ${context}
       // 更新数据库
       try {
         await supabase
-          .from('conversations')
+          .from('conversation_contexts')
           .update({
             messages: conversation.messages,
             updated_at: conversation.updatedAt.toISOString()
@@ -396,7 +396,7 @@ ${context}
   async updateConversationTitle(conversationId: string, title: string): Promise<void> {
     try {
       const { error } = await supabase
-        .from('conversations')
+        .from('conversation_contexts')
         .update({ 
           title,
           updated_at: new Date().toISOString()
@@ -418,7 +418,7 @@ ${context}
   async clearConversation(conversationId: string): Promise<void> {
     try {
       const { error } = await supabase
-        .from('conversations')
+        .from('conversation_contexts')
         .update({ 
           messages: [],
           updated_at: new Date().toISOString()
@@ -444,7 +444,7 @@ ${context}
   }> {
     try {
       let query = supabase
-        .from('conversations')
+        .from('conversation_contexts')
         .select('messages');
 
       if (userId) {

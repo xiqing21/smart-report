@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import * as XLSX from 'exceljs';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import PptxGenJS from 'pptxgenjs';
-import Handlebars from 'handlebars';
+import * as Handlebars from 'handlebars';
 
 export interface ExportOptions {
   format: 'pdf' | 'docx' | 'xlsx' | 'pptx' | 'html';

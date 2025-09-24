@@ -253,7 +253,7 @@ const AgentMonitor: React.FC = () => {
       width: 100,
       render: (duration: string, record: TaskLog) => {
         if (record.status === 'running') {
-          return <Text type="secondary">运行中...</Text>;
+          return <Text style={{ color: '#6b7280' }}>运行中...</Text>;
         }
         return duration || '-';
       }
@@ -261,11 +261,11 @@ const AgentMonitor: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div style={{ padding: '24px', backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <Title level={2} style={{ margin: 0 }}>🤖 智能体监控中心</Title>
-          <Text type="secondary">实时监控五大智能体运行状态和任务执行情况</Text>
+          <Title level={2} style={{ margin: 0, color: '#1f2937' }}>🤖 智能体监控中心</Title>
+          <Text style={{ color: '#6b7280' }}>实时监控五大智能体运行状态和任务执行情况</Text>
         </div>
         <Button 
           type="primary" 
@@ -289,8 +289,8 @@ const AgentMonitor: React.FC = () => {
               <Card
                 size="small"
                 style={{
-                  background: agent.status === 'busy' ? 'linear-gradient(135deg, #fff7e6, #fff2e8)' : 'white',
-                  border: agent.status === 'busy' ? '1px solid #ffd591' : '1px solid #d9d9d9'
+                  background: agent.status === 'busy' ? '#f9fafb' : '#ffffff',
+                  border: agent.status === 'busy' ? '1px solid #e5e7eb' : '1px solid #e5e7eb'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
@@ -321,32 +321,32 @@ const AgentMonitor: React.FC = () => {
                   
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <Text strong style={{ fontSize: '14px' }}>
+                      <Text strong style={{ fontSize: '14px', color: '#1f2937' }}>
                         {agent.name}
                       </Text>
                       {getStatusBadge(agent.status)}
                     </div>
                     
-                    <Text type="secondary" style={{ fontSize: '12px', display: 'block', marginBottom: '8px' }}>
+                    <Text style={{ fontSize: '12px', display: 'block', marginBottom: '8px', color: '#6b7280' }}>
                       {agent.description}
                     </Text>
                     
                     <Space direction="vertical" size={4} style={{ width: '100%' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={{ fontSize: '11px' }}>CPU</Text>
-                        <Text style={{ fontSize: '11px' }}>{agent.cpu}%</Text>
+                        <Text style={{ fontSize: '11px', color: '#374151' }}>CPU</Text>
+                        <Text style={{ fontSize: '11px', color: '#374151' }}>{agent.cpu}%</Text>
                       </div>
                       <Progress percent={agent.cpu} size="small" strokeColor={agent.color} showInfo={false} />
                       
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={{ fontSize: '11px' }}>内存</Text>
-                        <Text style={{ fontSize: '11px' }}>{agent.memory}%</Text>
+                        <Text style={{ fontSize: '11px', color: '#374151' }}>内存</Text>
+                        <Text style={{ fontSize: '11px', color: '#374151' }}>{agent.memory}%</Text>
                       </div>
                       <Progress percent={agent.memory} size="small" strokeColor={agent.color} showInfo={false} />
                       
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '4px' }}>
-                        <Text type="secondary">任务: {agent.completedTasks}/{agent.tasks}</Text>
-                        <Text type="secondary">{agent.lastActive}</Text>
+                        <Text style={{ color: '#6b7280' }}>任务: {agent.completedTasks}/{agent.tasks}</Text>
+                        <Text style={{ color: '#6b7280' }}>{agent.lastActive}</Text>
                       </div>
                     </Space>
                   </div>
@@ -360,38 +360,38 @@ const AgentMonitor: React.FC = () => {
       {/* 系统概览 */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
             <Statistic
               title="在线智能体"
               value={agents.filter(a => a.status === 'online' || a.status === 'busy').length}
               suffix={`/ ${agents.length}`}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: '#16a34a' }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
             <Statistic
               title="今日处理任务"
               value={agents.reduce((sum, agent) => sum + agent.completedTasks, 0)}
-              valueStyle={{ color: '#1890ff' }}
+              valueStyle={{ color: '#2563eb' }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card>
+          <Card style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
             <Statistic
               title="平均CPU使用率"
               value={Math.round(agents.reduce((sum, agent) => sum + agent.cpu, 0) / agents.length)}
               suffix="%"
-              valueStyle={{ color: '#fa8c16' }}
+              valueStyle={{ color: '#ea580c' }}
             />
           </Card>
         </Col>
       </Row>
 
       {/* 任务执行日志 */}
-      <Card title="📋 任务执行日志" style={{ marginBottom: '24px' }}>
+      <Card title="📋 任务执行日志" style={{ marginBottom: '24px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
         <Table
           columns={taskColumns}
           dataSource={taskLogs}
@@ -405,7 +405,7 @@ const AgentMonitor: React.FC = () => {
       {/* 系统状态提醒 */}
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="⚠️ 系统提醒" size="small">
+          <Card title="⚠️ 系统提醒" size="small" style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
             <Space direction="vertical" style={{ width: '100%' }}>
               <Alert
                 message="数据检测智能体任务失败"
@@ -425,31 +425,31 @@ const AgentMonitor: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="📈 性能趋势" size="small">
+          <Card title="📈 性能趋势" size="small" style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
             <Timeline
               items={[
                 {
                   color: 'green',
                   children: (
-                    <span><Text strong>数据采集智能体</Text> - 完成负荷数据采集</span>
+                    <span><Text strong style={{ color: '#1f2937' }}>数据采集智能体</Text> - 完成负荷数据采集</span>
                   )
                 },
                 {
                   color: 'blue',
                   children: (
-                    <span><Text strong>模式识别智能体</Text> - 识别异常负荷模式</span>
+                    <span><Text strong style={{ color: '#1f2937' }}>模式识别智能体</Text> - 识别异常负荷模式</span>
                   )
                 },
                 {
                   color: 'orange',
                   children: (
-                    <span><Text strong>预测建模智能体</Text> - 生成负荷预测模型</span>
+                    <span><Text strong style={{ color: '#1f2937' }}>预测建模智能体</Text> - 生成负荷预测模型</span>
                   )
                 },
                 {
                   color: 'red',
                   children: (
-                    <span><Text strong>报告生成智能体</Text> - 正在生成分析报告</span>
+                    <span><Text strong style={{ color: '#1f2937' }}>报告生成智能体</Text> - 正在生成分析报告</span>
                   )
                 }
               ]}

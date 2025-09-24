@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase';
-import { mockGetEmbedding, isBrowserEnvironment, type MockEmbeddingResponse } from './mockAIService';
+import { mockGetEmbedding, isBrowserEnvironment } from './mockAIService';
 
 // 在浏览器环境中使用模拟服务，在服务器环境中使用真实API
 let zhipuClient: any = null;
@@ -18,19 +18,19 @@ if (!isBrowserEnvironment()) {
 
 
 
-interface EmbeddingResponse {
-  data: {
-    embedding: number[];
-    index: number;
-    object: string;
-  }[];
-  model: string;
-  object: string;
-  usage: {
-    prompt_tokens: number;
-    total_tokens: number;
-  };
-}
+// interface EmbeddingResponse {
+//   data: {
+//     embedding: number[];
+//     index: number;
+//     object: string;
+//   }[];
+//   model: string;
+//   object: string;
+//   usage: {
+//     prompt_tokens: number;
+//     total_tokens: number;
+//   };
+// }
 
 interface DocumentChunk {
   content: string;
@@ -44,8 +44,8 @@ interface DocumentChunk {
 
 class EmbeddingService {
   private apiKey: string;
-  private baseUrl: string = 'https://open.bigmodel.cn/api/paas/v4';
-  private model: string = 'embedding-2';
+  // private baseUrl: string = 'https://open.bigmodel.cn/api/paas/v4';
+  // private model: string = 'embedding-2';
 
   constructor() {
     // 从环境变量获取智谱AI API密钥
@@ -278,7 +278,7 @@ class EmbeddingService {
           match_threshold: threshold,
           match_count: limit,
           filter_user_id: userId || null
-        });
+        } as any);
 
       if (error) {
         throw new Error(`语义搜索失败: ${error.message}`);

@@ -157,7 +157,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
         style={{ 
           marginBottom: designSystem.spacing[16],
           border: `1px solid ${designSystem.colors.primary}20`,
-          borderRadius: designSystem.borderRadius[16]
+          borderRadius: designSystem.borderRadius.xl
         }}
       >
         <div style={{ textAlign: 'center', padding: designSystem.spacing[24] }}>
@@ -188,7 +188,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
         marginBottom: designSystem.spacing[8],
         padding: designSystem.spacing[4],
         backgroundColor: designSystem.colors.background.secondary,
-        borderRadius: designSystem.borderRadius[8],
+        borderRadius: designSystem.borderRadius.md,
         border: `1px solid ${designSystem.colors.primary}20`
       }}>
         <RobotOutlined style={{ 
@@ -221,7 +221,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
                   border: selectedRecommendations.includes(recommendation.id)
                     ? `2px solid ${designSystem.colors.primary}`
                     : `1px solid ${designSystem.colors.border}`,
-                  borderRadius: designSystem.borderRadius[8],
+                  borderRadius: designSystem.borderRadius.md,
                   transition: 'all 0.3s ease'
                 }}
                 onClick={() => handleRecommendationSelect(recommendation)}
@@ -276,10 +276,7 @@ const AIRecommendationEngine: React.FC<AIRecommendationEngineProps> = ({
                         type="circle"
                         size={50}
                         percent={recommendation.confidence}
-                        strokeColor={{
-                          '0%': designSystem.colors.primary,
-                          '100%': designSystem.colors.success,
-                        }}
+                        strokeColor={designSystem.colors.primary[500]}
                         format={() => `${recommendation.confidence}%`}
                       />
                     </Tooltip>

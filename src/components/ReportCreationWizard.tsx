@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Steps, Form, Input, Select, Radio, Card, Row, Col, Typography, Space, Divider, message, Progress, Tag } from 'antd'
+import { Modal, Steps, Form, Input, Select, Card, Row, Col, Typography, Space, message, Progress, Tag } from 'antd'
 import {
   FileTextOutlined,
   RobotOutlined,
@@ -8,19 +8,12 @@ import {
   ThunderboltOutlined,
   BranchesOutlined,
   LineChartOutlined,
-  SearchOutlined,
   ExclamationCircleOutlined,
   UserOutlined,
   FundOutlined,
   PieChartOutlined,
-  HeartOutlined,
   DatabaseOutlined,
-  SettingOutlined,
-  PlayCircleOutlined,
   CheckCircleOutlined,
-  ShoppingCartOutlined,
-  DollarOutlined,
-  TeamOutlined
 } from '@ant-design/icons'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui'

@@ -75,121 +75,131 @@ const MainLayout: React.FC = () => {
     }
   }
 
-  // 菜单项配置 - 优化后的架构
-  const menuItems = [
-    {
-      key: '/workspace',
-      icon: <DashboardOutlined />,
-      label: '工作台',
-      description: '统一工作入口',
-      onClick: () => navigate('/workspace')
-    },
-    {
-      key: '/data-center',
-      icon: <DatabaseOutlined />,
-      label: '数据中心',
-      description: '数据源管理',
-      children: [
-        {
-          key: '/data-pipeline',
-          icon: <NodeIndexOutlined />,
-          label: '数据处理监控'
-        },
-        {
-          key: '/data-butler',
-          icon: <RobotOutlined />,
-          label: 'AI数据管家'
-        },
-        {
-          key: '/knowledge-base',
-          icon: <DatabaseOutlined />,
-          label: '知识库管理'
-        }
-      ]
-    },
-    {
-      key: '/intelligent-analysis',
-      icon: <BarChartOutlined />,
-      label: '智能分析',
-      description: 'AI驱动分析',
-      children: [
-        {
-          key: '/analysis',
-          icon: <BarChartOutlined />,
-          label: 'AI分析中心'
-        },
-        {
-          key: '/chart-generation',
-          icon: <LineChartOutlined />,
-          label: '对话式图表生成'
-        },
-        {
-          key: '/trend-prediction',
-          icon: <FundProjectionScreenOutlined />,
-          label: '趋势预测分析'
-        }
-      ]
-    },
-    {
-      key: '/report-factory',
-      icon: <FileTextOutlined />,
-      label: '报告工厂',
-      description: '报告创建与管理',
-      children: [
-        {
-          key: '/reports',
-          icon: <FileTextOutlined />,
-          label: '报告管理'
-        },
-        {
-          key: '/editor',
-          icon: <EditOutlined />,
-          label: '报告编辑器'
-        },
-        {
-          key: '/templates',
-          icon: <AppstoreOutlined />,
-          label: '模板中心'
-        },
-        {
-          key: '/export',
-          icon: <DownloadOutlined />,
-          label: '导出与发布'
-        }
-      ]
-    },
-    {
-      type: 'divider'
-    },
-    {
-      key: '/test-runner',
-      icon: <ExperimentOutlined />,
-      label: '🧪 功能测试',
-      description: '系统测试工具'
-    }
-  ]
+  // 菜单项配置 - 支持主菜单点击和子菜单下拉
+  const getMenuItems = () => {
+    // 主菜单项配置 - 可以直接点击导航
+    const mainItems = [
+      {
+        key: '/workspace',
+        icon: <DashboardOutlined />,
+        label: '工作台',
+        description: '统一工作入口'
+      },
+      {
+        key: '/data-center',
+        icon: <DatabaseOutlined />,
+        label: '数据中心',
+        description: '数据源管理',
+        children: [
+          {
+            key: '/data-pipeline',
+            icon: <NodeIndexOutlined />,
+            label: '数据处理监控'
+          },
+          {
+            key: '/data-butler',
+            icon: <RobotOutlined />,
+            label: 'AI数据管家'
+          },
+          {
+            key: '/knowledge-base',
+            icon: <DatabaseOutlined />,
+            label: '知识库管理'
+          }
+        ]
+      },
+      {
+        key: '/intelligent-analysis',
+        icon: <BarChartOutlined />,
+        label: '智能分析',
+        description: 'AI驱动分析',
+        children: [
+          {
+            key: '/analysis',
+            icon: <BarChartOutlined />,
+            label: 'AI分析中心'
+          },
+          {
+            key: '/chart-generation',
+            icon: <LineChartOutlined />,
+            label: '对话式图表生成'
+          },
+          {
+            key: '/trend-prediction',
+            icon: <FundProjectionScreenOutlined />,
+            label: '趋势预测分析'
+          }
+        ]
+      },
+      {
+        key: '/report-factory',
+        icon: <FileTextOutlined />,
+        label: '报告工厂',
+        description: '报告创建与管理',
+        children: [
+          {
+            key: '/reports',
+            icon: <FileTextOutlined />,
+            label: '报告管理'
+          },
+          {
+            key: '/editor',
+            icon: <EditOutlined />,
+            label: '报告编辑器'
+          },
+          {
+            key: '/templates',
+            icon: <AppstoreOutlined />,
+            label: '模板中心'
+          },
+          {
+            key: '/export',
+            icon: <DownloadOutlined />,
+            label: '导出与发布'
+          }
+        ]
+      },
+      {
+        type: 'divider'
+      },
+      {
+        key: '/test-runner',
+        icon: <ExperimentOutlined />,
+        label: '🧪 功能测试',
+        description: '系统测试工具'
+      }
+    ];
+
+    return mainItems;
+  };
+
+  const menuItems = getMenuItems();
 
   // 处理用户菜单点击
   const handleUserMenuClick = async ({ key }: { key: string }) => {
     switch (key) {
       case 'profile':
-        // TODO: 实现个人资料弹窗或页面
-        toast.info('个人资料功能即将上线')
-        break
+        navigate('/profile');
+        break;
       case 'account':
-        // TODO: 实现账户设置弹窗或页面
-        toast.info('账户设置功能即将上线')
-        break
+        navigate('/account');
+        break;
       case 'logout':
         try {
-          await signOut()
-          navigate('/login')
+          await signOut();
+          navigate('/login');
         } catch (error: any) {
-          toast.error(error.message || '退出登录失败')
+          toast.error(error.message || '退出登录失败');
         }
-        break
+        break;
     }
-  }
+  };
+
+  // 处理菜单点击
+  const handleMenuClick = ({ key }: { key: string }) => {
+    // 直接导航到对应的路由
+    navigate(key);
+  };
 
   // 用户下拉菜单
   const userMenuItems = [
@@ -341,7 +351,7 @@ const MainLayout: React.FC = () => {
             mode="inline"
             selectedKeys={[location.pathname]}
             items={menuItems}
-            onClick={({ key }) => navigate(key)}
+            onClick={handleMenuClick}
             style={{
               background: 'transparent',
               border: 'none',

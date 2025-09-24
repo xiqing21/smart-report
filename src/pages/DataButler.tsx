@@ -3,6 +3,7 @@ import { Upload, FileText, AlertTriangle, CheckCircle, TrendingUp, BarChart3, Pi
 import { message } from 'antd';
 import { useWebSocket } from '@/utils/websocket';
 import { zhipuAIService } from '@/services/ai/zhipuService';
+import { motion } from 'framer-motion';
 
 interface DataQualityIssue {
   type: 'missing_values' | 'duplicates' | 'outliers' | 'inconsistent_format';
@@ -380,7 +381,7 @@ const DataButler: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8">
+    <div className="min-h-screen bg-white p-8">
       {/* 页面标题 - 玻璃拟态风格 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -390,18 +391,18 @@ const DataButler: React.FC = () => {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
               AI数据管家
             </h1>
-            <p className="text-gray-300 text-lg">智能数据质量检测、异常识别与自动修复</p>
+            <p className="text-gray-600 text-lg">智能数据质量检测、异常识别与自动修复</p>
           </div>
           <motion.div
             animate={wsConnected ? { scale: [1, 1.1, 1] } : {}}
             transition={{ duration: 2, repeat: Infinity }}
-            className={`flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-sm border ${
+            className={`flex items-center gap-3 px-4 py-2 rounded-full border ${
               wsConnected 
-                ? 'bg-green-500/10 text-green-300 border-green-500/30' 
-                : 'bg-red-500/10 text-red-300 border-red-500/30'
+                ? 'bg-green-100 text-green-700 border-green-300' 
+                : 'bg-red-100 text-red-700 border-red-300'
             }`}
           >
             {wsConnected ? <Wifi className="w-5 h-5" /> : <WifiOff className="w-5 h-5" />}
@@ -417,7 +418,7 @@ const DataButler: React.FC = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="mb-8"
       >
-        <div className="flex space-x-2 bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/20">
+        <div className="flex space-x-2 bg-gray-100 rounded-2xl p-2 border border-gray-300">
           {[
             { key: 'upload', label: '数据上传', icon: Upload },
             { key: 'health', label: '健康检测', icon: Activity },
@@ -429,8 +430,8 @@ const DataButler: React.FC = () => {
               onClick={() => setActiveTab(key as any)}
               className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
                 activeTab === key
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -448,7 +449,7 @@ const DataButler: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-xl"
+          className="bg-white rounded-2xl p-8 border border-gray-200 shadow-xl"
         >
           <div className="text-center">
             <motion.div
@@ -464,7 +465,7 @@ const DataButler: React.FC = () => {
               <motion.label
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-300/50 rounded-xl cursor-pointer bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 rounded-xl cursor-pointer bg-blue-50 hover:bg-blue-100 transition-all duration-300"
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <FileText className="w-8 h-8 mb-2 text-blue-300" />
@@ -493,8 +494,8 @@ const DataButler: React.FC = () => {
           className="space-y-6"
         >
           {/* 健康检测卡片 */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
-            <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xl">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Activity className="w-6 h-6 text-green-400" />
               数据健康检测
             </h3>
@@ -502,19 +503,19 @@ const DataButler: React.FC = () => {
             {isAnalyzing ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
-                <p className="text-blue-200">正在进行数据健康检测...</p>
+                <p className="text-blue-600">正在进行数据健康检测...</p>
               </div>
             ) : analysisComplete && healthReport ? (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <div className="text-sm text-gray-300 mb-1">总体评分</div>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <div className="text-sm text-gray-600 mb-1">总体评分</div>
                     <div className={`text-2xl font-bold ${getScoreColor(healthReport.overallScore)}`}>
                       {healthReport.overallScore}/100
                     </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <div className="text-sm text-gray-300 mb-1">问题数量</div>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <div className="text-sm text-gray-600 mb-1">问题数量</div>
                     <div className="text-2xl font-bold text-orange-400">
                       {healthReport.issues?.length || 0}
                     </div>

@@ -23,7 +23,9 @@ import {
 } from '@ant-design/icons'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, Status } from '@/components/ui'
+import Card from '@/components/ui/Card'
+import Button from '@/components/ui/Button'
+import Status from '@/components/ui/Status'
 import { designSystem } from '@/styles/design-system'
 
 const { Title, Text } = Typography
@@ -349,19 +351,19 @@ const IntelligentAnalysis: React.FC = () => {
   ]
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+    <div className="p-8 bg-white min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="mb-8"
       >
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-          <Title level={2} className="flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-3">
-            <RobotOutlined className="text-cyan-400 text-3xl" />
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xl">
+          <Title level={2} className="flex items-center gap-3 text-gray-900 mb-3">
+            <RobotOutlined className="text-blue-600 text-3xl" />
             智能分析
           </Title>
-          <Text className="text-gray-300 text-lg">
+          <Text className="text-gray-700 text-lg">
             基于AI智能体的自动化数据分析，提供深度洞察和智能建议
           </Text>
         </div>
@@ -381,17 +383,17 @@ const IntelligentAnalysis: React.FC = () => {
                 whileHover={{ scale: 1.05, y: -5 }}
                 transition={{ duration: 0.3 }}
               >
-                <Card className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <Card className="bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
                   <div className="text-center">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4 shadow-lg">
                       <div className="text-2xl" style={{ color: stat.color }}>
                         {stat.icon}
                       </div>
                     </div>
-                    <Title level={4} className="text-white text-2xl mb-2">
+                    <Title level={4} className="text-gray-900 text-2xl mb-2">
                       {stat.value}
                     </Title>
-                    <Text className="text-gray-300 text-sm mb-2">
+                    <Text className="text-gray-600 text-sm mb-2">
                       {stat.title}
                     </Text>
                     <div className="mt-2">
@@ -420,15 +422,16 @@ const IntelligentAnalysis: React.FC = () => {
                 <span style={{ 
                   fontSize: designSystem.typography.fontSize.lg,
                   fontWeight: designSystem.typography.fontWeight.semibold,
-                  color: designSystem.colors.text.primary
+                  color: '#1f2937'
                 }}>
                   分析流程
                 </span>
               }
               style={{ 
                 height: '600px',
-                border: `1px solid ${designSystem.colors.border.light}`,
-                borderRadius: designSystem.borderRadius.lg
+                border: '1px solid #e5e7eb',
+                borderRadius: designSystem.borderRadius.lg,
+                backgroundColor: '#ffffff'
               }}
             >
               <Steps
@@ -484,7 +487,7 @@ const IntelligentAnalysis: React.FC = () => {
                 <Text style={{ 
                   fontSize: designSystem.typography.fontSize.sm,
                   fontWeight: designSystem.typography.fontWeight.medium,
-                  color: designSystem.colors.text.primary,
+                  color: '#1f2937',
                   marginBottom: designSystem.spacing.md,
                   display: 'block'
                 }}>
@@ -516,7 +519,7 @@ const IntelligentAnalysis: React.FC = () => {
                         </div>
                         <div style={{ 
                           fontSize: designSystem.typography.fontSize.xs,
-                          color: designSystem.colors.text.primary
+                          color: '#1f2937'
                         }}>
                           {type.label}
                         </div>
@@ -542,7 +545,7 @@ const IntelligentAnalysis: React.FC = () => {
                   <span style={{ 
                     fontSize: designSystem.typography.fontSize.lg,
                     fontWeight: designSystem.typography.fontWeight.semibold,
-                    color: designSystem.colors.text.primary
+                    color: '#1f2937'
                   }}>
                     分析任务
                   </span>
@@ -573,8 +576,9 @@ const IntelligentAnalysis: React.FC = () => {
               style={{ 
                 height: '600px', 
                 overflow: 'auto',
-                border: `1px solid ${designSystem.colors.border.light}`,
-                borderRadius: designSystem.borderRadius.lg
+                border: '1px solid #e5e7eb',
+                borderRadius: designSystem.borderRadius.lg,
+                backgroundColor: '#ffffff'
               }}
             >
               <List
@@ -585,10 +589,10 @@ const IntelligentAnalysis: React.FC = () => {
                     key={task.id}
                     style={{
                       padding: designSystem.spacing.md,
-                      border: `1px solid ${designSystem.colors.border.light}`,
+                      border: '1px solid #e5e7eb',
                       borderRadius: designSystem.borderRadius.md,
                       marginBottom: designSystem.spacing.sm,
-                      background: designSystem.colors.background.primary
+                      background: '#ffffff'
                     }}
                     actions={[
                       task.status === 'pending' && (
@@ -657,7 +661,7 @@ const IntelligentAnalysis: React.FC = () => {
                           <span style={{ 
                             fontWeight: designSystem.typography.fontWeight.semibold,
                             fontSize: designSystem.typography.fontSize.sm,
-                            color: designSystem.colors.text.primary
+                            color: '#1f2937'
                           }}>
                             {task.name}
                           </span>
@@ -681,7 +685,7 @@ const IntelligentAnalysis: React.FC = () => {
                           <div style={{ display: 'flex', gap: designSystem.spacing.lg, flexWrap: 'wrap' }}>
                             <span style={{ 
                               fontSize: designSystem.typography.fontSize.xs,
-                              color: designSystem.colors.text.secondary
+                              color: '#6b7280'
                             }}>
                               数据源：<Text style={{ color: designSystem.colors.text.primary }}>{task.dataSource}</Text>
                             </span>
@@ -718,9 +722,9 @@ const IntelligentAnalysis: React.FC = () => {
                             <div style={{ 
                               marginTop: designSystem.spacing.xs,
                               padding: designSystem.spacing.sm,
-                              background: designSystem.colors.background.secondary,
+                              background: '#f9fafb',
                               borderRadius: designSystem.borderRadius.sm,
-                              border: `1px solid ${designSystem.colors.border.light}`
+                              border: '1px solid #e5e7eb'
                             }}>
                               <Space wrap>
                                 <span style={{ 

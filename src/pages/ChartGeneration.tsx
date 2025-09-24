@@ -85,6 +85,10 @@ const ChartGeneration: React.FC = () => {
 
   // 生成图表配置
   const generateChartConfig = (type: string, data: any[], title: string): ChartConfig => {
+    // Handle different data structures
+    const processedData = data.length > 0 && 'name' in data[0] 
+      ? data.map((item: any) => ({ month: item.name, value: item.value }))
+      : data;
     let options: any = {
       title: {
         text: title,
@@ -112,7 +116,7 @@ const ChartGeneration: React.FC = () => {
             type: 'pie',
             radius: ['40%', '70%'],
             center: ['50%', '50%'],
-            data: data.map(item => ({
+            data: processedData.map(item => ({
               value: item.value,
               name: item.name || item.month,
             })),
@@ -131,13 +135,13 @@ const ChartGeneration: React.FC = () => {
           ...options,
           xAxis: {
             type: 'category',
-            data: data.map(item => item.name || item.month),
+            data: processedData.map(item => item.name || item.month),
           },
           yAxis: {
             type: 'value',
           },
           series: [{
-            data: data.map(item => item.value),
+            data: processedData.map(item => item.value),
             type: 'bar',
             itemStyle: {
               color: '#1890ff',
@@ -151,13 +155,13 @@ const ChartGeneration: React.FC = () => {
           ...options,
           xAxis: {
             type: 'category',
-            data: data.map(item => item.name || item.month),
+            data: processedData.map(item => item.name || item.month),
           },
           yAxis: {
             type: 'value',
           },
           series: [{
-            data: data.map(item => item.value),
+            data: processedData.map(item => item.value),
             type: 'line',
             smooth: true,
             itemStyle: {
@@ -174,7 +178,7 @@ const ChartGeneration: React.FC = () => {
     return {
       type,
       title,
-      data,
+      data: processedData,
       options,
     };
   };
@@ -220,18 +224,18 @@ const ChartGeneration: React.FC = () => {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
+    <div className="p-8 bg-white text-gray-900 min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="mb-8"
       >
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 shadow-xl">
-          <Title level={2} className="flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 mb-3">
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 shadow-xl">
+          <Title level={2} className="flex items-center gap-3 text-gray-900 mb-3">
             对话式图表生成
           </Title>
-          <Text className="text-gray-300 text-lg">
+          <Text className="text-gray-600 text-lg">
             通过自然语言描述自动生成图表，让数据可视化更加智能便捷
           </Text>
         </div>
@@ -246,30 +250,30 @@ const ChartGeneration: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <Card 
-                title={<span className="text-white/90 text-lg">📝 图表描述</span>}
-                className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg h-fit"
+                title={<span className="text-gray-900 text-lg">📝 图表描述</span>}
+                className="bg-white border border-gray-200 rounded-2xl shadow-lg h-fit"
               >
                 <Space direction="vertical" className="w-full" size="large">
                   <div>
-                    <Text strong className="text-white/80">数据集选择：</Text>
+                    <Text strong className="text-gray-700">数据集选择：</Text>
                     <Select
                       value={selectedDataset}
                       onChange={setSelectedDataset}
-                      className="w-full mt-2 bg-white/10 border border-white/20 rounded-lg text-white"
+                      className="w-full mt-2 border border-gray-300 rounded-lg text-gray-900"
                     >
-                      <Option value="sales" className="bg-gray-800 text-white">销售数据</Option>
-                      <Option value="categories" className="bg-gray-800 text-white">分类数据</Option>
+                      <Option value="sales" className="bg-white text-gray-900">销售数据</Option>
+                      <Option value="categories" className="bg-white text-gray-900">分类数据</Option>
                     </Select>
                   </div>
                   
                   <div>
-                    <Text strong className="text-white/80">描述您想要的图表：</Text>
+                    <Text strong className="text-gray-700">描述您想要的图表：</Text>
                     <TextArea
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="例如：生成一个显示月度销售趋势的折线图"
                       rows={4}
-                      className="w-full mt-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 hover:border-white/40 focus:border-blue-400 transition-all duration-300"
+                      className="w-full mt-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 hover:border-gray-400 focus:border-blue-500 focus:ring-blue-500 transition-all duration-300"
                     />
                   </div>
                   
@@ -282,16 +286,15 @@ const ChartGeneration: React.FC = () => {
                       icon={<SendOutlined />}
                       onClick={handleSubmit}
                       loading={loading}
-                      className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 border-none text-white hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg transition-all duration-300 shadow-md rounded-xl"
+                      className="w-full bg-blue-600 hover:bg-blue-700 border-blue-600 text-white hover:shadow-lg transition-all duration-300 shadow-md rounded-xl"
                       size="large"
                     >
                       {loading ? '正在生成图表...' : '生成图表'}
                     </Button>
                   </motion.div>
                   
-                  {/* 示例查询 */}
                   <div>
-                    <Text strong className="text-white/80">💡 示例查询：</Text>
+                    <Text strong className="text-gray-700">💡 示例查询：</Text>
                     <div className="mt-3 space-y-2">
                       {[
                         '生成销售趋势折线图',
@@ -304,7 +307,7 @@ const ChartGeneration: React.FC = () => {
                           whileTap={{ scale: 0.95 }}
                         >
                           <Tag
-                            className="cursor-pointer bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 rounded-full px-3 py-1"
+                            className="cursor-pointer bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200 hover:border-gray-400 transition-all duration-300 rounded-full px-3 py-1"
                             onClick={() => setQuery(example)}
                           >
                             {example}
@@ -326,7 +329,7 @@ const ChartGeneration: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <Card
-                title={<span className="text-white/90 text-lg">📊 图表展示</span>}
+                title={<span className="text-gray-900 text-lg">📊 图表展示</span>}
                 extra={
                   chartConfig && (
                     <Space>
@@ -337,7 +340,7 @@ const ChartGeneration: React.FC = () => {
                         <Button
                           icon={<DownloadOutlined />}
                           onClick={downloadChart}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 border-none text-white hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-md rounded-lg"
+                          className="bg-green-600 hover:bg-green-700 border-green-600 text-white transition-all duration-300 shadow-md rounded-lg"
                         >
                           下载
                         </Button>
@@ -349,7 +352,7 @@ const ChartGeneration: React.FC = () => {
                         <Button
                           icon={<ReloadOutlined />}
                           onClick={() => setChartConfig(null)}
-                          className="bg-gradient-to-r from-gray-500 to-slate-500 border-none text-white hover:from-gray-600 hover:to-slate-600 transition-all duration-300 shadow-md rounded-lg"
+                          className="bg-gray-600 hover:bg-gray-700 border-gray-600 text-white transition-all duration-300 shadow-md rounded-lg"
                         >
                           重置
                         </Button>
@@ -357,7 +360,7 @@ const ChartGeneration: React.FC = () => {
                     </Space>
                   )
                 }
-                className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-white/20 rounded-2xl shadow-lg min-h-[500px]"
+                className="bg-white border border-gray-200 rounded-2xl shadow-lg min-h-[500px]"
               >
                 {loading ? (
                   <motion.div
@@ -365,8 +368,8 @@ const ChartGeneration: React.FC = () => {
                     animate={{ opacity: 1 }}
                     className="flex items-center justify-center h-96"
                   >
-                    <Spin size="large" className="text-blue-400" />
-                    <Text className="ml-3 text-white/80">AI正在为您生成图表...</Text>
+                    <Spin size="large" className="text-blue-600" />
+                    <Text className="ml-3 text-gray-700">AI正在为您生成图表...</Text>
                   </motion.div>
                 ) : chartConfig ? (
                   <motion.div
@@ -375,7 +378,7 @@ const ChartGeneration: React.FC = () => {
                     transition={{ duration: 0.5 }}
                     className="p-6"
                   >
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/10">
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
                       <ReactECharts
                         option={chartConfig.options}
                         style={{ height: '400px', width: '100%' }}
@@ -387,9 +390,9 @@ const ChartGeneration: React.FC = () => {
                     {/* 图表类型切换 */}
                     {suggestedCharts.length > 0 && (
                       <>
-                        <Divider className="border-white/20" />
+                        <Divider className="border-gray-300" />
                         <div>
-                          <Text strong className="text-white/80">🔄 尝试其他图表类型：</Text>
+                          <Text strong className="text-gray-700">🔄 尝试其他图表类型：</Text>
                           <div className="mt-3 flex flex-wrap gap-2">
                             {suggestedCharts.map(type => {
                               const chartType = CHART_TYPES.find(t => t.value === type);
@@ -401,7 +404,7 @@ const ChartGeneration: React.FC = () => {
                                 >
                                   <Button
                                     onClick={() => switchChartType(type)}
-                                    className="bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 rounded-lg"
+                                    className="bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200 hover:border-gray-400 transition-all duration-300 rounded-lg"
                                   >
                                     {chartType.icon} {chartType.label}
                                   </Button>
@@ -418,17 +421,17 @@ const ChartGeneration: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6 }}
-                    className="flex items-center justify-center h-96 text-white/60"
+                    className="flex items-center justify-center h-96 text-gray-500"
                   >
                     <div className="text-center">
                       <motion.div 
-                        className="text-6xl mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+                        className="text-6xl mb-4 text-blue-600"
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         transition={{ type: "spring", stiffness: 300 }}
                       >
                         📈
                       </motion.div>
-                      <Text className="text-white/80 text-lg">请在左侧输入图表描述，开始生成您的专属图表</Text>
+                      <Text className="text-gray-700 text-lg">请在左侧输入图表描述，开始生成您的专属图表</Text>
                     </div>
                   </motion.div>
                 )}

@@ -1,4 +1,4 @@
-import { message } from 'antd';
+// import { message } from 'antd';
 
 // 图表配置接口
 export interface ChartConfig {
@@ -10,12 +10,12 @@ export interface ChartConfig {
 }
 
 // 智谱AI API配置
-const ZHIPU_API_CONFIG = {
-  baseURL: 'https://open.bigmodel.cn/api/paas/v4',
-  model: 'glm-4',
-  // 注意：实际使用时需要配置真实的API Key
-  apiKey: process.env.REACT_APP_ZHIPU_API_KEY || 'demo-key',
-};
+// const ZHIPU_API_CONFIG = {
+//   baseURL: 'https://open.bigmodel.cn/api/paas/v4',
+//   model: 'glm-4',
+//   // 注意：实际使用时需要配置真实的API Key
+//   apiKey: process.env.REACT_APP_ZHIPU_API_KEY || 'demo-key',
+// };
 
 // 图表类型映射
 const CHART_TYPE_MAPPING = {

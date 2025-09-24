@@ -883,7 +883,7 @@ const AIAnalysis: React.FC = () => {
   ];
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-white text-gray-900 min-h-screen">
       <div className="mb-6">
         <Title level={2}>AI 智能分析中心</Title>
         <Paragraph className="text-gray-600">

@@ -298,19 +298,6 @@ input:checked + .switch-slider {
 input:checked + .switch-slider:before {
   transform: translateX(26px);
 }
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.input-modern:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-  background: rgba(255, 255, 255, 0.95);
-}
 
 /* 进度条美化 */
 .progress-bar-modern {

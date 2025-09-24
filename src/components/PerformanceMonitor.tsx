@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Card, Badge, Progress } from 'antd';
 import { Activity, Clock, Cpu, HardDrive, Wifi } from 'lucide-react';
 
 interface PerformanceMetrics {
@@ -157,145 +155,125 @@ export const PerformanceMonitor: React.FC = () => {
         <h2 className="text-2xl font-bold">性能监控</h2>
         <div className="flex items-center space-x-2">
           <Badge 
-            variant={isMonitoring ? "default" : "secondary"}
+            color={isMonitoring ? "green" : "default"}
+            text={isMonitoring ? '监控中' : '已暂停'}
             className="cursor-pointer"
             onClick={() => setIsMonitoring(!isMonitoring)}
-          >
-            <Activity className="w-3 h-3 mr-1" />
-            {isMonitoring ? '监控中' : '已暂停'}
-          </Badge>
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* 页面加载时间 */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">页面加载时间</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatTime(metrics.pageLoadTime)}</div>
-            <div className="flex items-center space-x-2 mt-2">
-              <div className={`w-2 h-2 rounded-full ${
-                getPerformanceStatus(metrics.pageLoadTime, THRESHOLDS.pageLoadTime).color
-              }`} />
-              <p className="text-xs text-muted-foreground">
-                目标: ≤3秒
-              </p>
-            </div>
-            <Progress 
-              value={Math.min((metrics.pageLoadTime / THRESHOLDS.pageLoadTime.fair) * 100, 100)} 
-              className="mt-2"
-            />
-          </CardContent>
+        <Card
+          title="页面加载时间"
+          extra={<Clock />}
+        >
+          <div className="text-2xl font-bold">{formatTime(metrics.pageLoadTime)}</div>
+          <div className="flex items-center space-x-2 mt-2">
+            <div className={`w-2 h-2 rounded-full ${
+              getPerformanceStatus(metrics.pageLoadTime, THRESHOLDS.pageLoadTime).color
+            }`} />
+            <p className="text-xs text-muted-foreground">
+              目标: ≤3秒
+            </p>
+          </div>
+          <Progress 
+            percent={Math.min((metrics.pageLoadTime / THRESHOLDS.pageLoadTime.fair) * 100, 100)} 
+            className="mt-2"
+            showInfo={false}
+          />
         </Card>
 
         {/* API响应时间 */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">API响应时间</CardTitle>
-            <Wifi className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatTime(metrics.apiResponseTime)}</div>
-            <div className="flex items-center space-x-2 mt-2">
-              <div className={`w-2 h-2 rounded-full ${
-                getPerformanceStatus(metrics.apiResponseTime, THRESHOLDS.apiResponseTime).color
-              }`} />
-              <p className="text-xs text-muted-foreground">
-                目标: ≤1秒
-              </p>
-            </div>
-            <Progress 
-              value={Math.min((metrics.apiResponseTime / THRESHOLDS.apiResponseTime.fair) * 100, 100)} 
-              className="mt-2"
-            />
-          </CardContent>
+        <Card
+          title="API响应时间"
+          extra={<Wifi />}
+        >
+          <div className="text-2xl font-bold">{formatTime(metrics.apiResponseTime)}</div>
+          <div className="flex items-center space-x-2 mt-2">
+            <div className={`w-2 h-2 rounded-full ${
+              getPerformanceStatus(metrics.apiResponseTime, THRESHOLDS.apiResponseTime).color
+            }`} />
+            <p className="text-xs text-muted-foreground">
+              目标: ≤1秒
+            </p>
+          </div>
+          <Progress 
+            percent={Math.min((metrics.apiResponseTime / THRESHOLDS.apiResponseTime.fair) * 100, 100)} 
+            className="mt-2"
+            showInfo={false}
+          />
         </Card>
 
         {/* 内存使用 */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">内存使用</CardTitle>
-            <Cpu className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatSize(metrics.memoryUsage)}</div>
-            <div className="flex items-center space-x-2 mt-2">
-              <div className={`w-2 h-2 rounded-full ${
-                getPerformanceStatus(metrics.memoryUsage, THRESHOLDS.memoryUsage).color
-              }`} />
-              <p className="text-xs text-muted-foreground">
-                目标: ≤50MB
-              </p>
-            </div>
-            <Progress 
-              value={Math.min((metrics.memoryUsage / THRESHOLDS.memoryUsage.fair) * 100, 100)} 
-              className="mt-2"
-            />
-          </CardContent>
+        <Card
+          title="内存使用"
+          extra={<Cpu />}
+        >
+          <div className="text-2xl font-bold">{formatSize(metrics.memoryUsage)}</div>
+          <div className="flex items-center space-x-2 mt-2">
+            <div className={`w-2 h-2 rounded-full ${
+              getPerformanceStatus(metrics.memoryUsage, THRESHOLDS.memoryUsage).color
+            }`} />
+            <p className="text-xs text-muted-foreground">
+              目标: ≤50MB
+            </p>
+          </div>
+          <Progress 
+            percent={Math.min((metrics.memoryUsage / THRESHOLDS.memoryUsage.fair) * 100, 100)} 
+            className="mt-2"
+            showInfo={false}
+          />
         </Card>
 
         {/* 网络延迟 */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">网络延迟</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatTime(metrics.networkLatency)}</div>
-            <div className="flex items-center space-x-2 mt-2">
-              <div className={`w-2 h-2 rounded-full ${
-                getPerformanceStatus(metrics.networkLatency, THRESHOLDS.networkLatency).color
-              }`} />
-              <p className="text-xs text-muted-foreground">
-                目标: ≤100ms
-              </p>
-            </div>
-            <Progress 
-              value={Math.min((metrics.networkLatency / THRESHOLDS.networkLatency.fair) * 100, 100)} 
-              className="mt-2"
-            />
-          </CardContent>
+        <Card
+          title="网络延迟"
+          extra={<Activity />}
+        >
+          <div className="text-2xl font-bold">{formatTime(metrics.networkLatency)}</div>
+          <div className="flex items-center space-x-2 mt-2">
+            <div className={`w-2 h-2 rounded-full ${
+              getPerformanceStatus(metrics.networkLatency, THRESHOLDS.networkLatency).color
+            }`} />
+            <p className="text-xs text-muted-foreground">
+              目标: ≤100ms
+            </p>
+          </div>
+          <Progress 
+            percent={Math.min((metrics.networkLatency / THRESHOLDS.networkLatency.fair) * 100, 100)} 
+            className="mt-2"
+            showInfo={false}
+          />
         </Card>
 
         {/* 渲染时间 */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">DOM渲染时间</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatTime(metrics.renderTime)}</div>
-            <p className="text-xs text-muted-foreground mt-2">
-              DOM内容加载完成时间
-            </p>
-          </CardContent>
+        <Card
+          title="DOM渲染时间"
+          extra={<Clock />}
+        >
+          <div className="text-2xl font-bold">{formatTime(metrics.renderTime)}</div>
+          <p className="text-xs text-muted-foreground mt-2">
+            DOM内容加载完成时间
+          </p>
         </Card>
 
         {/* 打包大小 */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">打包大小</CardTitle>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatSize(metrics.bundleSize)}</div>
-            <p className="text-xs text-muted-foreground mt-2">
-              JavaScript包总大小
-            </p>
-          </CardContent>
+        <Card
+          title="打包大小"
+          extra={<HardDrive />}
+        >
+          <div className="text-2xl font-bold">{formatSize(metrics.bundleSize)}</div>
+          <p className="text-xs text-muted-foreground mt-2">
+            JavaScript包总大小
+          </p>
         </Card>
       </div>
 
       {/* 性能建议 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>性能建议</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
+      <Card title="性能建议">
+        <div className="space-y-2">
             {metrics.pageLoadTime > THRESHOLDS.pageLoadTime.good && (
               <div className="flex items-center space-x-2 text-sm">
                 <div className="w-2 h-2 rounded-full bg-yellow-500" />
@@ -321,7 +299,6 @@ export const PerformanceMonitor: React.FC = () => {
               </div>
             )}
           </div>
-        </CardContent>
       </Card>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Button, Badge, Progress, Tabs, Select, Input, Space, Tag, Tooltip, Modal, Slider, Switch, message } from 'antd';
 import { PlayCircleOutlined, PauseCircleOutlined, StopOutlined, ReloadOutlined, SettingOutlined, EyeOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Play, Pause, Square, RotateCcw, Settings, Eye, Trash2, Edit3, Activity, Clock, CheckCircle, AlertCircle, XCircle, Wifi, WifiOff, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useWebSocket } from '@/utils/websocket';
 
 interface TaskNode {
@@ -175,6 +176,17 @@ const DataPipeline: React.FC = () => {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed': return '已完成';
+      case 'running': return '运行中';
+      case 'failed': return '失败';
+      case 'paused': return '已暂停';
+      case 'pending': return '待处理';
+      default: return '未知';
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-green-500';
@@ -241,7 +253,7 @@ const DataPipeline: React.FC = () => {
   const selectedTaskData = tasks.find(task => task.id === selectedTask);
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="p-8 min-h-screen bg-white text-gray-900">
       {/* 页面标题 - 玻璃拟态风格 */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -251,26 +263,26 @@ const DataPipeline: React.FC = () => {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
               数据处理监控
             </h1>
-            <p className="text-gray-300 text-lg">实时监控数据处理流程，管理任务执行状态</p>
+            <p className="text-gray-600 text-lg">实时监控数据处理流程，管理任务执行状态</p>
           </div>
           <div className="flex items-center gap-4">
             <motion.div
               animate={wsConnected ? { scale: [1, 1.1, 1] } : {}}
               transition={{ duration: 2, repeat: Infinity }}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-300"
             >
-              <div className={`w-3 h-3 rounded-full ${wsConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
-              <span className={`text-sm font-medium ${wsConnected ? 'text-green-300' : 'text-red-300'}`}>
+              <div className={`w-3 h-3 rounded-full ${wsConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+              <span className={`text-sm font-medium ${wsConnected ? 'text-green-700' : 'text-red-700'}`}>
                 {wsConnected ? '实时连接' : '连接断开'}
               </span>
             </motion.div>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={() => setIsControlPanelVisible(true)}
             >
               <Settings className="w-5 h-5" />
@@ -296,16 +308,16 @@ const DataPipeline: React.FC = () => {
                 <Card 
                   title={
                     <div className="flex items-center gap-3">
-                      <Activity className="w-6 h-6 text-blue-400" />
-                      <span className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                      <Activity className="w-6 h-6 text-blue-600" />
+                      <span className="text-xl font-semibold text-gray-900">
                         处理任务
                       </span>
                     </div>
                   }
-                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl shadow-xl"
+                  className="bg-white border border-gray-200 rounded-2xl shadow-xl"
                   headStyle={{
                     background: 'transparent',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderBottom: '1px solid #e5e7eb',
                     padding: '24px'
                   }}
                   bodyStyle={{
@@ -319,16 +331,16 @@ const DataPipeline: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300"
+                        className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-gray-100 transition-all duration-300"
                       >
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-4">
-                            <h3 className="font-semibold text-white text-lg">{task.name}</h3>
+                            <h3 className="font-semibold text-gray-900 text-lg">{task.name}</h3>
                             <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              task.status === 'running' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
-                              task.status === 'completed' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
-                              task.status === 'failed' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-                              'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                              task.status === 'running' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                              task.status === 'completed' ? 'bg-green-100 text-green-800 border border-green-200' :
+                              task.status === 'failed' ? 'bg-red-100 text-red-800 border border-red-200' :
+                              'bg-yellow-100 text-yellow-800 border border-yellow-200'
                             }`}>
                               {getStatusText(task.status)}
                             </div>
@@ -339,8 +351,8 @@ const DataPipeline: React.FC = () => {
                               whileTap={{ scale: 0.95 }}
                               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                                 task.status === 'paused' 
-                                  ? 'bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30' 
-                                  : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 hover:bg-yellow-500/30'
+                                  ? 'bg-green-100 text-green-800 border border-green-200 hover:bg-green-200' 
+                                  : 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200'
                               }`}
                               onClick={() => handleTaskControl(task.id, task.status === 'paused' ? 'play' : 'pause')}
                             >
@@ -349,7 +361,7 @@ const DataPipeline: React.FC = () => {
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition-all duration-200"
+                              className="px-4 py-2 rounded-lg text-sm font-medium bg-red-100 text-red-800 border border-red-200 hover:bg-red-200 transition-all duration-200"
                               onClick={() => handleTaskControl(task.id, 'stop')}
                             >
                               <Square className="w-4 h-4" />
@@ -357,7 +369,7 @@ const DataPipeline: React.FC = () => {
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30 transition-all duration-200"
+                              className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200 transition-all duration-200"
                               onClick={() => handleTaskRestart(task.id)}
                             >
                               <RotateCcw className="w-4 h-4" />
@@ -366,17 +378,17 @@ const DataPipeline: React.FC = () => {
                         </div>
                         
                         <div className="mb-4">
-                          <div className="flex justify-between text-sm text-gray-300 mb-2">
+                          <div className="flex justify-between text-sm text-gray-600 mb-2">
                             <span>处理进度</span>
                             <span className="font-semibold">{Math.round(task.progress)}%</span>
                           </div>
-                          <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+                          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                             <motion.div
                               className={`h-3 rounded-full ${
-                                task.status === 'running' ? 'bg-gradient-to-r from-blue-400 to-purple-400' :
-                                task.status === 'completed' ? 'bg-gradient-to-r from-green-400 to-emerald-400' :
-                                task.status === 'failed' ? 'bg-gradient-to-r from-red-400 to-pink-400' :
-                                'bg-gradient-to-r from-yellow-400 to-orange-400'
+                                task.status === 'running' ? 'bg-blue-500' :
+                                task.status === 'completed' ? 'bg-green-500' :
+                                task.status === 'failed' ? 'bg-red-500' :
+                                'bg-yellow-500'
                               }`}
                               initial={{ width: 0 }}
                               animate={{ width: `${task.progress}%` }}
@@ -392,17 +404,17 @@ const DataPipeline: React.FC = () => {
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ duration: 0.3, delay: 0.5 + nodeIndex * 0.1 }}
-                              className="flex items-center gap-3 px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-200"
+                              className="flex items-center gap-3 px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition-all duration-200"
                             >
                               <div className={`w-2 h-2 rounded-full ${
-                                node.status === 'completed' ? 'bg-green-400' :
-                                node.status === 'running' ? 'bg-blue-400 animate-pulse' :
-                                node.status === 'failed' ? 'bg-red-400' :
-                                node.status === 'paused' ? 'bg-yellow-400' :
+                                node.status === 'completed' ? 'bg-green-500' :
+                                node.status === 'running' ? 'bg-blue-500 animate-pulse' :
+                                node.status === 'failed' ? 'bg-red-500' :
+                                node.status === 'paused' ? 'bg-yellow-500' :
                                 'bg-gray-400'
                               }`} />
-                              <span className="text-sm font-medium text-white">{node.name}</span>
-                              <span className="text-xs text-gray-400 font-mono">{node.progress}%</span>
+                              <span className="text-sm font-medium text-gray-900">{node.name}</span>
+                              <span className="text-xs text-gray-500 font-mono">{node.progress}%</span>
                             </motion.div>
                           ))}
                         </div>

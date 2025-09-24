@@ -79,20 +79,20 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
     }
   }
 
-  const getStatusColor = (type?: string) => {
-    switch (type) {
-      case 'success':
-        return designSystem.colors.success
-      case 'warning':
-        return designSystem.colors.warning
-      case 'error':
-        return designSystem.colors.error
-      case 'info':
-        return designSystem.colors.info
-      default:
-        return designSystem.colors.text.secondary
-    }
-  }
+  // const getStatusColor = (type?: string) => {
+  //   switch (type) {
+  //     case 'success':
+  //       return designSystem.colors.success
+  //     case 'warning':
+  //       return designSystem.colors.warning
+  //     case 'error':
+  //       return designSystem.colors.error
+  //     case 'info':
+  //       return designSystem.colors.info
+  //     default:
+  //       return designSystem.colors.text.secondary
+  //   }
+  // }
 
   const getIconByName = (iconName?: string) => {
     switch (iconName) {
@@ -159,7 +159,7 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
 
   const cardStyle: React.CSSProperties = {
     border: `1px solid ${designSystem.colors.border.light}`,
-    borderRadius: designSystem.borderRadius[16],
+    borderRadius: designSystem.borderRadius.xl,
     borderLeft: priority ? `4px solid ${getPriorityColor(priority)}` : undefined,
     transition: 'all 0.3s ease',
     cursor: onClick ? 'pointer' : 'default',
@@ -201,7 +201,7 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
               style={{
                 margin: 0,
                 color: designSystem.colors.text.primary,
-                fontSize: designSystem.typography.fontSize.md,
+                fontSize: designSystem.typography.fontSize.lg,
                 fontWeight: designSystem.typography.fontWeight.semibold,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -358,7 +358,7 @@ const OptimizedCard: React.FC<OptimizedCardProps> = ({
 
         {/* 操作按钮 */}
         {actions && actions.length > 0 && (
-          <div style={{ marginLeft: designSystem.spacing.md }}>
+          <div style={{ marginLeft: designSystem.spacing[4] }}>
             <Space size="small">
               {actions.slice(0, 3).map((action, index) => renderAction(action, index))}
             </Space>
